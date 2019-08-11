@@ -1,0 +1,8 @@
+swtech.common.config：编辑器中使用的公共配置。
+
+swtech-facade-pageDesign：编辑器主项目中使用的所有实体类与dubbo暴露接口。
+
+swtech-service-pageDesign：编辑器主项目。主要包括编辑器各控件增删改查、编辑器表单中页面内容增删改查、编辑器左侧页面树形节点增删改查、
+						   以及编辑器自身的业务接口（如：创建静态页、上传下载等）。
+
+swtech-service-pageDesign-control：编辑器子项目。主要包括编辑器中各控件自身的业务功能逻辑。
