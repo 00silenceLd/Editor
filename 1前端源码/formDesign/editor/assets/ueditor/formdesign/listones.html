@@ -1,0 +1,287 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title>列表模板2</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="leipi.style.css">
+    <script type="text/javascript" src="../dialogs/internal.js"></script>
+    <script type="text/javascript" src="./jquery-3.2.1.min.js"></script>
+    <script type="text/javascript" src="../httpData.config.js"></script>
+    <script type="text/javascript">
+        function createElement( type, name ) {
+            var element = null;
+            try {
+                element = document.createElement( '<' + type + ' name="' + name + '">' );
+            } catch ( e ) {}
+            if ( element == null ) {
+                element = document.createElement( type );
+                element.name = name;
+            }
+            return element;
+        }
+    </script>
+  <link rel="stylesheet" href="self/listone/css/css.css">
+</head>
+<body>
+    <div class="content">
+        <table class="table table-bordered table-striped table-hover">
+            <thead>
+                <tr>
+                    <th width="40%">
+                        <span> 控件名称 ：</span>
+                        <input id="orgname" onclick="javascript:this.select()" placeholder="必填项" type="text" class="input-medium" value="自定义列表" />
+                        <span class="label label-important">*</span>
+                    </th>
+                    <th>
+                      数据源：<select id="datasource">
+                      <option value="0">请选择</option>
+                    </select>
+                    </th>
+                </tr>
+                <tr>
+                    <th rowspan="2" style="vertical-align: top;">
+                        <img src="self/listone/img/demo.jpg">
+                      <div style="padding-top: 15px;">
+                        <input type="checkbox" name="bottomline" value="on"> 显示底部线
+                        <input type="checkbox" name="showpage" value="on"> 显示分页
+                        <input type="checkbox" name="orderby" value="asc"> 升序排列
+                      </div>
+                    </th>
+                    <th>
+                        <span>数据字段</span>
+                    </th>
+                </tr>
+                <tr>
+                   <td>
+                     <table>
+                       <tr>
+                         <td>图片</td>
+                         <td>
+                           <select id="datapic" class="datafiled">
+                             <option value="0">请选择</option>
+                           </select>
+                         </td>
+                       </tr>
+                       <tr>
+                         <td>标题</td>
+                         <td>
+                           <select id="datatitle" class="datafiled">
+                             <option value="0">请选择</option>
+                           </select>
+                         </td>
+                         <td><input type="text" class="input-medium" value="" placeholder="输入限制文本的字数"></td>
+                       </tr>
+                       <tr>
+                         <td>简介</td>
+                         <td>
+                           <select id="datacontent" class="datafiled">
+                             <option value="0">请选择</option>
+                           </select>
+                         </td>
+                         <td><input type="text" class="input-medium" value="" placeholder="输入限制文本的字数"></td>
+                       </tr>
+                     </table>
+                       <!--<select id="datazid">
+                           <option value="0">请选择</option>
+                       </select>
+                     <div id="datazid"></div>-->
+                   </td>
+               </tr>
+            </thead>
+        </table>
+    </div>
+    <script type="text/javascript">
+        var oNode = null,
+            gdataSource=null,
+            thePlugins = 'listone';
+
+        window.onload = function () {
+            $G('orgname').select();
+            //弹出窗口初始化函数
+            if ( UE.plugins[ thePlugins ].editdom ) {
+                oNode = UE.plugins[ thePlugins ].editdom;
+                $G( 'orgname' ).value = oNode.getAttribute( 'title' );
+                var datasource = oNode.getAttribute( 'datasource' );
+                var datapic = oNode.getAttribute( 'datapic' );
+                var datatitle = oNode.getAttribute( 'datatitle' );
+                var datacontent = oNode.getAttribute( 'datacontent' );
+                var pagesize = oNode.getAttribute( 'pagesize' );
+                var bottomline = oNode.getAttribute( 'bottomline' );
+                var showpage = oNode.getAttribute( 'showpage' );
+                var orderby = oNode.getAttribute( 'orderby' );
+                var colnumber = oNode.getAttribute( 'colnumber' );
+                var datasources=datasource.split(":");
+                $( "#datasource" ).prepend( '<option value="' + datasource +'" selected>' + datasources[1] + '</option>');
+                $.ajax({
+                  url: prevent_HOST + 'pageDesignQueryFacade/getPageEditorData?id=' + datasources[0],
+                  method:"GET",
+                  success:function(res){
+                    var pic='';
+                    var title='';
+                    var con='';
+                    $( ".datafiled").html('');
+                    $.each( res.msg, function ( index, value ) {
+                      if(datapic==value.value){
+                        pic+='<option value="' + value.value+'" selected>' + value.text + '</option>';
+                      }else{
+                        pic+='<option value="' + value.value+'">' + value.text + '</option>';
+                      }
+
+                      if(datatitle==value.value){
+                        title+='<option value="' + value.value+'" selected>' + value.text + '</option>';
+                      }else{
+                        title+='<option value="' + value.value+'">' + value.text + '</option>';
+                      }
+
+                      if(datacontent==value.value){
+                        con+='<option value="' + value.value+'" selected>' + value.text + '</option>';
+                      }else{
+                        con+='<option value="' + value.value+'">' + value.text + '</option>';
+                      }
+                    })
+                    $("#datapic").html(pic);
+                    $("#datatitle").html(title);
+                    $("#datacontent").html(con);
+                  }
+                })
+                if(pagesize!=undefined)$("input[name=pagesize]").val(pagesize);
+                if(bottomline!=undefined && bottomline=='on'){
+                  $("input[name=bottomline]").attr("checked","true");
+                }
+                if(showpage!=undefined && showpage=='on'){
+                  $("input[name=showpage]").attr("checked","true");
+                }
+                if(orderby!=undefined && orderby=='asc'){
+                  $("input[name=orderby]").attr("checked","true");
+                }
+                if(colnumber!=undefined){
+                  $("input[name=colnumber]").val(colnumber);
+                }
+            }
+
+            /*
+             * 绑定数据源
+             * 链接后台获取 数据链接
+             *
+             */
+            var nodeParentId = $( '#nodeParentId', window.parent.document ).val();
+            var nodeId = $('#node_id',window.parent.document).val();
+            var userinfo=window.localStorage['user']?JSON.parse(window.localStorage['user']):null;
+            $.ajax( {
+                url: prevent_HOST + 'nodeQueryFacade/getDataSourcePage?nodeId='+nodeId+"&uid="+userinfo.id,
+                method: 'GET',
+                success: function ( res ) {
+                    $.each( res.msg, function ( index, value ) {
+                        $( "#datasource" ).append( '<option value=' + value.id +':'+value.value+'>' + value.value + '</option>' );
+                    } )
+                },
+                error: function ( res ) {
+                    alert( '抱歉！获取 数据链接 失败！因为您好像还没有选择表哦！' )
+                }
+            } );
+            $(document).on("change","#datasource",function(e){
+              var nodeParentId = $(this).val().split(":");
+                $(".datafiled").empty();
+                $.ajax({
+                  url: prevent_HOST + 'pageDesignQueryFacade/getPageEditorData?id=' + nodeParentId[0],
+                  method:"GET",
+                  success:function(res){
+                     $.each( res.msg, function ( index, value ) {
+                              $( ".datafiled").append( '<option value="' + value.value+'">' + value.text + '</option>' );
+                          })
+                  }
+                })
+            });
+        }
+
+        dialog.oncancel = function () {
+            if ( UE.plugins[ thePlugins ].editdom ) {
+                delete UE.plugins[ thePlugins ].editdom;
+            }
+        };
+
+        dialog.onok = function () {
+            var gName = $G( 'orgname' ).value.replace( /\"/g, "&quot;" );
+            var datasource=$("#datasource").val();
+            var datapic=$("#datapic").val();
+            var datatitle=$("#datatitle").val();
+            var datacontent=$("#datacontent").val();
+            var pagesize=$("input[name=pagesize]").val();
+            var colnumber=$("input[name=colnumber]").val();
+            var bottomline=$("input[name=bottomline]:checked").val();
+            var showpage=$("input[name=showpage]:checked").val();
+            var orderby=$("input[name=orderby]:checked").val();
+
+            if(bottomline==undefined)bottomline='off';
+            if(showpage==undefined)showpage='off';
+            if(orderby==undefined)orderby='desc';
+            if(colnumber==undefined)colnumber='off';
+
+            if ( gName == '' ) {
+                alert( '控件名称不能为空' );
+                $G( 'orgname' ).focus();
+                return false;
+            }
+            if(datasource=='0'){
+              alert( '没有选择数据源' );
+              return false;
+            }
+            if(datapic=='' && datatitle=='' && datacontent==''){
+              alert( '没有选择数据字段' );
+              return false;
+            }
+
+
+            var gTitle = '';
+            if ( !oNode ) {
+                try {
+                    oNode = createElement( 'input', 'leipiNewField' );
+                    oNode.setAttribute( 'leipiPlugins', thePlugins );
+                    oNode.setAttribute( 'type', 'text' );
+                    oNode.setAttribute( 'value', gName );
+                    oNode.setAttribute( 'title', gName );
+                    oNode.setAttribute( 'datasource', datasource );
+                    oNode.setAttribute( 'datapic', datapic );
+                    oNode.setAttribute( 'datatitle', datatitle );
+                    oNode.setAttribute( 'datacontent', datacontent );
+                    oNode.setAttribute( 'pagesize', pagesize );
+                    oNode.setAttribute( 'bottomline', bottomline );
+                    oNode.setAttribute( 'showpage', showpage );
+                    oNode.setAttribute( 'orderby', orderby );
+                    oNode.setAttribute( 'colnumber', colnumber );
+                    oNode.setAttribute( 'style', 'height: 20px;line-height: 20px;' );
+                    //oNode.style.width="60px";
+                    editor.execCommand( 'insertHtml', oNode.outerHTML );
+                    return true;
+                } catch ( e ) {
+                    try {
+                        editor.execCommand( 'error' );
+                    } catch ( e ) {
+                        alert( '控件异常，请反馈或寻求帮助！' );
+                    }
+                    return false;
+                }
+            } else {
+                //修改
+                oNode.setAttribute( 'leipiPlugins', thePlugins );
+                oNode.setAttribute( 'value', gName );
+                oNode.setAttribute( 'title', gName );
+                oNode.setAttribute( 'datasource', datasource );
+                oNode.setAttribute( 'datapic', datapic );
+                oNode.setAttribute( 'datatitle', datatitle );
+                oNode.setAttribute( 'datacontent', datacontent );
+                oNode.setAttribute( 'pagesize', pagesize );
+                oNode.setAttribute( 'bottomline', bottomline );
+                oNode.setAttribute( 'showpage', showpage );
+                oNode.setAttribute( 'orderby', orderby );
+                oNode.setAttribute( 'colnumber', colnumber );
+                delete UE.plugins[ thePlugins ].editdom; //使用后清空这个对象，变回新增模式
+            }
+        };
+
+    </script>
+</body>
+
+</html>

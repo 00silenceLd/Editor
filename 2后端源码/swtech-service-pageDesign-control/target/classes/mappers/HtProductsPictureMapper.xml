@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="swtech.pageDesignControl.mapper.HtProductsPictureMapper" >
+  <resultMap id="BaseResultMap" type="swtech.pageDesignControl.entity.HtProductsPicture" >
+    <id column="hpp_id" property="hppId" jdbcType="INTEGER" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="swtech.pageDesignControl.entity.HtProductsPicture" extends="BaseResultMap" >
+    <result column="hpp_url" property="hppUrl" jdbcType="LONGVARCHAR" />
+    <result column="nodeId" property="nodeId" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    hpp_id
+  </sql>
+  <sql id="Blob_Column_List" >
+    hpp_url,nodeId
+  </sql>
+  
+  <select id="theme" resultMap="ResultMapWithBLOBs" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from ht_products_picture where nodeId=#{nodeId,jdbcType=INTEGER} ORDER BY hpp_id DESC  LIMIT 0,1
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from ht_products_picture
+    where hpp_id = #{hppId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="swtech.pageDesignControl.entity.HtProductsPicture" >
+    insert into ht_products_picture (hpp_id, hpp_url)
+    values (#{hppId,jdbcType=INTEGER}, #{hppUrl,jdbcType=LONGVARCHAR})
+  </insert>
+  <insert id="insertSelectiveHtProductsPicture" parameterType="swtech.pageDesignControl.entity.HtProductsPicture" >
+    insert into ht_products_picture
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="hppId != null" >
+        hpp_id,
+      </if>
+      <if test="hppUrl != null" >
+        hpp_url,
+      </if>
+      <if test="nodeId != null" >
+        nodeId,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="hppId != null" >
+        #{hppId,jdbcType=INTEGER},
+      </if>
+      <if test="hppUrl != null" >
+        #{hppUrl,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="nodeId != null" >
+        #{nodeId,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="swtech.pageDesignControl.entity.HtProductsPicture" >
+    update ht_products_picture
+    <set>
+      <if test="hppUrl != null" >
+        hpp_url = #{hppUrl,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where hpp_id = #{hppId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="swtech.pageDesignControl.entity.HtProductsPicture" >
+    update ht_products_picture
+    set hpp_url = #{hppUrl,jdbcType=LONGVARCHAR}
+    where hpp_id = #{hppId,jdbcType=INTEGER}
+  </update>
+</mapper>

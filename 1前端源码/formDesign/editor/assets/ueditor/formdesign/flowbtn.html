@@ -1,0 +1,379 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+    <title>流程控件</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.css">
+    <script type="text/javascript" src="self/js/vue.js"></script>
+
+    <script type="text/javascript" src="jquery-3.2.1.min.js"></script>
+    <link rel="stylesheet" href="leipi.style.css">
+    <script type="text/javascript" src="../dialogs/internal.js"></script>
+    <link rel="stylesheet" href="self/btnSelect/btnSelect.css">
+
+    <script type="text/javascript" src="./cropper/cropper.js"></script>
+    <script type="text/javascript" src="self/btnSelect/btnSelect.js"></script>
+
+    <script type="text/javascript" src="../httpData.config.js"></script>
+
+    <script type="text/javascript">
+        /* Thank you by
+                                    http://www.alt-tag.com/blog/2006/02/ie-dom-bugs/ */
+        function createElement(type, name) {
+            var element = null;
+            try {
+                element = document.createElement('<' + type + ' name="' + name + '">');
+            } catch (e) { }
+            if (element == null) {
+                element = document.createElement(type);
+                element.name = name;
+            }
+            return element;
+        }
+
+    </script>
+</head>
+
+<body>
+    <table class="table table-bordered table-striped table-hover" id="app">
+        <tr>
+            <th>
+                <span>控件名称</span>
+                <span class="label label-important">*</span>
+                <span>字段拼音</span>
+            </th>
+            <th>
+                <span>按钮名称</span>
+                <span class="label label-important">*</span>
+            </th>
+        </tr>
+        <tr>
+            <td>
+                <input id="orgName" onclick="javascript:this.select()" v-model="orgName" type="text" value="" placeholder="* 必填" onblur="getPY(this.value)">
+              <input type="text" class="span2" id="pluName" placeholder="字段" value="flowbtnname" >
+            </td>
+            <td>
+                <input id="orgValue" v-model="orgValue" type="text" placeholder="*必填">
+            </td>
+        </tr>
+        <tr>
+            <th>
+                <span>选择流程</span>
+                <span class="label label-important">*</span>
+            </th>
+            <th>跳转目标页</th>
+        </tr>
+        <tr>
+            <td>
+                <select id="orgFlow" name="selFlow" v-model="orgFlow">
+                    <option value='0'>请选择</option>
+                    <option v-for="op in option" :value="op.key">{{op.name}}</option>
+                </select>
+            </td>
+            <td>
+                <input id="orgUrl" placeholder="选填" v-model="orgUrl" type="url" value="">
+            </td>
+        </tr>
+        <tr>
+            <th colspan="2">
+                <span>请选择填写信息的表单：</span>
+            </th>
+        </tr>
+        <tr>
+            <th colspan="2">
+                <select id="orgnode" name="orgnode" v-model="orgformid" >
+                </select>
+            </th>
+        </tr>
+        <tr>
+            <th colspan="2">
+                <span>按钮样式</span>
+            </th>
+        </tr>
+        <tr>
+            <td colspan="2">
+                宽:
+                <input id="orgwidth" v-model="orgwidth" type="text" class="input-small span1" placeholder="auto" value="" onclick="this.value=this.value.replace(/\D/g,'')"
+                    onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')"
+                />
+                <select id="orgvarfontwidth" style="width:55px;" v-model="orgvarfontwidth">
+                    <option value="0">PX</option>
+                    <option value="1">%</option>
+                </select>
+                &nbsp;&nbsp; 高:
+                <input id="orgheight" v-model="orgheight" type="text" class="input-small span1" placeholder="auto" value="" onclick="this.value=this.value.replace(/\D/g,'')"
+                    onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')"
+                />
+                <select id="orgvarfontheight" style="width:55px;" v-model="orgvarfontheight">
+                    <option value="0">PX</option>
+                    <option value="1">%</option>
+                </select>
+                &nbsp;&nbsp; 字体大小:
+                <input id="orgfontsize" type="text" value="16" placeholder="auto" class="input-small span1" onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')"/>
+                <select style="width:60px;">
+                        <option>PX</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <th>
+                <span>背景颜色</span>
+            </th>
+            <th>
+                <span>文字颜色</span>
+            </th>
+        </tr>
+        <tr>
+            <td>
+                <input type="color" name="leipiNewField" id="orgBgColor" v-model="orgBgColor">
+            </td>
+            <td>
+                <input type="color" name="leipiNewField" id="orgFontColor" v-model="orgFontColor">
+            </td>
+        </tr>
+    </table>
+    <script>
+        var app = new Vue({
+            el: "#app",
+            data: {
+                option: [],orgformid:"0", orgBgColor: "", orgFontColor: "", orgheight: "", orgvarfontheight: "0", orgwidth: "",
+                orgvarfontwidth: "0", orgUrl: "", orgFlow: "0", orgName: "流程控件", orgValue: ""
+            }
+        });
+        //  gdataSource=null,
+        control_name=null,
+         oNode = null, thePlugins = "flowbtn";
+        var node_option=`<option value='0'>请选择</option>`;
+        var nodeParentId = $( '#nodeParentId', window.parent.document ).val();
+        nodeId = $('#node_id',window.parent.document).val();
+        //递归查询所有表单
+        function recursionNode(node){
+            node_option+="<option value='"+node.id+"'>"+node.value+"_"+node.id+"</option>";
+            app.option_node+=node;
+            if(node.children.length>0){
+                $.each(node.children,function(i,node){
+                    recursionNode(node);
+                });
+            }
+
+        }
+
+        window.onload = function () {
+            //获取用户信息
+            var userId=JSON.parse(localStorage.getItem("user")).id;
+            //获取所有登陆用户的表单信息
+            $.get(prevent_HOST+"nodeQueryFacade/getTreeNodeByUid?uId="+userId,function(myNode){
+                if(myNode.msg.children.length<=0){return false;}
+                $.each(myNode.msg.children,function(i,node){
+                    recursionNode(node);
+                });
+                $("#orgnode").html(node_option);
+                $("#orgnode").val(app.orgformid);
+            });
+            //获取流程信息
+            $.ajax({
+                type: "get",
+                url: Flow_Host+"activiti-demo/workflow/process-list",
+                success: function (retAllModel) {
+                    app.option = retAllModel.data.rows;
+                }
+            });
+
+            $G("orgName").select();
+            //存在则加载百度编辑器信息
+            if (UE.plugins[thePlugins].editdom) {
+                oNode = UE.plugins[thePlugins].editdom;   //
+                var gValue = '',
+                    gFontSize = oNode.getAttribute( 'orgfontsize' );
+
+                    
+                $G( 'orgfontsize' ).value = gFontSize;
+                if (oNode.getAttribute('value'));
+                app.orgBgColor = oNode.getAttribute("orgbgcolor");
+                app.orgFontColor = oNode.getAttribute("orgfontcolor");
+                app.orgheight = oNode.getAttribute("orgheight");
+                app.orgvarfontheight = oNode.getAttribute("orgvarfontheight");
+                app.orgwidth = oNode.getAttribute("orgwidth");
+                app.orgvarfontwidth = oNode.getAttribute("orgvarfontwidth");
+                app.orgUrl = oNode.getAttribute("orgurl");
+                app.orgFlow = oNode.getAttribute("orgflow");
+                app.orgName = oNode.getAttribute("orgname".replace(/&quot;/g, "\""));
+                app.orgValue = oNode.getAttribute("value").replace(/&quot;/g, "\"");
+                app.orgformid = oNode.getAttribute("orgformid");
+                //gdataSource=oNode.getAttribute();
+            }
+
+        }
+
+        dialog.onok = function () {
+            //点击提交判断必须选择项
+            if (app.orgName == "") {
+                alert('请输入控件名称');
+                return false;
+            }
+            if (app.orgValue == "") {
+                alert('请输入按钮名称');
+                return false;
+            }
+            console.log(app.orgFlow);
+            if (app.orgFlow == "0") {
+                alert("请选择流程");
+                return false;
+            }
+            if (app.orgformid == "0") {
+                alert("请选择信息表单");
+                return false;
+            }
+            var gFontSize = $G( 'orgfontsize' ).value;
+            //把信息保存到数据库
+            if (!oNode) {
+                try {
+                    oNode = createElement("input", "leipiNewField");
+                    oNode.setAttribute("type", "button");
+                    oNode.setAttribute("name", "flowbtnname");
+                    oNode.setAttribute("value", app.orgValue);
+                    oNode.setAttribute("title", app.orgValue);
+                    oNode.setAttribute("orgname", app.orgName);
+                    oNode.setAttribute("leipiplugins", thePlugins);
+                    oNode.setAttribute("orgflow", app.orgFlow);
+                    oNode.setAttribute("orgheight", app.orgheight === "" ? "30" : app.orgheight);
+                    oNode.setAttribute("orgwidth", app.orgwidth === "" ? "90" : app.orgwidth);
+                    oNode.setAttribute("orgvarfontheight", app.orgvarfontheight);
+                    oNode.setAttribute("orgvarfontwidth", app.orgvarfontwidth);
+                    oNode.setAttribute("orgbgcolor", app.orgBgColor === "" ? "" : app.orgBgColor);
+                    oNode.setAttribute("orgfontcolor", app.orgFontColor);
+                    oNode.setAttribute("onclick", "openFlowModal(this);");
+                    oNode.setAttribute("orgformid",app.orgformid);
+
+                    try {
+                        if (app.orgUrl == "" || app.orgUrl.substring(0, 7) == "http://" || app.orgUrl.substring(0, 8) == "https://") {
+                            oNode.setAttribute("orgurl", app.orgUrl);
+                        } else {
+                            alert("跳转目标必须 http:// 开头！");
+                            return false;
+                        }
+                        
+                        if( gFontSize != '' ){
+                                oNode.style.fontSize = gFontSize + 'px';
+                                oNode.setAttribute('orgfontsize', gFontSize);
+                        }else{
+                            oNode.style.fontSize = '';
+                            oNode.setAttribute('orgfontsize', '' );
+                        }
+                    } catch (e) {
+                    }
+
+
+                    if (app.orgvarfontheight == "0") {
+                        oNode.style.height = app.orgheight === "" ? "30px " : app.orgheight + "px ";
+                    } else {
+                        oNode.style.height = app.orgheight === "" ? "30% " : app.orgheight + "% ";
+                    }
+                    if (app.orgvarfontwidth == "0") {
+                        oNode.style.width = app.orgwidth === "" ? "90px " : app.orgwidth + "px ";;
+                    } else {
+                        oNode.style.width = app.orgwidth === "" ? "90% " : app.orgwidth + "% ";;
+                    }
+                    if (app.orgBgColor != "") {
+                        oNode.style.background = app.orgBgColor;
+                    }
+                    if (app.orgFontColor != "") {
+                        oNode.style.color = app.orgFontColor;
+                    }
+                    editor.execCommand('insertHtml', oNode.outerHTML);
+                    var editNewData={"node_id": nodeId,"title":app.orgValue,"control_name": "flowbtnname"}
+                      $.ajax({
+                        url: prevent_HOST + `pageDesignOperatorFacade/insertControl`,
+                        type: 'POST',
+                        dataType: 'json',
+                        contentType: 'application/json; charset=UTF-8',
+                        data: JSON.stringify(editNewData),
+                        async: false,
+                        success: function ( res ) {
+                        }
+                      })
+                } catch (e) {
+                    try {
+                        console.log(e);
+                        editor.execCommand('error');
+                    } catch (e) {
+                        alert('控件异常，请到 与我们反馈或寻求帮助！');
+                    }
+                    return false;
+                }
+            } else {
+                //编辑后保存到数据库
+                oNode.setAttribute("value", app.orgValue);
+                oNode.setAttribute("title", app.orgValue);
+                oNode.setAttribute("leipiplugins", thePlugins);
+                oNode.setAttribute("orgflow", app.orgFlow);
+                oNode.setAttribute("orgheight", app.orgheight === "" ? "30" : app.orgheight);
+                oNode.setAttribute("orgwidth", app.orgwidth === "" ? "90" : app.orgwidth);
+                oNode.setAttribute("orgvarfontheight", app.orgvarfontheight);
+                oNode.setAttribute("orgvarfontwidth", app.orgvarfontwidth);
+                oNode.setAttribute("orgbgcolor", app.orgBgColor);
+                oNode.setAttribute("orgfontcolor", app.orgFontColor);
+                oNode.setAttribute("onclick", "openFlowModal(this);");
+                oNode.setAttribute("orgformid",app.orgformid);
+                oNode.setAttribute( 'orgfontsize', gFontSize );
+
+                try {
+                    if (app.orgUrl == "" || app.orgUrl.substring(0, 7).toLowerCase() == "http://" || app.orgUrl.substring(0, 8).toLowerCase() == "https://") {
+                        oNode.setAttribute("orgurl", app.orgUrl);
+                    } else {
+                        alert("跳转目标必须 http:// 开头！");
+                        return false;
+                    }
+                } catch (e) {
+                }
+
+                oNode.style.padding = "0 !important";
+                if (app.orgvarfontheight == "0") {
+                    oNode.style.height = app.orgheight === "" ? "30px " : app.orgheight + "px ";
+                } else {
+                    oNode.style.height = app.orgheight === "" ? "30% " : app.orgheight + "% ";
+                }
+                if (app.orgvarfontwidth == "0") {
+                    oNode.style.width = app.orgwidth === "" ? "90px " : app.orgwidth + "px ";;
+                } else {
+                    oNode.style.width = app.orgwidth === "" ? "90% " : app.orgwidth + "% ";;
+                }
+                if (app.orgBgColor != "") {
+                    oNode.style.background = app.orgBgColor;
+                }
+                if (app.orgFontColor != "") {
+                    oNode.style.color = app.orgFontColor;
+                }
+                if( gFontSize != '' ){
+                    oNode.style.fontSize = gFontSize + 'px';
+                    oNode.setAttribute('orgfontsize', gFontSize );
+                }else{
+                    oNode.style.fontSize = '';
+                    oNode.setAttribute('orgfontsize', '' );
+                }
+                delete UE.plugins[thePlugins].editdom;
+                var editNewData={"node_id": nodeId,"title":app.orgValue,"control_name": "flowbtnname","new_control_name": "flowbtnname"}
+                $.ajax({
+                    url: prevent_HOST + `pageDesignOperatorFacade/updateControl`,
+                    type: 'POST',
+                    dataType: 'json',
+                    contentType: 'application/json; charset=UTF-8',
+                    data: JSON.stringify(editNewData),
+                    async: false,
+                    success: function ( res ) {
+                    }
+                })
+            }
+        }
+
+        dialog.oncancel = function () {
+            if (UE.plugins[thePlugins].editdom) {
+                delete UE.plugins[thePlugins].editdom;
+            }
+        };
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>微信电脑网站支付</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+
+    <!-- <link rel="stylesheet" href="../js/layui/css/layui.css" media="all" /> -->
+    <!-- <link rel="stylesheet" href="../js/layui/css/font-awesome.min.css" /> -->
+</head>
+<style type="text/css">
+    .layui-this {
+        background-color: #02aaf1;
+        color: #FFFFFF !important;
+    }
+
+    .layui-this::after {
+        border-bottom: 2px solid #02aaf1 !important;
+    }
+
+    .layui-tab-title {
+        border-bottom-style: none;
+        left: 20%;
+    }
+
+    .layui-tab-content {
+        position: absolute;
+        left: 10%;
+        width: 80%;
+    }
+
+    .am-header {
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: box;
+        width: 100%;
+        position: relative;
+        padding: 7px 0;
+        -webkit-box-sizing: border-box;
+        -ms-box-sizing: border-box;
+        box-sizing: border-box;
+        background: #1D222D;
+        height: 50px;
+        text-align: center;
+        -webkit-box-pack: center;
+        -ms-flex-pack: center;
+        box-pack: center;
+        -webkit-box-align: center;
+        -ms-flex-align: center;
+        box-align: center;
+    }
+
+    .am-header h1 {
+        -webkit-box-flex: 1;
+        -ms-flex: 1;
+        box-flex: 1;
+        line-height: 18px;
+        text-align: center;
+        font-size: 18px;
+        font-weight: 300;
+        color: #fff;
+    }
+</style>
+
+<body>
+    <header class="am-header">
+        <h1>微信电脑网站支付</h1>
+    </header>
+    <div id="app">
+        <div class="layui-tab">
+            <ul class="layui-tab-title">
+                <li class="layui-this">付款</li>
+                <li>交易查询</li>
+                <li>退款</li>
+                <li>退款查询</li>
+                <li>交易关闭</li>
+            </ul>
+            <div class="layui-tab-content">
+                <div class="layui-tab-item layui-show layui-form-pane">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">商户订单号</label>
+                        <div class="layui-input-block">
+                            <input type="text" :value="payinfo.out_trade_no" readonly="readonly" class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">付款金额</label>
+                        <div class="layui-input-block">
+                            <input type="text" v-model="payinfo.total_fee" type="number" placeholder="请输入付款金额(不能为0)"
+                                class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">商品描述</label>
+                        <div class="layui-input-block">
+                            <input type="text" v-model="payinfo.body" autocomplete="off" placeholder="请输入商品描述"
+                                class="layui-input">
+                        </div>
+                    </div>
+                    <button @click="pay" class="layui-btn layui-btn-fluid layui-btn-normal">付款</button>
+                    <button onclick="pay()" class="layui-btn layui-btn-fluid layui-btn-normal">测试</button>
+                </div>
+                <div class="layui-tab-item">
+                    内容2
+                </div>
+                <div class="layui-tab-item">内容3
+
+                </div>
+                <div class="layui-tab-item">内容4
+
+                </div>
+                <div class="layui-tab-item">内容5
+
+                </div>
+                ction
+            </div>
+            ction
+        </div>
+    </div>
+    <script src="../js/vue.min.js"></script>
+    <!-- <script src="../js/vue.js"></script> -->
+    <script src="../../layui/layui.js"></script>
+    <!-- <script src="../js/util.js"></script> -->
+    <script src="../js/jquery-3.2.1.min.js"></script>
+    <!-- <script src="../js/wechat/md5.js"></script> -->
+    <script src="../md5/jquery.md5.js"></script>
+    <!-- <script src="../js/wechat/wechat_config.js"></script> -->
+    <script type="text/javascript">
+        var layer;
+        layui.use(['element', 'layer'], function () {
+            var element = layui.element;
+            layer = layui.layer
+        })
+        //wechat 调用	//JSAPI 微信内H5 调起微信支付
+        function onBridgeReady() {
+            WeixinJSBridge.invoke(
+                'getBrandWCPayRequest',
+                vm.$data.prepay,
+                function (res) {
+                    if (res.err_msg == "get_brand_wcpay_request:ok") {
+                        // 使用以上方式判断前端返回,微信团队郑重提示：
+                        //res.err_msg将在用户支付成功后返回ok，但并不保证它绝对可靠。
+                        // window.location.href="http://gzdjd.m13w.cn/editor/assets/ueditor/formdesign/preview.html?link=269"
+                        alert("支付成功");
+                        layer.msg('支付成功', { time: 2000, icon: 6, offset: 'auto' })
+                    } else if (res.err_msg === 'get_brand_wcpay_request:fail') {
+                        alert("支付失败");
+                        layer.msg('支付失败', { time: 2000, icon: 2, offset: 'auto' })
+                    } else if (res.err_msg === 'get_brand_wcpay_request:cancel') {
+                        alert("支付取消");
+                        layer.msg('支付取消', { time: 2000, icon: 2, offset: 'auto' })
+                    }
+                });
+        }
+
+        function weixinpay() {
+            if (typeof WeixinJSBridge == "undefined") {
+                if (document.addEventListener) {
+                    document.addEventListener('WeixinJSBridgeReady', onBridgeReady, false);
+                } else if (document.attachEvent) {
+                    document.attachEvent('WeixinJSBridgeReady', onBridgeReady);
+                    document.attachEvent('onWeixinJSBridgeReady', onBridgeReady);
+                }
+            } else {
+                onBridgeReady(ction);
+            }
+        }
+
+        const vm = new Vue({
+            el: '#app',
+            data: function () {
+                return {
+                    payinfo: {
+                        out_trade_no: "201971714180578",
+                        total_fee: 1,
+                        body: 'commoditydescription',
+                        userId: '17666599883'
+                    },
+                    prepay: {
+                        appId: 'wx5ddf828c7945b913',					//公众号id
+                        timeStamp: new Date().valueOf(),				//时间戳
+                        nonceStr: "214DB1971143A7C4C7E40ACFED2D472E",	//随机32位字符串
+                        package: null,								//订单详情扩展字符串,统一下单接口返回的prepay_id参数值
+                        signType: 'MD5',								//微信签名 
+                        paySign: null
+                    }
+                }
+            },
+            methods: {
+                pay() {	//付款
+                    if (this.payinfo.total_fee <= 0) {
+                        layer.msg('付款金额必须大于0', { time: 2000, icon: 5, offset: 'auto' })
+                        return false;
+                    } else {
+                        let that = this
+                        var url = 'http://2532pq1547.wicp.vip/wechat/prepay';
+                        // var url = 'http://swpay.haoxincm.com/hotel/wechat/prepay';
+                        $.ajax({
+                            url: url,
+                            data: that.payinfo,
+                            contentType: 'application/json',
+                            success: function (res) {
+                                if (res.return_code === 'SUCCESS' && res.return_msg === 'OK') {
+
+                                    // that.prepay.package = 'prepay_id=' + "wx170924075129403e6f36683d1102565700"
+                                    // const appId = that.prepay.appId
+                                    // const nonceStr = that.prepay.nonceStr
+                                    // // const package = 'prepay_id=' + res.prepay_id
+                                    // const package = 'prepay_id=' + "wx170924075129403e6f36683d1102565700"
+                                    // const signType = that.prepay.signType
+                                    // const timeStamp = that.prepay.timeStamp
+                                    // // that.prepay.paySign = generateStr(appId, nonceStr, package, signType, timeStamp)
+                                    // that.prepay.paySign = generateStr(appId, nonceStr, "prepay_id=wx170924075129403e6f36683d1102565700", signType, timeStamp)
+                                    // setTimeout(() => weixinpay(res.orderId), 500);
+
+                                    parameters(res);
+                                }
+                            },
+                            error: function (res) {
+                                layer.msg('服务器异常', { time: 2000, icon: 2, offset: 'auto' })
+                            }
+                        });
+                    }
+
+                },
+            },
+
+            created() {
+
+            }
+        })
+        function parameters(res) {
+            // that.prepay.package = 'prepay_id=' + res.prepay_id
+            const appId = 'wx5ddf828c7945b913'
+            const nonceStr = "214DB1971143A7C4C7E40ACFED2D472E"
+            // const package = 'prepay_id=' + res.prepay_id
+            const package = 'prepay_id=' + "wx170924075129403e6f36683d1102565700"
+            const signType = "214DB1971143A7C4C7E40ACFED2D472E"
+            const timeStamp = new Date().valueOf()
+            vm.$data.prepay.paySign = generateStr(appId, nonceStr, package, signType, timeStamp)
+            setTimeout(() => weixinpay(res.orderId), 500)
+        }
+
+
+          // function pay() {
+        //     var data = {
+        //         "payinfo": {
+        //             "out_trade_no": "201971714180522",
+        //             "total_fee": 11,
+        //             "body": "commodity description",
+        //             "userId": "17817559999"
+        //         },
+        //         "prepay": {
+        //             "appId": "wx5ddf828c7945b913",
+        //             "timeStamp": new Date().valueOf(),
+        //             "nonceStr": "214DB1971143A7C4C7E40ACFED2D472E",
+        //             "package": null,
+        //             "signType": "MD5",
+        //             "paySign": null
+        //         }
+
+        //     }
+        //     if (data.payinfo.total_fee <= 0) {
+
+        //     } else {
+        //         var url = 'http://2532pq1547.wicp.vip/wechat/prepay';
+        //         // var url = 'http://swpay.haoxincm.com/hotel/wechat/prepay';
+        //         $.ajax({
+        //             url: url,
+        //             // data:JSON.stringify(data.payinfo),
+        //             data: data.payinfo,
+        //             contentType: 'application/json',
+        //             success: function (res) {
+        //                 if (res.return_code === 'SUCCESS' && res.return_msg === 'OK') {
+        //                     parameterstwo(res);
+        //                 }
+        //             }
+        //         })
+        //     }
+
+        // }
+        // function parameterstwo(res) {
+        //     // data.payinfo.package = 'prepay_id=' + "wx170924075129403e6f36683d1102565700"
+        //     const appId = data.payinfo.appId
+        //     const package = 'prepay_id=' + "wx170924075129403e6f36683d1102565700"
+        //     const signType = data.payinfo.signType
+        //     const timeStamp = data.payinfo.timeStamp
+        //     data.payinfo.paySign = generateStr(appId, nonceStr, package, signType, timeStamp)
+        //     setTimeout(() => weixinpay(res.orderId), 500);
+        // }
+
+
+    </script>
+</body>
+
+</html>

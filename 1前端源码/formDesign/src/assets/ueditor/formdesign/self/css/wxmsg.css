@@ -1,0 +1,33 @@
+*{
+  margin: 0;
+  padding: 0;
+}
+.wxmsg-top{
+  height: 40px;
+  line-height: 40px;
+  overflow: hidden;
+  text-align: center;
+  background-color: #3d6f6f;
+  color: #FFFFFF;
+}
+.wxmsg-top h2{
+  font-size: 16px;
+}
+.wxmsg-top-re{
+  display: inline-block;
+  position: absolute;
+  height: 40px;
+  width: 30px;
+  left: 0px;
+  top: 0;
+  background: url(../../images/return.png) no-repeat center center;
+  background-size: 15px 15px;
+}
+.wxmsg-content{
+  padding: 15px 20px;
+  font-size: 14px;
+  line-height: 22px;
+}
+.wxmsg-content dt{
+  padding-bottom: 10px;
+}

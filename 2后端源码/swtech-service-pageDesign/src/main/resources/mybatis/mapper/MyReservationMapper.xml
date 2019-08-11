@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="swtech.service.pageDesign.dao.impl.MyReservationDaoImpl" >
+  <resultMap id="BaseResultMap" type="swtech.facade.pageDesign.entity.MyReservation" >
+    <id column="mr_rid" property="mrRid" jdbcType="INTEGER" />
+    <result column="bc_bcId" property="bcBcid" jdbcType="VARCHAR" />
+    <result column="mr_time" property="mrTime" jdbcType="VARCHAR" />
+    <result column="mr_phone" property="mrPhone" jdbcType="VARCHAR" />
+    <result column="mr_cardId" property="mrCardid" jdbcType="VARCHAR" />
+    <result column="mr_arrive" property="mrArrive" jdbcType="VARCHAR" />
+    <result column="mr_comment" property="mrComment" jdbcType="VARCHAR" />
+    <result column="mr_status" property="mrStatus" jdbcType="INTEGER" />
+    <result column="mr_auth_code" property="mrAuthCode" jdbcType="INTEGER" />
+    <result column="mr_order_number" property="mrOrderNumber" jdbcType="VARCHAR" />
+  </resultMap>
+  <resultMap id="BaseResultMapMbc" type="swtech.facade.pageDesign.entity.MyBeautyCommodity" >
+    <id column="bc_id" property="bcId" jdbcType="INTEGER" />
+    <result column="bc_name" property="bcName" jdbcType="VARCHAR" />
+    <result column="bc_book_information" property="bcBookInformation" jdbcType="VARCHAR" />
+    <result column="bc_price" property="bcPrice" jdbcType="DOUBLE" />
+    <result column="bc_member_price" property="bcMemberPrice" jdbcType="DOUBLE" />
+    <result column="bc_rack" property="bcRack" jdbcType="INTEGER" />
+    <result column="bc_info" property="bcInfo" jdbcType="VARCHAR" />
+    <result column="bc_smid" property="bcSmid" jdbcType="INTEGER" />
+    <result column="bc_picture" property="bcPicture" jdbcType="LONGVARCHAR" />
+  </resultMap>
+   <resultMap id="BaseResultMapMr" type="swtech.facade.pageDesign.entity.MyReservation" extends="BaseResultMap">
+    
+     <collection property="myBeautyCommodity"  resultMap="BaseResultMapMbc"/>
+  </resultMap>
+ 
+  <sql id="Base_Column_List" >
+    mr_rid, bc_bcId, mr_time, mr_phone, mr_cardId, mr_arrive, mr_comment, mr_status, 
+    mr_auth_code, mr_order_number
+  </sql>
+  
+    <select id="selectMrRid" resultMap="BaseResultMapMr" parameterType="java.lang.Integer">
+  		SELECT mr.*,mbc.*  FROM my_reservation mr,my_beauty_commodity mbc 
+	WHERE mr.bc_bcId = mbc.bc_id and mr.mr_rid = #{mrRid,jdbcType=INTEGER}
+  		
+  </select>
+  
+  <select id="selectCode" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+  		SELECT * FROM my_reservation WHERE
+  		<!-- <if test="_parameter.length == 6"> -->
+  		 	mr_auth_code = #{mrAuthCode,jdbcType=INTEGER}
+      
+  		<!-- </if>
+  		<if test="_parameter.length > 6">
+  			mr_order_number=#{mrOrderNumber,jdbcType=VARCHAR})
+  		</if> -->
+  		
+  </select>
+  
+  
+  
+  <select id="selectReserva" resultMap="BaseResultMapMr"  parameterType="java.lang.Integer" >
+  		SELECT mr.*,mbc.*  FROM my_reservation mr,my_beauty_commodity mbc 
+		WHERE mr.bc_bcId = mbc.bc_id 
+		<if test="_parameter !=4">
+		AND mr_status = #{mrStatus,jdbcType=INTEGER}  
+		GROUP BY mr.mr_rid ORDER BY mr.mr_rid DESC
+		</if>
+		<if test="_parameter ==4">
+			GROUP BY mr.mr_rid ORDER BY mr.mr_rid DESC
+		</if>
+  </select>
+  
+ 	<select id="mrAuthCode" resultType="java.lang.Integer">
+		SELECT mr_auth_code FROM
+		my_reservation
+	</select>
+	
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from my_reservation
+    where mr_rid = #{mrRid,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from my_reservation
+    where mr_rid = #{mrRid,jdbcType=INTEGER}
+  </delete>
+  
+  <insert id="insert" parameterType="swtech.facade.pageDesign.entity.MyReservation" >
+    insert into my_reservation (mr_rid, bc_bcId, mr_time, 
+      mr_phone, mr_cardId, mr_arrive, 
+      mr_comment, mr_status, mr_auth_code, 
+      mr_order_number)
+    values (#{mrRid,jdbcType=INTEGER}, #{bcBcid,jdbcType=VARCHAR}, #{mrTime,jdbcType=VARCHAR}, 
+      #{mrPhone,jdbcType=VARCHAR}, #{mrCardid,jdbcType=VARCHAR}, #{mrArrive,jdbcType=VARCHAR}, 
+      #{mrComment,jdbcType=VARCHAR}, #{mrStatus,jdbcType=INTEGER}, #{mrAuthCode,jdbcType=INTEGER}, 
+      #{mrOrderNumber,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelectiveMyReservation" parameterType="swtech.facade.pageDesign.entity.MyReservation" >
+    insert into my_reservation
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="mrRid != null" >
+        mr_rid,
+      </if>
+      <if test="bcBcid != null" >
+        bc_bcId,
+      </if>
+      <if test="mrTime != null" >
+        mr_time,
+      </if>
+      <if test="mrPhone != null" >
+        mr_phone,
+      </if>
+      <if test="mrCardid != null" >
+        mr_cardId,
+      </if>
+      <if test="mrArrive != null" >
+        mr_arrive,
+      </if>
+      <if test="mrComment != null" >
+        mr_comment,
+      </if>
+      <if test="mrStatus != null" >
+        mr_status,
+      </if>
+      <if test="mrAuthCode != null" >
+        mr_auth_code,
+      </if>
+      <if test="mrOrderNumber != null" >
+        mr_order_number,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="mrRid != null" >
+        #{mrRid,jdbcType=INTEGER},
+      </if>
+      <if test="bcBcid != null" >
+        #{bcBcid,jdbcType=VARCHAR},
+      </if>
+      <if test="mrTime != null" >
+        #{mrTime,jdbcType=VARCHAR},
+      </if>
+      <if test="mrPhone != null" >
+        #{mrPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="mrCardid != null" >
+        #{mrCardid,jdbcType=VARCHAR},
+      </if>
+      <if test="mrArrive != null" >
+        #{mrArrive,jdbcType=VARCHAR},
+      </if>
+      <if test="mrComment != null" >
+        #{mrComment,jdbcType=VARCHAR},
+      </if>
+      <if test="mrStatus != null" >
+        #{mrStatus,jdbcType=INTEGER},
+      </if>
+      <if test="mrAuthCode != null" >
+        #{mrAuthCode,jdbcType=INTEGER},
+      </if>
+      <if test="mrOrderNumber != null" >
+        #{mrOrderNumber,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updReserva" parameterType="swtech.facade.pageDesign.entity.MyReservation" >
+    update my_reservation
+    <set >
+      <if test="bcBcid != null" >
+        bc_bcId = #{bcBcid,jdbcType=VARCHAR},
+      </if>
+      <if test="mrTime != null" >
+        mr_time = #{mrTime,jdbcType=VARCHAR},
+      </if>
+      <if test="mrPhone != null" >
+        mr_phone = #{mrPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="mrCardid != null" >
+        mr_cardId = #{mrCardid,jdbcType=VARCHAR},
+      </if>
+      <if test="mrArrive != null" >
+        mr_arrive = #{mrArrive,jdbcType=VARCHAR},
+      </if>
+      <if test="mrComment != null" >
+        mr_comment = #{mrComment,jdbcType=VARCHAR},
+      </if>
+      <if test="mrStatus != null" >
+        mr_status = #{mrStatus,jdbcType=INTEGER},
+      </if>
+      <if test="mrAuthCode != null" >
+        mr_auth_code = #{mrAuthCode,jdbcType=INTEGER},
+      </if>
+      <if test="mrOrderNumber != null" >
+        mr_order_number = #{mrOrderNumber,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where mr_rid = #{mrRid,jdbcType=INTEGER}
+  </update>
+</mapper>

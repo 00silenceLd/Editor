@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace命名空间，唯一特性 -->
+<mapper
+	namespace="swtech.pageDesignControl.mapper.CJDJAssetDetailMapper">
+
+
+	<resultMap id="assetDetailMap"
+		type="swtech.pageDesignControl.entity.AssetDetail">
+		<id column="id" property="id" />
+		<result column="node_id" property="nodeId" />
+		<result column="asset_name" property="assetName" />
+		<result column="total_area" property="totalArea" />
+		<result column="no_contract_area" property="noContractArea" />
+		<result column="contract_area" property="contractArea" />
+		<result column="independent_management_area"
+			property="independentManagementArea" />
+		<result column="independent_management_income"
+			property="independentManagementIncome" />
+		<result column="rentout_management_area"
+			property="rentoutManagementArea" />
+		<result column="rentout_man" property="rentoutMan" />
+		<result column="rentout_time" property="rentoutTime" />
+		<result column="rentout_money" property="rentoutMoney" />
+		<result column="other_management_area"
+			property="otherManagementArea" />
+		<result column="other_management_income"
+			property="otherManagementIncome" />
+		<result column="unification_management_area"
+			property="unificationManagementArea" />
+		<result column="unification_management_income"
+			property="unificationManagementIncome" />
+		<result column="remarks" property="remarks" />
+		<result column="remark" property="remark" />
+	</resultMap>
+
+	<select id="getAssetDetailByNodeId" parameterType="Integer"
+		resultMap="assetDetailMap">
+		select
+		id,
+		node_id,
+		asset_name,
+		total_area,
+		no_contract_area,
+		contract_area,
+		independent_management_area,
+		independent_management_income,
+		rentout_management_area,
+		rentout_man,
+		rentout_time,
+		rentout_money,
+		other_management_area,
+		other_management_income,
+		unification_management_area,
+		unification_management_income,
+		remarks,
+		remark
+		from
+		ht_asset_detail
+		where
+		node_id=#{nodeId}
+		limit #{begin},#{limit}
+	</select>
+
+	<insert id="saveAssetDetail"
+		parameterType="swtech.pageDesignControl.entity.AssetDetail">
+		insert into ht_asset_detail(
+		node_id,
+		asset_name,
+		total_area,
+		no_contract_area,
+		contract_area,
+		independent_management_area,
+		independent_management_income,
+		rentout_management_area,
+		rentout_man,
+		rentout_time,
+		rentout_money,
+		other_management_area,
+		other_management_income,
+		unification_management_area,
+		unification_management_income,
+		remarks,
+		remark)
+		values
+		(#{nodeId},
+		#{assetName},
+		#{totalArea},
+		#{noContractArea},
+		#{contractArea},
+		#{independentManagementArea},
+		#{independentManagementIncome},
+		#{rentoutManagementArea},
+		#{rentoutMan},
+		#{rentoutTime},
+		#{rentoutMoney},
+		#{otherManagementArea},
+		#{otherManagementIncome},
+		#{unificationManagementArea},
+		#{unificationManagementIncome},
+		#{remarks},
+		#{remark})
+	</insert>
+
+	<delete id="deleteAssetDetail" parameterType="Integer">
+		delete from
+		ht_asset_detail where id = #{id}
+	</delete>
+
+	<update id="updateAssetDetail"
+		parameterType="swtech.pageDesignControl.entity.AssetDetail">
+		update ht_asset_detail
+		<trim prefix="set" suffixOverrides=",">
+			<if test="assetName != null">
+				asset_name=#{assetName},
+			</if>
+			<if test="totalArea != null">
+				total_area=#{totalArea},
+			</if>
+			<if test="noContractArea != null">
+				no_contract_area=#{noContractArea},
+			</if>
+			<if test="contractArea != null">
+				contract_area=#{contractArea},
+			</if>
+			<if test="independentManagementArea != null">
+				independent_management_area=#{independentManagementArea},
+			</if>
+			<if test="independentManagementIncome != null">
+				independent_management_income=#{independentManagementIncome},
+			</if>
+			<if test="rentoutManagementArea != null">
+				rentout_management_area=#{rentoutManagementArea},
+			</if>
+			<if test="rentoutMan != null">
+				rentout_man=#{rentoutMan},
+			</if>
+			<if test="rentoutTime != null">
+				rentout_time=#{rentoutTime},
+			</if>
+			<if test="rentoutMoney != null">
+				rentout_money=#{rentoutMoney},
+			</if>
+			<if test="otherManagementArea != null">
+				other_management_area=#{otherManagementArea},
+			</if>
+			<if test="otherManagementIncome != null">
+				other_management_income=#{otherManagementIncome},
+			</if>
+			<if test="unificationManagementArea != null">
+				unification_management_area=#{unificationManagementArea},
+			</if>
+			<if test="unificationManagementIncome != null">
+				unification_management_income=#{unificationManagementIncome},
+			</if>
+			<if test="remarks != null">
+				remarks=#{remarks},
+			</if>
+			<if test="remark != null">
+				remark=#{remark},
+			</if>
+		</trim>
+		where id = #{id}
+	</update>
+
+	<select id="getAssetDetailCountByNodeId" parameterType="Integer"
+		resultType="Integer">
+
+		select count(id) from ht_asset_detail where node_id =
+		#{nodeId}
+
+	</select>
+
+</mapper>

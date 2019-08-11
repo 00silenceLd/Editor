@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="swtech.pageDesignControl.mapper.MyBeautyCommodityMapper" >
+  <resultMap id="BaseResultMap" type="swtech.pageDesignControl.entity.MyBeautyCommodity" >
+    <id column="bc_id" property="bcId" jdbcType="INTEGER" />
+    <result column="bc_name" property="bcName" jdbcType="VARCHAR" />
+    <result column="bc_book_information" property="bcBookInformation" jdbcType="VARCHAR" />
+    <result column="bc_price" property="bcPrice" jdbcType="DOUBLE" />
+    <result column="bc_member_price" property="bcMemberPrice" jdbcType="DOUBLE" />
+    <result column="bc_rack" property="bcRack" jdbcType="INTEGER" />
+    <result column="bc_info" property="bcInfo" jdbcType="VARCHAR" />
+    <result column="bc_smid" property="bcSmid" jdbcType="INTEGER" />
+    <result column="bc_picture" property="bcPicture" jdbcType="LONGVARCHAR" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="swtech.pageDesignControl.entity.MyBeautyCommodity" extends="BaseResultMap" >
+    <result column="bc_picture" property="bcPicture" jdbcType="LONGVARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    bc_id, bc_name, bc_book_information, bc_price, bc_member_price, bc_rack, bc_info, 
+    bc_smid
+  </sql>
+  <sql id="Blob_Column_List" >
+    bc_picture
+  </sql>
+
+  <select id="selectAll" resultMap="BaseResultMap">
+  		SELECT * FROM my_beauty_commodity where bc_smid=#{bcSmid,jdbcType=INTEGER}
+  </select>
+  <select id="selectByPrimaryKeyBeautyCommodity" resultMap="ResultMapWithBLOBs" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from my_beauty_commodity
+    where bc_id = #{bcId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKeyCommodity" parameterType="java.lang.Integer" >
+    delete from my_beauty_commodity
+    where bc_id = #{bcId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="swtech.pageDesignControl.entity.MyBeautyCommodity" >
+    insert into my_beauty_commodity (bc_id, bc_name, bc_book_information, 
+      bc_price, bc_member_price, bc_rack, 
+      bc_info, bc_smid, bc_picture
+      )
+    values (#{bcId,jdbcType=INTEGER}, #{bcName,jdbcType=VARCHAR}, #{bcBookInformation,jdbcType=VARCHAR}, 
+      #{bcPrice,jdbcType=DOUBLE}, #{bcMemberPrice,jdbcType=DOUBLE}, #{bcRack,jdbcType=INTEGER}, 
+      #{bcInfo,jdbcType=VARCHAR}, #{bcSmid,jdbcType=INTEGER}, #{bcPicture,jdbcType=LONGVARCHAR}
+      )
+  </insert>
+  <insert id="insertMyBeautyCommodity" parameterType="swtech.pageDesignControl.entity.MyBeautyCommodity" >
+    insert into my_beauty_commodity
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="bcId != null" >
+        bc_id,
+      </if>
+      <if test="bcName != null" >
+        bc_name,
+      </if>
+      <if test="bcBookInformation != null" >
+        bc_book_information,
+      </if>
+      <if test="bcPrice != null" >
+        bc_price,
+      </if>
+      <if test="bcMemberPrice != null" >
+        bc_member_price,
+      </if>
+      <if test="bcRack != null" >
+        bc_rack,
+      </if>
+      <if test="bcInfo != null" >
+        bc_info,
+      </if>
+      <if test="bcSmid != null" >
+        bc_smid,
+      </if>
+      <if test="bcPicture != null" >
+        bc_picture,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="bcId != null" >
+        #{bcId,jdbcType=INTEGER},
+      </if>
+      <if test="bcName != null" >
+        #{bcName,jdbcType=VARCHAR},
+      </if>
+      <if test="bcBookInformation != null" >
+        #{bcBookInformation,jdbcType=VARCHAR},
+      </if>
+      <if test="bcPrice != null" >
+        #{bcPrice,jdbcType=DOUBLE},
+      </if>
+      <if test="bcMemberPrice != null" >
+        #{bcMemberPrice,jdbcType=DOUBLE},
+      </if>
+      <if test="bcRack != null" >
+        #{bcRack,jdbcType=INTEGER},
+      </if>
+      <if test="bcInfo != null" >
+        #{bcInfo,jdbcType=VARCHAR},
+      </if>
+      <if test="bcSmid != null" >
+        #{bcSmid,jdbcType=INTEGER},
+      </if>
+      <if test="bcPicture != null" >
+        #{bcPicture,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelectiveCommodity" parameterType="swtech.pageDesignControl.entity.MyBeautyCommodity" >
+    update my_beauty_commodity
+    <set >
+      <if test="bcName != null" >
+        bc_name = #{bcName,jdbcType=VARCHAR},
+      </if>
+      <if test="bcBookInformation != null" >
+        bc_book_information = #{bcBookInformation,jdbcType=VARCHAR},
+      </if>
+      <if test="bcPrice != null" >
+        bc_price = #{bcPrice,jdbcType=DOUBLE},
+      </if>
+      <if test="bcMemberPrice != null" >
+        bc_member_price = #{bcMemberPrice,jdbcType=DOUBLE},
+      </if>
+      <if test="bcRack != null" >
+        bc_rack = #{bcRack,jdbcType=INTEGER},
+      </if>
+      <if test="bcInfo != null" >
+        bc_info = #{bcInfo,jdbcType=VARCHAR},
+      </if>
+      <if test="bcSmid != null" >
+        bc_smid = #{bcSmid,jdbcType=INTEGER},
+      </if>
+      <if test="bcPicture != null" >
+        bc_picture = #{bcPicture,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where bc_id = #{bcId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="swtech.pageDesignControl.entity.MyBeautyCommodity" >
+    update my_beauty_commodity
+    set bc_name = #{bcName,jdbcType=VARCHAR},
+      bc_book_information = #{bcBookInformation,jdbcType=VARCHAR},
+      bc_price = #{bcPrice,jdbcType=DOUBLE},
+      bc_member_price = #{bcMemberPrice,jdbcType=DOUBLE},
+      bc_rack = #{bcRack,jdbcType=INTEGER},
+      bc_info = #{bcInfo,jdbcType=VARCHAR},
+      bc_smid = #{bcSmid,jdbcType=INTEGER},
+      bc_picture = #{bcPicture,jdbcType=LONGVARCHAR}
+    where bc_id = #{bcId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="swtech.pageDesignControl.entity.MyBeautyCommodity" >
+    update my_beauty_commodity
+    set bc_name = #{bcName,jdbcType=VARCHAR},
+      bc_book_information = #{bcBookInformation,jdbcType=VARCHAR},
+      bc_price = #{bcPrice,jdbcType=DOUBLE},
+      bc_member_price = #{bcMemberPrice,jdbcType=DOUBLE},
+      bc_rack = #{bcRack,jdbcType=INTEGER},
+      bc_info = #{bcInfo,jdbcType=VARCHAR},
+      bc_smid = #{bcSmid,jdbcType=INTEGER}
+    where bc_id = #{bcId,jdbcType=INTEGER}
+  </update>
+</mapper>

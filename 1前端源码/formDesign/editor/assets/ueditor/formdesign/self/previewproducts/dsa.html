@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+
+
+	<!-- jQuery -->
+	<!-- <script src="../js/jquery-3.2.1.min.js"></script> -->
+
+</head>
+
+<body>
+
+
+
+
+</body>
+<script type="text/javascript">
+	// $(function () {
+		// var WeixinJSBridge = "sw";
+		// alert(typeof dasd);
+		// $.ajax({
+		// 	url:"http://2532pq1547.wicp.vip/wechat/prepay?out_trade_no=200071518141315&total_fee=1&body=1254&userId=17666599883",
+		//     type: "get",
+		//     dataType: "json",
+		//     success: function (res) {
+
+		if (typeof WeixinJSBridge == "undefined") {
+			alert("undefined");
+			// if (typeof window.WeixinJSBridge == "undefined") {
+
+
+				// 	$(document).on("WeixinJSBridgeReady", function () {
+				// 		$("#weiXinPay").click();
+				// 	});
+				// } else {
+				// 	$("#weiXinPay").click();
+				// }
+
+
+				if (document.addEventListener) {
+					document.addEventListener('WeixinJSBridgeReady', onBridgeReady, false);
+				} else if (document.attachEvent) {
+					document.attachEvent('WeixinJSBridgeReady', onBridgeReady);
+					document.attachEvent('onWeixinJSBridgeReady', onBridgeReady);
+				}
+			} else {
+				onBridgeReady();
+			// }
+		}
+		// })
+		// if (typeof WeixinJSBridge != "undefined"){
+		// 		   if( document.addEventListener ){
+		// 			   document.addEventListener('WeixinJSBridgeReady', onBridgeReady, false);
+		// 		   }else if (document.attachEvent){
+		// 			   document.attachEvent('WeixinJSBridgeReady', onBridgeReady); 
+		// 			   document.attachEvent('onWeixinJSBridgeReady', onBridgeReady);
+		// 		   }
+		// 		}else{
+		// 		   onBridgeReady();
+		// 		}
+
+	// })
+	function onBridgeReady() {
+		alert("onBridgeReady");
+		var data = {
+			"appId": "wx5ddf828c7945b913",
+			"nonceStr": "nonceStgadgsasf",
+			"package": "wx15174512270352e40cba24361851073300",
+			"signType": "MD5",
+			"timeStamp": "1563261968",
+			"paySign": "0F30FAC47AD9153EACD88FC76878255A"
+		}
+		WeixinJSBridge.invoke(
+			'getBrandWCPayRequest',
+			data,
+			function (res) {
+				alert("invoke"+"res");
+				if (res.err_msg == "get_brand_wcpay_request:ok") {
+					// 使用以上方式判断前端返回,微信团队郑重提示：
+					//res.err_msg将在用户支付成功后返回ok，但并不保证它绝对可靠。
+					layer.msg('支付成功', { time: 2000, icon: 6, offset: 'auto' })
+				} else if (res.err_msg === 'get_brand_wcpay_request:fail') {
+					layer.msg('支付失败', { time: 2000, icon: 2, offset: 'auto' })
+				} else if (res.err_msg === 'get_brand_wcpay_request:cancel') {
+					layer.msg('支付取消', { time: 2000, icon: 2, offset: 'auto' })
+				}
+			});
+	}
+</script>
+
+</html>

@@ -1,0 +1,327 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+
+  <head>
+    <title>文本框</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.css">
+    <!--[if lte IE 6]>
+    <link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap-ie6.css">
+    <![endif]-->
+    <!--[if lte IE 7]>
+    <link rel="stylesheet" type="text/css" href="bootstrap/css/ie.css">
+    <![endif]-->
+
+
+    <style type="text/css">
+      #addBtnId {
+        text-decoration: none;
+        margin-left: 5px;
+        display: inline-block;
+        background: powderblue;
+        padding: 3px 5px 3px 5px;
+        border-radius: 5px;
+      }
+
+      #deleteBtnId {
+        display: none;
+        text-decoration: none;
+        margin-left: 5px;
+        display: none;
+        background: powderblue;
+        padding: 3px 5px 3px 5px;
+        border-radius: 5px;
+      }
+
+      #updateBtnId {
+        text-decoration: none;
+        margin-left: 5px;
+        display: none;
+        background: powderblue;
+        padding: 3px 5px 3px 5px;
+        border-radius: 5px;
+      }
+
+
+      .slaveSourceCla {
+        text-decoration: none !important;
+        display: inline-block;
+        border: 1px solid;
+        padding: 0px 5px;
+        margin-left: 5px;
+      }
+    </style>
+
+
+    <link rel="stylesheet" href="leipi.style.css">
+    <script type="text/javascript" src="../dialogs/internal.js"></script>
+    <script type="text/javascript" src="jquery-3.2.1.min.js"></script>
+    <script src="self/js/py.js"></script>
+    <script type="text/javascript" src="../httpData.config.js"></script>
+
+    <script type="text/javascript">
+      function createElement(type, name) {
+        var element = null;
+        try {
+          element = document.createElement('<' + type + ' name="' + name + '">');
+        } catch (e) {}
+        if (element == null) {
+          element = document.createElement(type);
+          element.name = name;
+        }
+        return element;
+      }
+    </script>
+
+  </head>
+
+  <body>
+    <div class="content">
+      <table class="table table-bordered table-striped ">
+        <tr>
+          <th>
+            <span>添加数据源</span>
+          </th>
+        </tr>
+        <tr>
+          <td>
+            <input type="text" class="span2" id="dataSourceNameId" placeholder="数据源名称" value="">
+            <a id="addBtnId" href="javaScript:void(0)">添加</a>
+            <a id="updateBtnId" href="javaScript:void(0)">修改</a>
+            <a id="deleteBtnId" href="javaScript:void(0)">删除</a>
+          </td>
+        </tr>
+      </table>
+      <div id="dataSourceAreaId">
+        <!-- <a class="slaveSourceCla" href="javaScript:void(0)" onclick="slaveSourceCli(this)">潭村</a>
+				<a class="slaveSourceCla" href="javaScript:void(0)" onclick="slaveSourceCli(this)">大幅度村</a> -->
+      </div>
+
+
+    </div>
+
+    <script type="text/javascript">
+      var selectedSlaveSource = null;
+      $('#addBtnId').on('click', function() {
+        var dataSourceName = $.trim($('#dataSourceNameId').val()); //获取用户输入的数据源名
+
+        if (!dataSourceName) {
+          alert("数据源名不能为空");
+          return false;
+        }
+
+        var html =
+          '<a class="slaveSourceCla" href="javaScript:void(0)" thissourceid="" onclick="slaveSourceCli(this)">' +
+          dataSourceName + '</a>';
+        $('#dataSourceAreaId').append(html);
+
+        $('#dataSourceNameId').val('');
+        selectedSlaveSource = null; //清空被选中的数据源
+
+        // $('#addBtnId').css('display', 'inline-block');
+        // $('#deleteBtnId').hide();
+        // $('#updateBtnId').hide();
+      })
+
+      $('#updateBtnId').on('click', function() {
+        var dataSourceName = $.trim($('#dataSourceNameId').val()); //获取用户输入的数据源名
+
+        if (!dataSourceName) {
+          alert("数据源名不能为空");
+          return false;
+        }
+
+        $('.slaveSourceCla').each(function(i, n) { //将用户重新输入的源名写入
+          if ($(n).html() == selectedSlaveSource) {
+            $(n).html(dataSourceName);
+          }
+        })
+
+        $('#dataSourceNameId').val('');
+        selectedSlaveSource = null; //清空被选中的数据源
+
+
+        $('.slaveSourceCla').css({
+          'background': 'white',
+          'color': 'black'
+        });
+        $('#addBtnId').css('display', 'inline-block');
+        $('#deleteBtnId').hide();
+        $('#updateBtnId').hide();
+      })
+
+
+
+
+
+      $('#deleteBtnId').on('click', function() {
+
+        $('.slaveSourceCla').each(function(i, n) {
+          if ($(n).html() == selectedSlaveSource) { //遍历,删除被选择的数据源
+            $(n).remove();
+          }
+        })
+        selectedSlaveSource = null; //清空被选中的数据源
+
+
+
+        $('.slaveSourceCla').css({
+          'background': 'white',
+          'color': 'black'
+        });
+        $('#addBtnId').css('display', 'inline-block');
+        $('#deleteBtnId').hide();
+        $('#updateBtnId').hide();
+      })
+
+
+      function slaveSourceCli(e) {
+
+        //修改样式
+        $('.slaveSourceCla').css({
+          'background': 'white',
+          'color': 'black'
+        });
+        $(e).css({
+          'background': 'blue',
+          'color': 'white'
+        });
+
+
+        selectedSlaveSource = $(e).html();
+        $('#dataSourceNameId').val(selectedSlaveSource);
+
+        $('#addBtnId').hide();
+        $('#updateBtnId').css('display', 'inline-block');
+        $('#deleteBtnId').css('display', 'inline-block');
+      }
+
+
+
+
+
+
+
+      var oNode = null;
+      var thePlugins = 'multidatasourcepublic';
+      var nodeId = $('#node_id', parent.document).val();
+      var userId = JSON.parse(window.localStorage.getItem('user')).id;
+      window.onload = function() {
+        oNode = UE.plugins[thePlugins].editdom;
+        $.ajax({
+          url: prevent_HOST + 'nodeQueryFacade/getThisSlavePage?nodeId=' + nodeId,
+          async: false,
+          /* type: 'GET',
+          dataType: 'json',
+          contentType: 'application/json; charset=UTF-8',
+          data: JSON.stringify(data), */
+          success: function(res) {
+            if (res.status == "200") {
+              var slaveInfos = res.msg;
+              if (slaveInfos.length > 0) {
+                for (var i = 0; i < slaveInfos.length; i++) {
+                  var slaveInfo = slaveInfos[i];
+                  var html =
+                    '<a class="slaveSourceCla" href="javaScript:void(0)" thissourceid="' + slaveInfo.nodeId +
+                    '" onclick="slaveSourceCli(this)">' +
+                    slaveInfo.nodeName.split('nid')[0] + '</a>';
+                  $('#dataSourceAreaId').append(html);
+                }
+              }
+            }
+          }
+        })
+      }
+
+
+
+
+
+      dialog.oncancel = function() {
+        if (UE.plugins[thePlugins].editdom) {
+          delete UE.plugins[thePlugins].editdom;
+        }
+      };
+
+
+
+
+      dialog.onok = function() {
+
+        /* 	data = [{
+        		'id': '20264',
+        		'value': "第一个",
+        		'node_level': '0',
+        		'parent_id': nodeId,
+        		'isFolder': '1',
+        		'node_type': '7',
+        		'createrUid': userId,
+        		'is_public': '0',
+        		'is_approve': '1',
+        		'is_popularize': '1',
+        		'is_slave_page': '1'
+        	}]; */
+
+        var datas = [];
+        var sourceCount = 0;
+        $('.slaveSourceCla').each(function(i, n) {
+          sourceCount++;
+          var data = {
+            'value': $(n).html() + 'nid' + nodeId + 'no' + sourceCount,
+            'node_level': '0',
+            'parent_id': nodeId,
+            'isFolder': '1',
+            'node_type': '7',
+            'createrUid': userId,
+            'is_public': '0',
+            'is_approve': '1',
+            'is_popularize': '1',
+            'is_slave_page': '1'
+          };
+          if ($(n).attr('thissourceid')) {
+            data.id = $(n).attr('thissourceid');
+          }
+          datas.push(data);
+
+        })
+        console.log(datas)
+        if (datas.length > 0) {
+          $.ajax({
+            url: prevent_HOST + 'nodeOperatorFacade/addTreeNode',
+            async: false,
+            type: 'POST',
+            dataType: 'json',
+            contentType: 'application/json; charset=UTF-8',
+            data: JSON.stringify(datas),
+            success: function(res) {
+              if (res.status == "200") {}
+            }
+          })
+        }
+        if (!oNode) {
+          try {
+            oNode = createElement('input', 'multidatasourcepublic');
+            oNode.setAttribute('leipiplugins', 'multidatasourcepublic');
+            oNode.setAttribute('placeholder', '多数据源发布标识控件');
+
+            editor.execCommand('insertHtml', oNode.outerHTML);
+          } catch (e) {
+            try {
+              editor.execCommand('error');
+            } catch (e) {
+              alert('控件异常，请反馈或寻求帮助！');
+            }
+            return false;
+          }
+        } else {
+          oNode.setAttribute('leipiplugins', 'multidatasourcepublic');
+          oNode.setAttribute('placeholder', '多数据源发布标识控件');
+          delete UE.plugins[thePlugins].editdom;
+
+        }
+      };
+    </script>
+  </body>
+
+</html>

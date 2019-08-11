@@ -1,0 +1,28 @@
+package swtech.pageDesignControl.mapper;
+
+import swtech.pageDesignControl.entity.HtShopcar;
+
+import java.util.List;
+import java.util.Map;
+
+
+
+public interface HtShopcarMapper {
+   
+
+    int insertSelectiveShopCar(HtShopcar record);
+
+    List<Map<String, Object>> allHtShopcar();
+    
+    int deleteByPrimaryKeyShopCar(Integer productsId);
+    
+    int emptyCart();
+    
+    int updateStatus(Integer getReservationId);
+    
+    List<Map<String, Object>>  allorder(Integer shopBeiId);
+    
+    int cancelorder(Integer shopBeiId);
+    
+    int paynow(HtShopcar htShopcar);
+}

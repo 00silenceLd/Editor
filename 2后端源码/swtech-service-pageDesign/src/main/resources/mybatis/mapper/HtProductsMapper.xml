@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="swtech.service.pageDesign.dao.impl.HtProductsDaoImpl" >
+  <resultMap id="BaseResultMap" type="swtech.facade.pageDesign.entity.HtProducts" >
+    <id column="products_id" property="productsId" jdbcType="INTEGER" />
+    <result column="products_name" property="productsName" jdbcType="VARCHAR" />
+    <result column="prodycts_price" property="prodyctsPrice" jdbcType="DOUBLE" />
+    <result column="products_info" property="productsInfo" jdbcType="VARCHAR" />
+    <result column="products_category" property="productsCategory" jdbcType="INTEGER" />
+    <result column="products_comment" property="productsComment" jdbcType="VARCHAR" />
+    <result column="products_status" property="productsStatus" jdbcType="INTEGER" />
+    <result column="products_shop" property="productsShop" jdbcType="INTEGER" />
+    <result column="products_picture" property="productsPicture" jdbcType="LONGVARCHAR" />
+  </resultMap>
+
+    
+
+  <sql id="Base_Column_List" >
+    products_id, products_name, prodycts_price, products_info, products_category, products_comment, 
+    products_status, products_shop, products_picture
+  </sql>
+  <select id="allProducts" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    SELECT   products_id,products_name, prodycts_price, products_info, products_category, products_comment ,products_picture FROM  ht_products
+      WHERE   products_category= #{ productsCategory,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectByPrimaryKeyProducts" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from ht_products
+    where products_id = #{productsId,jdbcType=INTEGER}
+  </select>
+ 
+
+  <insert id="insertSelectiveProducts" parameterType="swtech.facade.pageDesign.entity.HtProducts" >
+    insert into ht_products
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="productsId != null" >
+        products_id,
+      </if>
+      <if test="productsName != null" >
+        products_name,
+      </if>
+      <if test="prodyctsPrice != null" >
+        prodycts_price,
+      </if>
+      <if test="productsInfo != null" >
+        products_info,
+      </if>
+      <if test="productsCategory != null" >
+        products_category,
+      </if>
+      <if test="productsComment != null" >
+        products_comment,
+      </if>
+      <if test="productsStatus != null" >
+        products_status,
+      </if>
+      <if test="productsShop != null" >
+        products_shop,
+      </if>
+      <if test="productsPicture != null" >
+        products_picture,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="productsId != null" >
+        #{productsId,jdbcType=INTEGER},
+      </if>
+      <if test="productsName != null" >
+        #{productsName,jdbcType=VARCHAR},
+      </if>
+      <if test="prodyctsPrice != null" >
+        #{prodyctsPrice,jdbcType=DOUBLE},
+      </if>
+      <if test="productsInfo != null" >
+        #{productsInfo,jdbcType=VARCHAR},
+      </if>
+      <if test="productsCategory != null" >
+        #{productsCategory,jdbcType=INTEGER},
+      </if>
+      <if test="productsComment != null" >
+        #{productsComment,jdbcType=VARCHAR},
+      </if>
+      <if test="productsStatus != null" >
+        #{productsStatus,jdbcType=INTEGER},
+      </if>
+      <if test="productsShop != null" >
+        #{productsShop,jdbcType=INTEGER},
+      </if>
+      <if test="productsPicture != null" >
+        #{productsPicture,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+    <update id="updateByPrimaryKeySelectiveProducts" parameterType="swtech.facade.pageDesign.entity.HtProducts" >
+    update ht_products
+    <set >
+      <if test="productsName != null" >
+        products_name = #{productsName,jdbcType=VARCHAR},
+      </if>
+      <if test="prodyctsPrice != null" >
+        prodycts_price = #{prodyctsPrice,jdbcType=DOUBLE},
+      </if>
+      <if test="productsInfo != null" >
+        products_info = #{productsInfo,jdbcType=VARCHAR},
+      </if>
+      <if test="productsCategory != null" >
+        products_category = #{productsCategory,jdbcType=INTEGER},
+      </if>
+      <if test="productsComment != null" >
+        products_comment = #{productsComment,jdbcType=VARCHAR},
+      </if>
+      <if test="productsStatus != null" >
+        products_status = #{productsStatus,jdbcType=INTEGER},
+      </if>
+      <if test="productsShop != null" >
+        products_shop = #{productsShop,jdbcType=INTEGER},
+      </if>
+      <if test="productsPicture != null" >
+        products_picture = #{productsPicture,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where products_id = #{productsId,jdbcType=INTEGER}
+  </update>
+</mapper>

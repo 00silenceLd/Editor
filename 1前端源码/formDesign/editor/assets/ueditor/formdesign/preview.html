@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    <title>处理中...</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <!-- <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE8" /> -->
+    <meta content="yes" name="apple-mobile-web-app-capable">
+    <meta content="yes" name="apple-touch-fullscreen">
+    <meta name="format-detection" content="telphone=no, email=no" />
+    <meta name="renderer" content="webkit">
+
+    <link rel="stylesheet" href="./self/addImage/addImage.css">
+    <!-- <link rel="stylesheet" type="text/css" href="./self/commentControl/css/commentController.css"> -->
+    <!-- Bootstrap 图标-->
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.same.css">
+    <link rel="stylesheet" href="./bootstrap/css/bootstrap.css">
+    <!-- 本页面的样式 -->
+    <link rel="stylesheet" href="./self/css/style.css">
+    <link rel="stylesheet" href="./self/swiper/swiper-4.2.2.min.css">
+    <!-- Loading样式的css -->
+    <link rel="stylesheet" href="./self/css/loading.css">
+    <!-- iframeRouter - 内嵌路由控件 -->
+    <link rel="stylesheet" href="./self/css/iframeRouter.css">
+    <link rel="stylesheet" href="./images/font/iconfont.css">
+    <link rel="stylesheet" href="./self/css/conterie.css">
+    <!-- pagedetails - 详情页 Tpl2 使用的iconfont -->
+    <link rel="stylesheet" href="./images/font_icon/iconfont.css">
+    <link rel="stylesheet" href="./images/tpl2_font_icon/iconfont.css">
+    <!-- zTree - 分类控件树形控件 -->
+    <link rel="stylesheet" href="./self/zTree/metroStyle/metroStyle.css">
+    <link rel="stylesheet" href="./self/ligerlib/ligerUI/skins/Aqua/css/ligerui-all.css">
+    <!--添加、删除数据控件-->
+    <link rel="stylesheet" href="./self/css/glc.css">
+    <link rel="stylesheet" href="./self/tree/yntree.min.css">
+    <link rel="stylesheet" type="text/css" href="./layui/css/layui.css">
+    <link rel="stylesheet" type="text/css" href="./self/css/aboutLogin.css">
+
+
+
+    <!-- ----------------------javascript----------------------------------------- -->
+
+
+
+    <!-- ---------------------------------------第三方 Begin------------------------------- -->
+    <!-- jQuery -->
+    <script src="./self/js/jquery-3.2.1.min.js"></script>
+    <script src="./self/ligerlib/jquery.cookie.js"></script>
+    <!-- <script src="./self/zTree/jquery.ztree.all.min.js"></script> -->
+    <!-- 权限相关 -->
+    <script src="./self/js/sCheckIn.js"></script>
+    <!-- 根据是否为绝对动态页，添加script标签引用外部js文件 -->
+    <!-- <script src="./self/js/dynamicAddJs.js" type="text/javascript" charset="utf-8"></script> -->
+
+    <script src="./self/md5/jquery.md5.js"></script>
+    <!-- bootstrap -->
+    <script src="./bootstrap/js/bootstrap.js"></script>
+    <!-- layui -->
+    <script src="./layui/layui.js" type="text/javascript" charset="utf-8"></script>
+    <!-- rsa加密 -->
+    <script src="./self/rsa/RSA.js"></script>
+
+    <!-- Echarts -->
+    <!-- <script src="./self/echarts/echarts.min.js"></script> -->
+    <!-- swiper 轮播-->
+    <!-- <script src="./self/swiper/swiper-4.2.2.min.js"></script> -->
+    <!--ligerui 表达设计器  (因暂时找不到引用该js的地方，先注释)-->
+    <!-- <script src="./self/ligerlib/ligerUI/js/ligerui.min.js"></script>
+		<script src="./self/ligerlib/ligerUI/js/plugins/ligerTree.js"></script> -->
+    <!-- 在线预览配PDF文件   (因暂时找不到引用该js的地方，先注释) -->
+    <!-- <script src="./self/pdfjs/build/pdf.js"></script> -->
+    <!-- ---------------------------------------第三方 TheEnd------------------------------- -->
+
+
+
+    <!-- ---------------------------------------编辑器内部配置 Begin------------------------------- -->
+    <!-- 请求 前缀 配置文件 -->
+    <script src="../httpData.config.js"></script>
+    <!-- 百度编辑器相关 -->
+    <script src="../ueditor.parse.js"></script>
+    <script src="../ueditor.config.js"></script>
+    <script src="../ueditor.all.js"></script>
+    <!-- 判断 终端 类型 -->
+    <script src="./self/js/isMobile.js"></script>
+    <!-- 动态渲染页面主要的js -->
+    <script src="./self/js/fun.js"></script>
+    <script src="./self/js/use_top_preview.js"></script>
+    <script src="./self/js/use_bottom_preview.js"></script>
+    <script src="./self/js/preview_logic.js"></script>
+    <script src="./self/js/preview_other_config.js"></script>
+    <!-- ---------------------------------------编辑器内部配置 TheEnd------------------------------- -->
+
+
+    <!-- ---------------------------------------控件自定义配置 Begin------------------------------- -->
+    <!-- 流程 -->
+    <!-- <script src="./self/js/allflow.js"></script> -->
+    <!-- addImage(因暂时找不到引用该js的地方，先注释) -->
+    <script src="./self/addImage/addImage.js"></script>
+    <!-- 评论控件 -->
+    <!-- <script type="text/javascript" src="./self/commentControl/js/commentController.js"></script> -->
+    <!-- 公共头部/底部 -->
+    <!-- <script defer="defer" src="./self/headerandfooter/headerandfooter.js" type="text/javascript" charset="utf-8"></script> -->
+    <!-- 侧栏导航 -->
+    <!-- <script src="./self/sidebarnav/sidebarnav.js" type="text/javascript" charset="utf-8"></script> -->
+    <!-- 星星评分 -->
+    <!-- <script defer="defer" src="./self/js/score.js" type="text/javascript" charset="utf-8"></script> -->
+    <!-- ---------------------------------------控件自定义配置 TheEnd------------------------------- -->
+
+
+
+    <!-- 不知道是什么东西 (因暂时找不到引用该js的地方，先注释)-->
+    <script src="./self/tree/yntree.js"></script>
+    <script src="./self/js/py.js"></script>
+
+
+    <link rel="stylesheet" type="text/css" href="./self/suspension-ball/suspentsion-ball.css" />
+  </head>
+
+  <body>
+    <div id="ballId" style="display: none;">帮助
+      <ul id="ul">
+        <li id="account">个人中心</li>
+      </ul>
+    </div>
+    <script type="text/javascript" src="./self/suspension-ball/suspension-ball.js?version=201907221434"></script>
+    <!-- addImage modal -->
+    <div style="display:none;" class="modal fade" id="avatar-modal" role="dialog" tabindex="-1">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button class="close" data-dismiss="modal" type="button">&times;</button>
+            <h4 class="modal-title" id="avatar-modal-label">上传图片</h4>
+          </div>
+          <div class="modal-body">
+            <iframe width="100%" height="100%" src="addimage-modal.html" frameborder="0" scrolling="auto"></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- /addImage modal -->
+    <div id="spinner" class="spinner" style="display:none">
+      <div class="circle"></div>
+      <div class="circle"></div>
+      <p class="resValue"></p>
+    </div>
+    <!-- addVideo modal -->
+    <div style="display:none;" class="modal fade" id="video-modal" role="dialog" tabindex="-1">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button class="close" data-dismiss="modal" type="button">&times;</button>
+            <h4 class="modal-title" id="avatar-modal-label">上传视频</h4>
+          </div>
+          <div class="modal-body">
+            <iframe width="100%" height="100%" src="addvideo-modal.html" frameborder="0"></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- <div class="container head">
+        <div class="header">
+            <h1>
+                <strong>预览表单</strong>
+                <small>如无问题请保存你的设计</small>
+            </h1>
+        </div>
+    </div> -->
+    <!--<div id="rtoptool">
+      <span class="rtoptooloff" aria-label="Left Align" id="rtoptooloff">
+        &rsaquo;
+      </span>
+      <span data-method="add" class="gomethod"><img class="btn-img" src="./self/icon/add.png">添加数据</span>
+      <span data-method="list" class="gomethod"><img class="btn-img" src="./self/icon/watch.png">查看数据</span>
+      <span data-method="del" class="gomethod"><img class="btn-img" src="./self/icon/delete.png">删除数据</span>
+      <span data-method="edit" class="gomethod"><img class="btn-img" src="./self/icon/change.png">修改数据</span>
+    </div>-->
+
+    <div id="lian" style="width: 110px;height: 110px;position: fixed;right: 10px;bottom: 200px;display: none;">
+      <p id="close1" style="position: absolute;right: 1px;top: -16px;color: black;font-size: 12px;width: 25px;height: 20px;z-index: 1;cursor: pointer;">关闭</p>
+      <img src="images/liannanzugong.jpg" alt="" style="width: 110px;height: 110px;">
+    </div>
+
+    <section class="container" style="padding-left: 0;padding-right: 0;">
+      <form id="insertForm" onkeydown="if(event.keyCode==13)return false;">
+        <div class="bodyContent">
+
+
+
+        </div>
+        <!-- <div class="submitBtnDiv">
+                <button type="submit" class="btn btn-success" id="submitBtn" style="display:none;">提交</button>
+            </div> -->
+
+      </form>
+
+
+
+
+      <!-- 评论控件 -->
+      <!-- <div id="commentControl"> -->
+      <div id="commentControl" class="tent_info comtcla" style="display: none;">
+        <input type="hidden" name="Cuid" id="Cuid" value="0" />
+        <input type="hidden" name="nodeId" id="nodeId" value="0" /><!-- 用来查询该条记录评论的数据源数据表的nodeId -->
+        <input type="hidden" name="selectId" id="selectId" value="0" /><!-- 用来查询该条记录评论的在数据源数据表的主键id -->
+
+        <div id="comOutBor" class="col-md-12 col-sm-12 col-xl-12 commentTextarea one">
+          <div id="tips">&nbsp;&nbsp;评论区</div>
+          <textarea class="text_send" id="text_send" placeholder="请发表你的观点..."></textarea>
+
+          <div id="tijiaoId" class="col-md-12 col-sm-12 col-xl-12 btn btn_send btn1" style="
+					width: 120px;background: #f16f0b; color: #fff;float: right;margin-top: 3px;">提交</div>
+        </div>
+        <div id="commentArea">
+
+        </div>
+      </div>
+      <!-- </div> -->
+    </section>
+
+
+
+
+    <!-- 登录 -->
+    <div id="loginbox">
+      <form action="" method="POST" name="loginform" onsubmit="return (check_name()+check_pwd())==2">
+        <div id="tip" style="text-align: center;">
+          <!-- <img src="http://47.106.39.210/folder/15423388258921537516642689809191545387972741.png" alt=""> -->
+          <span>用户名密码登录</span>
+        </div>
+        <label style="text-align: center;"><input type="text" onblur="check_name()" name="user" id="username" value=""
+            placeholder="账号">
+          <p id="username_msg" style="height: 12px;font-size: 12px;color: red;display: none;">*手机号输入错误，请重新输入*</p>
+        </label>
+        <label style="text-align: center;"><input type="password" onblur="check_pwd()" name="passwd" id="password"
+            value="" placeholder="密码">
+          <p style="height: 12px;font-size: 12px;color: red;display: none;" id="password_msg">*仅允许输入字母、数字、符号的组合9-24位字符*</p>
+        </label>
+        <p id="next">
+          <input type="checkbox" name="" checked="checked">
+          <label for="" style="display: inline;font-size: 12px;margin-left: 5px;color: #666;">下次自动登录</label>
+        </p>
+        <button type="button" style="height: 40px;width: 300px;background: #3f89ec;color: #fff;border:none;cursor: pointer;margin: 10px 0 10px 30px;"
+          id="btn" onclick="login()">登录</button>
+        <p style="margin-left: 30px">
+          <a onclick="_sign_in()" href="javascript:;" style="color:rgb(46, 130, 255);">忘记密码?</a>
+        </p>
+
+        <div id="zhuce">
+          <a onclick="_forgetPassword()" href="javascript:;" style="display: inline-block; height: 60px;line-height: 60px;float: right;margin-right: 30px; color: #2e82ff">立即注册</a>
+        </div>
+
+        <script>
+          function _forgetPassword(){
+                    window.location.href = "http://"+window.location.host+"/login2/#!/index";
+                }
+                function _sign_in(){
+                    window.location.href = "http://"+localHost+"/editor/assets/ueditor/formdesign/preview.html?link=16038";
+                }
+            </script>
+
+        <p id="close">×</p>
+      </form>
+    </div>
+
+
+
+
+
+
+    <div id="over"></div>
+    <!-- 登录结束 -->
+
+
+
+    <!--用户权限管理-->
+    <div class="myopenwin" id="jobRoleUserWin">
+      <div class="myopen-content">
+        <div class="panel panel-default" id="openSwJob">
+          <div class="panel-heading">组织选择</div>
+          <div class="panel-body">
+            <!--<form>
+          <div class="form-group">
+            <div class="wxjobselect"></div>
+          </div>
+        </form>-->
+            <ul id="wxjobtree"></ul>
+          </div>
+        </div>
+        <div class="panel panel-default" id="openSwRole">
+          <div class="panel-heading">角色选择</div>
+          <div class="panel-body">
+            <div class="power-group">
+              <select class="wxmsgjob" name="roleendselect" onchange="setRoleSelect(this.value)">
+              </select>
+              <div class="wxroleselect">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="panel panel-default" id="openSwRoleUser">
+          <div class="panel-heading">用户选择</div>
+          <div class="panel-body">
+            <div class="power-group">
+              <select class="wxmsgjob" name="" onchange="getRoleTree(this.value)">
+              </select>
+              <select class="wxmsgjob" name="userroleselect" onchange="getUserTree(this.value)">
+              </select>
+              <div class="wxuserselect">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="myopenwin-footer">
+          <button type="button" class="btn btn-default" id="wxCanlBtn">关闭</button>
+          <button type="button" class="btn btn-primary" id="wxCfrBtn">提交</button>
+        </div>
+      </div>
+    </div>
+
+
+
+
+
+
+  </body>
+</html>

@@ -1,0 +1,98 @@
+strong {
+            font-weight: bold;
+        }
+        input {
+            margin-bottom: 0 !important;
+        }
+
+        .submitBtnDiv {
+            height: 40px;
+            line-height: 40px;
+            text-align: center;
+        }
+
+        .formlist_table_td {           
+            box-sizing: border-box;
+        }
+
+        .formlist_table_td td,
+        .formlist_table_vd td,
+        .formlist_table_vd th {
+            padding: 3px 5px;
+            border: 1px solid #f7f7f7;
+            font-size: 1.6rem;
+            line-height: 2.5rem;
+        }
+        .formlist_table_td td a,
+        .formlist_table_vd td a {            
+            font-size: 1.6rem;
+            line-height: 2.5rem;
+        }
+
+        .formlist_table_td th,
+        .formlist_table_vd th {
+            padding-left: 5px;            
+        }
+        .formlist_table_vd th {            
+            background-color: #f5f5f5;
+            text-align: right;
+        }
+        .formlist_table_vd td, .formlist_table_vd th {            
+            border: 1px solid #efe7e7;
+        }
+
+        .formlist_span {
+            display: block;
+            width: 100%;
+            line-height: 26px;            
+            padding: 1px 1px;
+        }
+        .formlist_span img,
+        .formlist_table_td td img,
+        .formlist_table_vd td img
+        {            
+            height: auto;
+        }
+
+        /*轮播框小黄点*/
+
+        #slidebox .go {
+            background-color: orange !important;
+        }
+
+        .list-group {
+            padding-left: 0;
+            margin-bottom: 20px;
+            font-size: 1.6rem;
+            line-height: 2.5rem;
+        }
+        .list-group a{
+            font-size: 1.6rem;
+            line-height: 2.5rem;
+        }
+        .list-group-item:first-child {
+            border-top-left-radius: 4px;
+            border-top-right-radius: 4px;
+        }
+
+        .list-group-item {
+            position: relative;
+            display: block;
+            padding: 10px 15px;
+            margin-bottom: -1px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+        }
+
+        .myclassselect {
+            width: auto;
+        }
+
+        .buylabel_a{
+            border-radius: 3px;
+            padding: 1px 10px;
+        }
+        .listone-other{
+            text-align: center;
+            width: 100%;
+        }

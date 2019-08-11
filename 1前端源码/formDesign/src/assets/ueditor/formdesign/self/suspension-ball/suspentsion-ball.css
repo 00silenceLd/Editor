@@ -1,0 +1,38 @@
+#ballId {
+    background: rgb(19, 167, 19);
+    color: white;
+    width: 50px;
+    text-align: center;
+    height: 50px;
+    line-height: 50px;
+    border-radius: 50%;
+    box-shadow: 5px 5px 40px rgba(0, 0, 0, 0.5);
+    /* 过渡效果在IE下展示效果不友好 */
+    transition: all 0.08s;
+    user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -webkit-user-select: none;
+    top: 4%;
+    right: 1%;
+    transform: translate3d(-50%, -50%, 0);
+  }
+  #ul{
+    position: absolute;
+    display: none;
+    cursor: pointer;
+    background: #fff;
+    list-style-type:none;
+    border:1px #f7f7f7 solid;
+    /*上右下左*/
+    margin: 14px 0px 15px -27px;;
+    border-radius: 15px;
+    padding-left:10px;
+    width: 100px;
+    line-height: 30px;
+    color:#205D67;
+    font-size: 0.9rem;
+  }
+  #ul li{
+    text-align:center!important;
+  }

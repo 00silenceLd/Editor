@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<HTML>
+	<HEAD>
+		<TITLE>数据表分类</TITLE>
+		<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+		<link rel="stylesheet" href="css/demo.css" type="text/css">
+		<link rel="stylesheet" href="css/zTreeStyle/zTreeStyle.css" type="text/css">
+		<link rel="stylesheet" href="showData/layui/css/layui.css" media="all">
+	</HEAD>
+
+	<BODY>
+		<h6></h6>
+		<div class="content_wrap">
+			<div class="zTreeDemoBackground left">
+				&nbsp;&nbsp;<a id="addParent" href="#" title="增加分类节点" onclick="return false;">增加分类节点</a> 
+				&nbsp;&nbsp;<a id="addLeaf" href="#" title="增加数据节点" onclick="return false;">增加数据节点</a> <br>
+				&nbsp;&nbsp;<a id="edit" href="#" title="编辑名称" onclick="return false;">编辑名称</a> 
+				&nbsp;&nbsp;<a id="remove" href="#" title="删除节点" onclick="return false;">删除节点</a> 
+				<ul id="treeDemo" class="ztree"></ul>
+			</div>
+			<div class="right">
+				<iframe id="showDataIframeId" src="" width="1200" height="1000"></iframe>
+			</div>
+		</div>
+
+
+		<div id="selectDataNodeId" style="display: none;">
+			<select Id="dataNodesId" style="margin-left: 70px; margin-top: 50px;">
+
+			</select>
+		</div>
+
+
+		<script type="text/javascript" src="js/jquery-1.4.4.min.js"></script>
+		<script type="text/javascript" src="js/jquery.ztree.core.js"></script>
+		<script type="text/javascript" src="js/jquery.ztree.exedit.js"></script>
+		<script src="showData/layui/layui.js" charset="utf-8"></script>
+		<script src="js/classifyTree.js" type="text/javascript" charset="utf-8"></script>
+	
+	</BODY>
+</HTML>

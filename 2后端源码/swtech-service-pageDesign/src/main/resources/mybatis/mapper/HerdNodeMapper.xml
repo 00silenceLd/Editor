@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="swtech.service.pageDesign.dao.impl.HerdNodeDaoImpl">
+	<sql id="table">ht_node</sql>
+	<resultMap id="herdNodeMap" type="swtech.facade.pageDesign.entity.HerdNode">
+		<id column="id" property="id" />
+		<result column="version" property="version" />
+		<result column="is_delete" property="is_delete" />
+		<result column="node_name" property="value" />
+		<result column="node_level" property="node_level" />
+		<result column="node_type" property="node_type" />
+		<result column="parent_id" property="parent_id" />
+		<result column="node_sore" property="node_sore" />
+		<result column="createrUid" property="createrUid" />
+		<result column="url" property="url" />
+		<result column="isFolder" property="isFolder" />
+	</resultMap>
+	
+	<resultMap id="herdNode_Map" type="swtech.facade.pageDesign.entity.HerdNode">
+		<id column="id" property="id" />
+		<result column="version" property="version" />
+		<result column="is_delete" property="is_delete" />
+		<result column="node_name" property="value" />
+		<result column="node_level" property="node_level" />
+		<result column="node_type" property="node_type" />
+		<result column="parent_id" property="parent_id" />
+		<result column="node_sore" property="node_sore" />
+		<result column="createrUid" property="createrUid" />
+		<result column="url" property="url" />
+		<result column="isFolder" property="isFolder" />
+		<collection property="children" column="id"
+			ofType="swtech.facade.pageDesign.entity.HerdNode" select="selectHerdNodeChildrenById"></collection>
+	</resultMap>
+
+
+	<!-- 再递归查询出一级部门下的所有子部门 -->
+	<select id="selectHerdNodeChildrenById" resultMap="herdNode_Map"
+		parameterType="long">
+		select * from ht_node_wqgl where is_delete=0 and
+		parent_id=#{id} order by node_sore
+	</select>
+
+	<!-- 插入网站管理表 -->
+	<insert id="insertHerdNode" parameterType="swtech.facade.pageDesign.entity.HerdNode" >
+		   insert into ht_node_wqgl(version,is_delete,node_name,node_level,node_type,parent_id,node_sore,isLeaf,createrUid,url,pic,isFolder)
+		   values
+		   (#{version},#{is_delete},#{value},#{node_level},#{node_type},#{parent_id},#{node_sore},#{isLeaf},#{createrUid},#{url},#{pic},#{isFolder})
+	</insert>
+
+	<!-- 查询pid下所有对象 -->
+	<select id="getOneHerdNode" parameterType="java.lang.Integer" resultMap="herdNode_Map">
+		 select * from ht_node_wqgl where is_delete = 0 and parent_id = #{pid} order by node_sore
+	</select>
+
+	<!-- 查询ID -->
+	<select id="getById" parameterType="java.lang.Integer" resultMap="herdNodeMap">
+		select * from ht_node_wqgl where is_delete = 0 and id = #{id}
+	</select>
+
+	<!-- 查询所有ht_node_wqgl -->
+	<select id="FindByHerdNode" resultMap="herdNodeMap">
+			select * from ht_node_wqgl where is_delete=0
+	</select>
+	
+	<!-- 查询与Node对象交替前的Node对象 -->
+	<select id="selectHerdNodeSore" parameterType="java.util.Map" resultMap="herdNodeMap">
+		select * from ht_node_wqgl where is_delete = 0 and parent_id = #{pid} and node_sore = #{newNodeSore}
+	</select>
+	
+	<!-- 添加树节点 -->
+	<insert id="insertTreeHerdNode" parameterType="swtech.facade.pageDesign.entity.HerdNode" >
+		   insert into ht_node_wqgl(version,is_delete,node_name,node_level,node_type,parent_id,node_sore,isLeaf,createrUid,url,pic,isFolder)
+		   values
+		   (#{version},#{is_delete},#{value},#{node_level},#{node_type},#{parent_id},#{node_sore},#{isLeaf},#{createrUid},#{url},#{pic},#{isFolder})
+	</insert>
+	
+	<!-- 修改树节点 -->
+	<update id="updateTreeHerdNode" parameterType="swtech.facade.pageDesign.entity.HerdNode" >
+		update ht_node_wqgl
+		<trim prefix="set" suffixOverrides=",">
+			<if test="version != null">
+				version = #{version,jdbcType=INTEGER}+1,
+			</if>
+			<if test="value != null">
+				node_name = #{value,jdbcType=VARCHAR},
+			</if>
+			<if test="node_type != null">
+				node_type = #{node_type,jdbcType=INTEGER},
+			</if>
+			<if test="node_sore != null">
+				node_sore = #{node_sore,jdbcType=INTEGER},
+			</if>
+			<if test="parent_id != null">
+				parent_id = #{parent_id,jdbcType=INTEGER},
+			</if>
+			<if test="node_level != null">
+				node_level = #{node_level,jdbcType=CHAR},
+			</if>
+			<if test="is_delete != null">
+				is_delete = #{is_delete,jdbcType=BIT},
+			</if>
+			<if test="url != null">
+				url = #{url,jdbcType=VARCHAR},
+			</if>
+			<if test="pic != null">
+				pic = #{pic,jdbcType=VARCHAR},
+			</if>
+			<if test="isFolder != null">
+				isFolder = #{isFolder,jdbcType=BIT},
+			</if>
+			<if test="is_first != null">
+				is_first = #{is_first,jdbcType=BIT},
+			</if>
+		</trim>
+		<where>
+			id = #{id}
+		</where>
+	</update>
+	
+	
+	<!-- 删除树节点 -->
+	<delete id="deleteTreeHerdNode" parameterType="java.lang.Integer" >
+		delete from ht_node_wqgl where id = #{id}
+	</delete>
+	
+	<!-- 查询子节点总和 -->
+	<select id="getHerdNodeCountByPId" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+		select count(id) from ht_node_wqgl where is_delete=0 and parent_id =#{parent_id}
+	</select>
+	
+	<!-- 根据ID查询对象信息 -->
+	<select id="getByHerdNodeName" parameterType="java.lang.Integer" resultMap="herdNodeMap">
+		select * from ht_node_wqgl where id = #{nodeId}
+	</select>
+	<select id="selectPublicItemList" parameterType="String" resultType="java.util.Map">  
+    	${sqlStr}  
+    </select>  
+	<select id="getSiteFirst" resultType="java.util.Map" parameterType="java.lang.String" >
+     	${_parameter}
+   </select>
+   <insert id="insertRecord" parameterType="java.lang.String" >
+     ${_parameter}
+   </insert>
+   <select id="change_Nodetype" resultType="java.util.Map" parameterType="java.lang.String" >
+     ${_parameter}
+   </select>
+   
+   <select id="getFirst" resultType="java.lang.Integer">
+   	select node_id from ht_first where is_delete = 0
+   </select>
+   
+   <select id="selectNodeNameById" parameterType="java.util.Map" resultType="java.util.Map">
+   select node_name from ht_node where id=${node_id}
+   </select>
+   
+   <update id="updateHandleAdministrator" parameterType="java.util.Map">
+    UPDATE ht_role_user SET isAdmin=#{handle} where role_id=#{roleId}  and uid=#{userId}
+   </update>
+</mapper>

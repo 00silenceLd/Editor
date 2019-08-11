@@ -1,0 +1,509 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+
+<head>
+    <title>轮播</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta name="generator" content="www.leipi.org" />
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.css">
+    <!--[if lte IE 6]>
+    <link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap-ie6.css">
+    <![endif]-->
+    <!--[if lte IE 7]>
+    <link rel="stylesheet" type="text/css" href="bootstrap/css/ie.css">
+    <![endif]-->
+    <link rel="stylesheet" href="leipi.style.css">
+    <script type="text/javascript" src="jquery-3.2.1.min.js"></script>
+
+    <script src="../httpData.config.js"></script>
+    <script type="text/javascript" src="../dialogs/internal.js"></script>
+    <script type="text/javascript">
+    var imageUrl = new Array();     //轮播图片的URL
+    var imageLink = new Array();    //图片的链接
+
+        function createElement( type, name ) {
+            var element = null;
+            try {
+                element = document.createElement( '<' + type + ' name="' + name + '">' );
+            } catch ( e ) {}
+            if ( element == null ) {
+                element = document.createElement( type );
+                element.name = name;
+            }
+            console.log( element );
+            return element;
+        }
+
+
+        //slidebox
+        function isIE() {
+            if ( window.attachEvent ) {
+                return true;
+            }
+            return false;
+        }
+        //moveRow在IE支持而在火狐里不支持！以下是扩展火狐下的moveRow
+        if ( !isIE() ) {
+            function getTRNode( nowTR, sibling ) {
+                while ( nowTR = nowTR[ sibling ] )
+                    if ( nowTR.tagName == 'TR' ) break;
+                return nowTR;
+            }
+            if ( typeof Element != 'undefined' ) {
+                Element.prototype.moveRow = function ( sourceRowIndex, targetRowIndex ) //执行扩展操作
+                {
+                    if ( !/^(table|tbody|tfoot|thead)$/i.test( this.tagName ) || sourceRowIndex === targetRowIndex ) return false;
+                    var pNode = this;
+                    if ( this.tagName == 'TABLE' ) pNode = this.getElementsByTagName( 'tbody' )[ 0 ]; //firefox会自动加上tbody标签，所以需要取tbody，直接table.insertBefore会error
+                    var sourceRow = pNode.rows[ sourceRowIndex ],
+                        targetRow = pNode.rows[ targetRowIndex ];
+                    if ( sourceRow == null || targetRow == null ) return false;
+                    var targetRowNextRow = sourceRowIndex > targetRowIndex ? false : getTRNode( targetRow, 'nextSibling' );
+                    if ( targetRowNextRow === false ) pNode.insertBefore( sourceRow, targetRow ); //后面行移动到前面，直接insertBefore即可
+                    else { //移动到当前行的后面位置，则需要判断要移动到的行的后面是否还有行，有则insertBefore，否则appendChild
+                        if ( targetRowNextRow == null ) pNode.appendChild( sourceRow );
+                        else pNode.insertBefore( sourceRow, targetRowNextRow );
+                    }
+                }
+            }
+        }
+
+        /*删除tr*/
+        function fnDeleteRow( obj ) {
+            var oTable = document.getElementById( "options_table" );
+            while ( obj.tagName != 'TR' ) {
+                obj = obj.parentNode;
+            }
+            oTable.deleteRow( obj.rowIndex );
+            if( $( obj ).find( "td input:file" ).val() !="" ){
+                //没有选择文件的话就不删除数组里面的内容
+                imageUrl.splice( obj.rowIndex,1 );
+            }
+            if( $( obj ).find("td input:text").val() !=""){
+                imageLink.splice( obj.rowIndex,1 );
+            }
+        }
+        /*上移*/
+        function fnMoveUp( obj ) {
+            var oTable = document.getElementById( "options_table" );
+            while ( obj.tagName != 'TR' ) {
+                obj = obj.parentNode;
+            }
+            var minRowIndex = 1;
+            var curRowIndex = obj.rowIndex;
+            if ( curRowIndex - 1 >= minRowIndex ) {
+                oTable.moveRow( curRowIndex, curRowIndex - 1 );
+                var moveUrl = imageUrl[ curRowIndex - 1 ];
+                imageUrl[ curRowIndex-1 ] = imageUrl[ curRowIndex-2 ];
+                imageUrl[ curRowIndex-2 ] = moveUrl;
+                moveUrl = "";
+                moveUrl = imageLink[ curRowIndex - 1 ];
+                imageLink[ curRowIndex-1 ] = imageLink[ curRowIndex-2 ];
+                imagelink[ curRowIndex-2 ] = moveUrl;
+                moveUrl = "";
+
+            }
+        }
+        /*下移*/
+        function fnMoveDown( obj ) {
+            var oTable = document.getElementById( "options_table" );
+            while ( obj.tagName != 'TR' ) {
+                obj = obj.parentNode;
+            }
+            var maxRowIndex = oTable.rows.length;
+            var curRowIndex = obj.rowIndex;
+            if ( curRowIndex + 1 < maxRowIndex ) {
+                oTable.moveRow( curRowIndex, curRowIndex + 1 );
+                var moveUrl = imageUrl[ curRowIndex -1 ];
+                imageUrl[ curRowIndex -1 ] = imageUrl[ curRowIndex ];
+                imageUrl[ curRowIndex ] = moveUrl;
+                moveUrl = "";
+                moveUrl = imageLink[ curRowIndex -1 ];
+                imageLink[ curRowIndex -1 ] = imageLink[ curRowIndex ];
+                imageLink[ curRowIndex ] = moveUrl;
+                moveUrl = "";
+
+            }
+        }
+
+        /*生成tr*/
+        function fnAddComboTr( obj ) {
+            var oTable = document.getElementById( 'options_table' );
+            var new_tr_node = oTable.insertRow( oTable.rows.length );
+            var new_td_node0 = new_tr_node.insertCell( 0 ),
+                new_td_node1 = new_tr_node.insertCell( 1 ),
+                new_td_node2 = new_tr_node.insertCell( 2 );
+
+
+            var sChecked = '';
+            var sType = 'image/jpeg,image/jpg,image/png,image/svg';
+            if ( obj.checked ) sChecked = 'checked="checked"';
+            if ( !obj.name ) obj.name = '';
+            if ( !obj.value ) obj.value = '';
+            new_td_node0.innerHTML = '<td><a class="btn btn-info" style="position: relative;width:90px;height:100%;"><input style="position: absolute;left:0;top:0;width:100%;height: 100%;opacity: 0;" type="file" ' + sChecked + 'accept="'+ sType +'"name="leipiNewField" onchange="imgPreview(this)">选择图片</a><img width=20px;height=20px; style="display: none;margin-left:4px;" src="#"></td>';
+            new_td_node1.innerHTML = '<td><input type="text"  placeholder="Input URL" onchange="Addurl(this)"></td>'
+            new_td_node2.innerHTML =
+                '<td><div class="btn-group"><a title="上移" class="btn btn-small btn-info" href="javascript:void(0);" onclick="fnMoveUp(this)"><i class="icon-white icon-arrow-up"></i>上移</a><a title="下移" class="btn btn-small btn-info" href="javascript:void(0);" onclick="fnMoveDown(this)"><i class="icon-white icon-arrow-down"></i>下移</a><a title="删除" class="btn btn-small btn-default" href="javascript:void(0);" onclick="fnDeleteRow(this)"><i class="icon-ban-circle"></i>删除</a></div></td>';
+            return true;
+        }
+
+        function imgPreview( fileDom ){
+            var obj = fileDom;
+            while( obj.tagName != 'TR' ){
+                obj = obj.parentNode;
+            }
+            var curRowIndex = obj.rowIndex;
+            var file = fileDom.files[0];
+            if( !/^image\//.test( file.type ) ){
+                alert( "只能选择图片文件哦！");
+                $( fileDom ).wrap('<form></form>');
+                $( fileDom ).parent()[0].reset();       //选错文件就清空
+                $( fileDom ).unwrap();
+            }
+            else{
+
+                var reader = new FileReader();
+                reader.readAsDataURL( file );
+                reader.onload=function(f){
+                imageUrl[ curRowIndex -1 ] = this.result;
+                //右边显示选择的图片
+                $( obj ).find( "img" ).attr( "src" , this.result );
+                $( obj ).find( "img" ).css( "display" , "inline-block" );
+
+                }
+            }
+        }
+
+        function Addurl( obj ){     //改变输入框时,link跟着改变
+            var obja = obj;
+            while ( obja.tagName != 'TR' ) {
+                obja = obja.parentNode;
+            }
+            var curRowIndex = obja.rowIndex -1;
+            if( obj.value != ""){
+                imageLink[ curRowIndex ] = obj.value;
+            }
+            console.log( imageLink );
+        }
+
+        function fnAdd() {
+            fnAddComboTr( {
+                "name": 'leipiNewField',
+            } );
+        }
+
+        /*组合slidebox*/
+        function fnParseOptions( gChecked ) {
+            var oTable = document.getElementById( 'options_table' );
+            var nTr = oTable.getElementsByTagName( 'tr' ),
+                trLength = nTr.length,
+                html = "";
+            for ( var i = 0; i < trLength; i++ ) {
+                var inputs = nTr[ i ].getElementsByTagName( 'input' );
+
+                //console.log(inputs[0].files[0]);
+                /*var reader = new FileReader();
+                reader.readAsDataURL( inputs[0].files[0] );
+                reader.onload=function(f){
+                    imageUrl[i] = this.result;
+                }*/
+                if ( inputs.length > 0 ) {
+                    if ( !inputs[ 0 ].value ) continue;
+                    html += '<a href="'+ imageLink[ i-1 ] +'"><img name="' + inputs[ 0 ].name +'"style="position:absolute;width:100%;height:100%;"'  +
+                        ' type="slidebox" src="'+ imageUrl[ i-1 ] +'"/>'+"</a>";
+                }
+            }
+            //alert(html);
+            return html;
+
+        }
+
+    </script>
+</head>
+<body>
+    <div class="content">
+        <table class="table table-bordered table-striped">
+            <tr>
+                <th colspan="2">
+                    <span>控件名称</span>
+                    <span class="label label-important">*</span>
+                    <span>字段拼音</span>
+                </th>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <input id="orgname" placeholder="必填项" onclick="javascript:this.select()" type="text" value="轮播框" onblur="getPY(this.value)">
+                    <input type="text" class="span2" id="pluName" placeholder="字段" value="" >
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    <span>数据源</span>
+                </th>
+                <th>
+                    <span>数据字段</span>
+                </th>
+            </tr>
+            <tr>
+                <td>
+                    <select id="datasource">
+                        <option value="text">数据源</option>
+                    </select>
+                </td>
+                <td>
+                    <select id="datazid">
+                        <option value="left">数据字段</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <th colspan="2">
+                    <span>控件样式</span>
+                </th>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    宽:
+                    <input id="orgwidth" name="leipiNewField" type="text" class="input-samll span1" value="100" placeholder="auto" onclick="this.value=this.value.replace(/\D/g,'')" onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')">
+                    <select id="orgvarfontwidth" style="width:75px;">
+                            <option>PX</option>
+                            <option selected>%</option>
+                    </select>
+                    &nbsp;&nbsp;&nbsp;高:
+                    <input id="orgheight" name="leipiNewField" type="text" class="input-samll span1" value="350" placeholder="auto" onclick="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')">
+                    <select id="orgvarfontheight" style="width:75px;">
+                            <option>PX</option>
+                            <option>%</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <table class="table table-hover table-condensed" id="options_table">
+                        <tr>
+                            <th>图片</th>
+                            <th>图片关联的URL</th>
+                            <th>操作</th>
+                        </tr>
+                        <!--tr>
+                    <td><input type="slidebox" checked="checked"></td>
+                    <td><input type="text" value="选项一"></td>
+                    <td>
+                        <div class="btn-group">
+                            <a title="上移" class="btn btn-small btn-info" href="#"><i class="icon-white icon-arrow-up"></i></a>
+                            <a title="下移" class="btn btn-small btn-info" href="#"><i class="icon-white icon-arrow-down"></i></a>
+                            <a title="删除" class="btn btn-small btn-default"><i class="icon-ban-circle"></i></a>
+                        </div>
+                    </td>
+                </tr-->
+
+                    </table>
+                    <a title="添加图片" class="btn btn-primary" onclick="fnAdd();">添加图片</a>
+                </td>
+            </tr>
+
+        </table>
+    </div>
+    <script type="text/javascript">
+        var gVarfontwidth = $("#orgvarfontwidth option:selected").val();
+        $("#orgvarfontwidth").click(function(){
+           gVarfontwidth = $("#orgvarfontwidth option:selected").val();
+        });
+        var gVarfontheight = $("#orgvarfontheight option:selected").val();
+        $("#orgvarfontheight").click(function(){
+           gVarfontheight = $("#orgvarfontheight option:selected").val();
+        });
+    </script>
+    <script type="text/javascript">
+        var oNode = null,
+            thePlugins = 'slidebox';
+        window.onload = function () {
+            $G( 'orgname' ).select();
+            if ( UE.plugins[ thePlugins ].editdom ) {
+                oNode = UE.plugins[ thePlugins ].editdom;
+                var gTitle = oNode.getAttribute( 'title' ).replace( /&quot;/g, "\"" ),
+                     gWidth = oNode.getAttribute( 'orgwidth' ),
+                     gHeight = oNode.getAttribute( 'orgheight' ),
+                     checked = oNode.getAttribute( 'orderby' );
+                checked == '0' ? $G( 'orgchecked1' ).checked = true : $G( 'orgchecked0' ).checked = true,
+                inputTags = oNode.getElementsByTagName( 'input' ),
+                length = inputTags.length;
+                $G( 'orgname' ).value = gTitle;
+                $G( 'orgwidth' ).value = parseInt( gWidth );
+                $G( 'orgheight' ).value = parseInt( gHeight );
+
+                var aInputs = [];
+                for ( var i = 0; i < length; i++ ) {
+                    //testEle.setAttribute("test","aaa"); // 自定义属性 设置
+                    //testEle.attributes["test"].nodeValue; // 获得
+                    if ( inputTags[ i ].type == 'slidebox' )
+                        fnAddComboTr( inputTags[ i ] );
+                }
+
+
+            }
+            /*
+             * 数据源链接后台获取 数据链接
+             *
+             */
+            var nodeParentId = $( '#nodeParentId', window.parent.document ).val();
+            var nodeId = $("#node_id",window.parent.document).val();
+          var userinfo=window.localStorage['user']?JSON.parse(window.localStorage['user']):null;
+            $.ajax( {
+                url: prevent_HOST + 'nodeQueryFacade/getDataSourcePage?nodeId='+nodeId+"&uid="+userinfo.id,
+                method: 'GET',
+                success: function ( res ) {
+                    $.each( res.msg, function ( index, value ) {
+                        $( "#datasource" ).append( '<option value=' + value.id + '>' + value.value + '</option>' );
+                    } )
+                },
+                error: function ( res ) {
+                    alert( '抱歉！获取 数据链接 失败！因为您好像还没有选择表哦！' )
+                }
+            } );
+            $( document ).on( "change", "#datasource", function ( e ) {
+                var nodeParentId = $( this ).val();
+                $( "#datazid" ).empty();
+                $.ajax( {
+                    url: prevent_HOST + 'pageDesignQueryFacade/getPageEditorData?id=' + nodeParentId,
+                    method: "GET",
+                    success: function ( res ) {
+                        $.each( res.msg, function ( index, value ) {
+                            $( "#datazid" ).append( '<option value=' + value.value + '>' + value.text + '</option>' );
+                        } )
+                    }
+                } )
+            } );
+
+        }
+        dialog.oncancel = function () {
+            if ( UE.plugins[ thePlugins ].editdom ) {
+                delete UE.plugins[ thePlugins ].editdom;
+            }
+        };
+        dialog.onok = function () {
+
+
+            if ( $G( 'orgname' ).value == '' ) {
+                alert( '控件名称不能为空' );
+                return false;
+            }
+            if( imageUrl.length < 2 ){
+
+                alert( '轮播图至少要两张图片哦' );
+                return false;
+            }
+
+            var gTitle = $G( 'orgname' ).value.replace( /\"/g, "&quot;" ),
+                 gWidth = $G( 'orgwidth' ).value,
+                 gHeight = $G( 'orgheight' ).value;
+
+
+
+
+
+            if ( !oNode ) {
+                try {
+                    var options = fnParseOptions( gTitle );
+                    if ( !options ) {
+                        alert( '请添加选项' );
+                        return false;
+                    }
+
+                    var input = document.getElementsByName( 'leipiNewField' );
+
+                    if( gWidth != '' ) {
+                        if( gVarfontwidth == "PX"){
+                            gWidth = gWidth + 'px';
+                        }
+                        if( gVarfontwidth == "%" ){
+                            gWidth = gWidth + '%';
+
+                        }
+                    } else{
+                        gWidth = "";
+                    }
+                    if( gHeight != '' ) {
+                        if( gVarfontheight == "PX"){
+                           gHeight = gHeight + 'px';
+
+                        }
+                        if( gVarfontheight == "%" ){
+                            gHeight = gHeight + '%';
+
+                        }
+                    } else{
+                        gHeight = "";
+                    }
+                        console.log( imageUrl.length );
+                    //{|- 使用边界，防止用户删除了span标签，程序处理要把边界替换为空
+                        var html = "<span leipiplugins='slidebox'  style='position:relative;display:block;margin:0 auto;width:"+gWidth+";height:"+gHeight+";' datasource='" + datasource + "'orgwidth='" + gWidth + "'orgheight='" + gHeight +  "' title='" + gTitle + "' name='leipiNewField' " + ">";
+                    //小圆点
+                            html += "<span style='position:absolute; height: 16px;right: 5%;bottom: 5%;cursor: pointer;z-index: 5;'>";
+                            for( var len = 0; len< imageUrl.length; len++ ){
+                                html += "<b class='go' index='"+ len +"'style='position: relative;display: inline-block;margin:0 5px;width: 10px;height: 10px;border-radius: 50%;border: 1px solid black;background-color: #fff;cursor: pointer;'>";
+                                html += "</b>";
+                            }
+                            html += "</span>";
+                            //左箭头
+                            html += "<a id='prev'  style='position:absolute;left:20px;top:50%;margin-top:-20px;display:block;font-size:36px;width:40px;height:40px;border-radius: 50%;background-color: RGBA(0,0,0, .1);text-align: center;color: #fff;line-height: 40px;font-weight: bold;cursor: pointer;z-index: 5;' "+" >";
+                            html += " &lt ";
+                            html +="</a>"
+                    //右箭头
+                            html += "<a id='next'   style='position: absolute;right:20px;top:50%;margin-top:-20px;display:block;font-size: 36px;width:40px;height: 40px;border-radius: 50%;background-color: RGBA(0,0,0, .1);text-align: center;color: #fff;line-height: 40px;font-weight: bold;cursor: pointer;z-index: 5;'" + ">";
+                            html += " &gt  ";
+                            html +="</a>";
+                            html += options;
+
+                            html += '</span> ';
+                    /*var html = '{|-<span leipiplugins="slidebox" style="display:inline-block;width:'+gWidth+';height:'+gHeight+';font-size:'+gFontSize+ '" title="' + gTitle + '"orgwidth="'+ gWidth +'"orgheight="'+ gHeight +'"orgfontsize="'+ gFontSize +'" orderby=' + gChecked + ' selected=' +
+                        selectValue + '>';
+                    html += options;
+                    html += '</span>-|}';*/
+                    editor.execCommand( 'insertHtml', html );
+                    return true;
+                } catch ( e ) {
+                    try {
+                        editor.execCommand( 'error' );
+                    } catch ( e ) {
+                        alert( '控件异常，请与我们反馈或寻求帮助！' );
+                    }
+                    return false;
+                }
+            } else {
+                oNode.setAttribute( 'title', gTitle );
+
+                if( gWidth != '' ) {
+                    if( gVarfontwidth == "PX"){
+
+                        oNode.style.width = gWidth + 'px';
+                        oNode.setAttribute( 'orgwidth' , gWidth );
+                    }
+                    if( gVarfontwidth == "%" ){
+
+                        oNode.style.width = gWidth + '%';
+                        oNode.setAttribute( 'orgwidth' , gWidth );
+                    }
+                }
+                if( gHeight != '' ){
+                    if( gVarfontheight == "PX"){
+                        oNode.style.height = gHeight + 'px';
+                        oNode.setAttribute( 'orgheight' , gHeight );
+                    }
+                    if( gVarfontheight == "%" ){
+                        oNode.style.height = gHeight + '%';
+                        oNode.setAttribute( 'orgheight' , gHeight );
+                    }
+                }
+                var input = document.getElementsByName( 'leipiNewField' );
+                delete UE.plugins[ thePlugins ].editdom;
+                return true;
+            }
+        };
+
+    </script>
+</body>
+
+</html>
+

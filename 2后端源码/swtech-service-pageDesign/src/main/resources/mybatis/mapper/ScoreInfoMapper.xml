@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+	namespace="swtech.service.pageDesign.dao.impl.ScoreInfoDaoImpl">
+
+
+	<resultMap id="scoreInfoMap"
+		type="swtech.facade.pageDesign.entity.ScoreInfo">
+		<id column="id" property="id" />
+		<result column="node_id" property="nodeId" />
+		<result column="select_id" property="selectId" />
+		<result column="score_result" property="scoreResult" />
+	</resultMap>
+
+	<select id="getCountByNodeIdAndSelectId"
+		parameterType="swtech.facade.pageDesign.entity.ScoreInfo"
+		resultType="Integer">
+
+		select count(id) from ht_score_info
+		where node_id=#{nodeId}
+		and select_id=#{selectId}
+
+	</select>
+
+	<insert id="saveScoreInfo"
+		parameterType="swtech.facade.pageDesign.entity.ScoreInfo"
+		keyProperty="id" useGeneratedKeys="true">
+
+		insert into ht_score_info
+		(node_id,select_id,score_result)
+		values(#{nodeId},#{selectId},#{scoreResult})
+
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+
+	</insert>
+
+	<update id="updateScoreResultByNodeIdAndSelectId"
+		parameterType="swtech.facade.pageDesign.entity.ScoreInfo">
+
+		update ht_score_info set score_result=#{scoreResult}
+		where
+		node_id=#{nodeId} and select_id=#{selectId}
+
+	</update>
+
+	<delete id="deleteScoreInfoById" parameterType="Integer">
+
+		delete from
+		ht_score_info where id=#{id}
+
+	</delete>
+	<select id="getScoreResultByNodeIdAndSelectId"
+		parameterType="swtech.facade.pageDesign.entity.ScoreInfo"
+		resultType="Integer">
+
+		select score_result from ht_score_info
+		where
+		node_id=#{nodeId} and select_id=#{selectId}
+
+	</select>
+
+	<select id="getcountByNodeIdAndScoreResult"
+		parameterType="java.util.Map" resultType="Integer">
+
+		select count(id) from
+		ht_score_info
+		where node_id=#{nodeId} and score_result=#{scoreResult}
+
+	</select>
+	<select id="getIdsByNodeIdAndScoreResult"
+		parameterType="java.util.Map" resultType="Integer">
+
+		select select_id from
+		ht_score_info
+		where node_id=#{nodeId} and score_result=#{scoreResult}
+
+	</select>
+	<select id="getIdOfNotDelete" parameterType="java.util.Map"
+		resultType="Integer">
+
+		select id from
+		${tableName}
+		where id=#{id} and is_delete=0
+
+	</select>
+
+	<select id="getSelectIdByNodeIdAndscoreResult"
+		parameterType="swtech.facade.pageDesign.entity.ScoreInfo"
+		resultType="Integer">
+
+		select select_id from ht_score_info
+		where
+		node_id=#{nodeId}
+		and score_result=#{scoreResult}
+
+	</select>
+
+	<select id="getSourceNameBySourceNodeId" parameterType="Integer"
+		resultType="string">
+		select node_name
+		from
+		ht_pageEditor
+		where node_id =
+		#{sourceNodeId} and is_delete=0
+	</select>
+
+	<select id="getResultCountByTableName"
+		parameterType="java.util.Map" resultType="int">
+
+		select count(id) from
+		${tableName} where is_delete = 0
+
+
+	</select>
+
+
+
+
+</mapper>

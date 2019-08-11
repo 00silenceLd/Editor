@@ -1,0 +1,137 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+
+<head>
+  <title>微信短信列表</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <link rel="stylesheet" href="bootstrap/css/bootstrap.css">
+  <!--[if lte IE 6]>
+  <link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap-ie6.css">
+  <![endif]-->
+  <!--[if lte IE 7]>
+  <link rel="stylesheet" type="text/css" href="bootstrap/css/ie.css">
+  <![endif]-->
+  <link rel="stylesheet" href="leipi.style.css">
+  <script type="text/javascript" src="../dialogs/internal.js"></script>
+  <script type="text/javascript" src="jquery-3.2.1.min.js" ></script>
+  <script type="text/javascript" src="../httpData.config.js"></script>
+
+  <script type="text/javascript">
+    /* Thank you by
+                                http://www.alt-tag.com/blog/2006/02/ie-dom-bugs/ */
+    function createElement( type, name ) {
+      var element = null;
+      try {
+        element = document.createElement( '<' + type + ' name="' + name + '">' );
+      } catch ( e ) {}
+      if ( element == null ) {
+        element = document.createElement( type );
+        element.name = name;
+      }
+      return element;
+    }
+
+  </script>
+</head>
+
+<body>
+<div class="content">
+  <table class="table table-bordered table-striped table-hover">
+    <tr>
+      <th>
+        <span>收发选择</span>
+        <span class="label label-important">*</span>
+      </th>
+      <th>
+        <span>短信类型</span>
+        <span class="label label-important">*</span>
+      </th>
+    </tr>
+    <tr>
+      <td>
+        <input type="radio" name="wxsendtype" value="send" checked>发短信
+        <input type="radio" name="wxsendtype" value="receive">收短信
+      </td>
+      <td>
+        <input type="radio" name="msgflag" value="0" checked> 全部
+        <input type="radio" name="msgflag" value="1"> 学校通知
+        <input type="radio" name="msgflag" value="4"> 年级通知
+        <input type="radio" name="msgflag" value="5"> 班级通知
+        <input type="radio" name="msgflag" value="2"> 请假通知
+        <input type="radio" name="msgflag" value="3"> 家庭作业
+      </td>
+    </tr>
+    <tr>
+      <td>
+        分页大小：<input type="number" name="pagesize" value="0">
+      </td>
+      <td>
+
+      </td>
+    </tr>
+  </table>
+</div>
+<script type="text/javascript">
+  var oNode = null,
+    gdataSource=null,
+    thePlugins = 'wxlist';
+  window.onload = function () {
+    if ( UE.plugins[ thePlugins ].editdom ) {
+      oNode = UE.plugins[ thePlugins ].editdom;
+      try{
+        var  msgflag = oNode.getAttribute( 'msgflag' ).replace( /&quot;/g, "\"" );
+        var  wxsendtype = oNode.getAttribute( 'wxsendtype' ).replace( /&quot;/g, "\"" );
+        var  pagesize = oNode.getAttribute( 'pagesize' ).replace( /&quot;/g, "\"" );
+        $('input[value='+msgflag+']').attr("checked",true);
+        $('input[value='+wxsendtype+']').attr("checked",true);
+        $('input[name="pagesize"]').val(pagesize);
+      }catch (e) {}
+    }
+    var nodeParentId = $( '#nodeParentId', window.parent.document ).val();
+    var nodeId = $('#node_id',window.parent.document).val();
+  }
+
+  dialog.oncancel = function () {
+    if ( UE.plugins[ thePlugins ].editdom ) {
+      delete UE.plugins[ thePlugins ].editdom;
+    }
+  };
+  dialog.onok = function () {
+    var msgflag=$("input[name=msgflag]:checked").val();
+    var wxsendtype=$("input[name=wxsendtype]:checked").val();
+    var pagesize=$('input[name="pagesize"]').val();
+    var wxtitle=wxsendtype=='send'?"发短信":"收短信";
+    if ( !oNode ) {
+      try {
+        oNode = createElement( 'input', 'leipiNewField' );
+        oNode.setAttribute( 'type', 'text' );
+        oNode.setAttribute( 'title', wxtitle+"列表" );
+        oNode.setAttribute( 'value', wxtitle+"列表" );
+        oNode.setAttribute( 'name', 'leipiNewField' );
+        oNode.setAttribute( 'leipiplugins', thePlugins );
+        oNode.setAttribute( 'style',"width: 90px;height: 30px;" );
+        oNode.setAttribute( 'msgflag',msgflag);
+        oNode.setAttribute( 'wxsendtype',wxsendtype);
+        oNode.setAttribute( 'pagesize',pagesize);
+        editor.execCommand( 'insertHtml', oNode.outerHTML );
+      } catch ( e ) {
+        try {
+          editor.execCommand( 'error' );
+        } catch ( e ) {
+          alert( '控件异常，请反馈或寻求帮助！' );
+        }
+        return false;
+      }
+    } else {
+      oNode.setAttribute( 'pagesize', pagesize );
+      oNode.setAttribute( 'msgflag',msgflag);
+      oNode.setAttribute( 'title', wxtitle+"列表" );
+      oNode.setAttribute( 'value', wxtitle+"列表" );
+      oNode.setAttribute( 'wxsendtype',wxsendtype);
+      delete UE.plugins[ thePlugins ].editdom;
+    }
+  };
+</script>
+</body>
+</html>

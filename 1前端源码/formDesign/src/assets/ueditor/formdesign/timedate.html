@@ -1,0 +1,195 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+
+<head>
+  <title>时间日期插件</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <link rel="stylesheet" href="bootstrap/css/bootstrap.css">
+
+  <!--[if lte IE 6]>
+  <link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap-ie6.css">
+  <![endif]-->
+  <!--[if lte IE 7]>
+  <link rel="stylesheet" type="text/css" href="bootstrap/css/ie.css">
+  <![endif]-->
+  <link rel="stylesheet" href="leipi.style.css">
+  <script type="text/javascript" src="../dialogs/internal.js"></script>
+  <script type="text/javascript" src="jquery-3.2.1.min.js"></script>
+  <script src="self/js/py.js"></script>
+  <script type="text/javascript" src="../httpData.config.js"></script>
+  <script type="text/javascript">
+    /* Thank you by
+                                   http://www.alt-tag.com/blog/2006/02/ie-dom-bugs/ */
+    function createElement( type, name ) {
+      var element = null;
+      try {
+        element = document.createElement( '<' + type + ' name="' + name + '">' );
+      } catch ( e ) {}
+      if ( element == null ) {
+        element = document.createElement( type );
+        element.name = name;
+      }
+      return element;
+    }
+
+  </script>
+</head>
+
+<body>
+<div class="content">
+  <table class="table table-bordered table-striped table-hover">
+    <tr>
+      <th>
+        <span>控件名称</span>
+        <span class="label label-important">*</span>
+        <span>字段拼音</span>
+      </th>
+      <th>
+        <span>字体大小</span>
+      </th>
+    </tr>
+    <tr>
+      <td>
+        <input type="text" id="orgname" onclick="javascript:this.select()" placeholder="必填项" value="时间"  onblur="getPY(this.value)">
+        <input type="text" class="span2" id="pluName" placeholder="只允许拼音、不允许有相同名" value="" >
+      </td>
+      <td>
+        <input id="orgfontsize" type="text" value="16px" class="input-small" />
+      </td>
+    </tr>
+    <tr>
+      <th>
+        <span>日期控件的高度</span>
+      </th>
+      <th>
+        <span>日期控件的宽度</span>
+      </th>
+    </tr>
+    <tr>
+      <td>
+        <input id="orgheight" type="text" class="input-small" placeholder="auto" />
+        <select id="orgvarfontheight" style="width:65px;">
+          <option value="px">PX</option>
+          <option value="%">%</option>
+        </select>
+      </td>
+      <td>
+        <input id="orgwidth" type="text" class="input-small" placeholder="auto" value="" onclick="this.value=this.value.replace(/\D/g,'')" />
+        <select id="orgvarfontwidth" style="width:60px;">
+          <option value="px">PX</option>
+          <option value="%">%</option>
+        </select>
+      </td>
+    </tr>
+
+  </table>
+</div>
+
+<script type="text/javascript">
+  var oNode = null,
+    gdataSource = null,
+    control_name=null,
+    nodeId=null,
+    thePlugins = 'timedate';
+  window.onload = function () {
+    $G( 'orgname' ).select();
+    if ( UE.plugins[ thePlugins ].editdom ) {
+      oNode = UE.plugins[ thePlugins ].editdom;
+      var gName = oNode.getAttribute( 'title' ),
+        gHeight = oNode.getAttribute( 'orgheight' ),
+        gWidth = oNode.getAttribute( 'orgwidth' ),
+        name = oNode.getAttribute('name'),
+        
+        gSize = oNode.getAttribute( 'orgfontsize' );
+      $G( "orgheight" ).value = gHeight.replace(/\D/g,'');
+      $G( "orgwidth" ).value = gWidth.replace(/\D/g,'');
+      $G( 'orgfontsize' ).value = gSize;
+      $G( 'orgname' ).value = gName;
+      control_name=name;
+      $G( 'pluName' ).value = name;
+      
+    }
+
+    nodeId = $('#node_id',window.parent.document).val();
+  }
+
+  dialog.oncancel = function () {
+    if ( UE.plugins[ thePlugins ].editdom ) {
+      delete UE.plugins[ thePlugins ].editdom;
+    }
+  };
+  dialog.onok = function () {
+    if ( $G( 'orgname' ).value == '' ) {
+      alert( '请输入控件名称' );
+      return false;
+    }
+    var PN=$('#pluName');
+    cupy=PN.val();
+    if(cupy==''){
+      getPY($G( 'orgname' ).value);
+    }
+    // console.log($("#orgvarfontwidth").val())
+    var gTitle = $G( 'orgname' ).value.replace( /\"/g, "&quot;" );
+    // var orgname = $G( 'orgname' ).value;
+    
+    var orgfontsize = $G( 'orgfontsize' ).value;
+    var orgvarfontwidth = $("#orgvarfontwidth").val();
+    var orgvarfontheight = $("#orgvarfontheight").val();
+    var orgheight = $G( 'orgheight' ).value+orgvarfontwidth;
+    var orgwidth = $G( 'orgwidth' ).value+orgvarfontheight;
+    var Pid = getpluId();
+    if ( !oNode ) {
+      try {
+        var leipiplugins = `<input name="`+cupy+`" placeholder="请选择日期" dateid="${Pid}" type="time" title="${gTitle}" leipiplugins="timedate" orgwidth="${orgwidth}"   orgheight="${orgheight}"  orgfontsize="${orgfontsize}" style="width:${orgwidth};height:${orgheight};font-size:${orgfontsize}">`;        
+        editor.execCommand( 'insertHtml', leipiplugins );
+        var editNewData={"node_id": nodeId,"title":gTitle,"control_name": cupy}
+                    $.ajax({
+                      url: prevent_HOST + `pageDesignOperatorFacade/insertControl`,
+                      type: 'POST',
+                      dataType: 'json',
+                      contentType: 'application/json; charset=UTF-8',
+                      data: JSON.stringify(editNewData),
+                      async: false,
+                      success: function ( res ) {
+                      }
+                    })
+      } catch ( e ) {
+        try {
+          editor.execCommand( 'error' );
+        } catch ( e ) {
+          alert( '控件异常，请到 与我们 反馈或寻求帮助！' );
+        }
+        return false;
+      }
+    } else {
+      oNode.setAttribute('name',cupy);
+      oNode.setAttribute( 'title', gTitle );
+      oNode.setAttribute( 'orgwidth', orgwidth );
+      oNode.setAttribute( 'orgheight', orgheight );
+      oNode.setAttribute( 'style', "width:"+orgwidth+";height:"+orgheight+"; font-size:"+orgfontsize );
+      delete UE.plugins[ thePlugins ].editdom;
+      var editNewData={"node_id": nodeId,"title":gTitle,"control_name": control_name,"new_control_name": cupy}
+                    $.ajax({
+                        url: prevent_HOST + `pageDesignOperatorFacade/updateControl`,
+                        type: 'POST',
+                        dataType: 'json',
+                        contentType: 'application/json; charset=UTF-8',
+                        data: JSON.stringify(editNewData),
+                        async: false,
+                        success: function ( res ) {
+                        }
+                    })
+    }
+  };
+
+  function getpluId() { //时间戳生成唯一id
+    var timestamp = Date.parse( new Date() );
+    timestamp = 'plu' + timestamp / 1000;
+    return timestamp;
+  }
+
+</script>
+</body>
+
+</html>

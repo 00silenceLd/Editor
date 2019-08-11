@@ -1,0 +1,197 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title>记录/统计控件</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="leipi.style.css">
+    <script type="text/javascript" src="../dialogs/internal.js"></script>
+    <script type="text/javascript" src="./jquery-3.2.1.min.js"></script>
+    <script type="text/javascript" src="../httpData.config.js"></script>
+    <script src="self/js/py.js"></script>
+    <script type="text/javascript">
+        function createElement( type, name ) {
+            var element = null;
+            try {
+                element = document.createElement( '<' + type + ' name="' + name + '">' );
+            } catch ( e ) {}
+            if ( element == null ) {
+                element = document.createElement( type );
+                element.name = name;
+            }
+            return element;
+        }
+    </script>
+  <link rel="stylesheet" href="self/listone/css/css.css">
+</head>
+<body>
+    <div class="content">
+      <table class="table table-bordered table-striped table-hover">
+        <tr>
+          <th>控件名称<span class="label label-important">*</span>字段</th>
+          <th>数据源</th>
+        </tr>
+        <tr>
+          <td>
+              <input id="orgname" onclick="javascript:this.select()" placeholder="必填项" type="text" class="input-medium" value="记录" onblur="getPY(this.value)" />
+              <input type="text" class="span2" id="pluName" placeholder="字段" value="" >
+          </td>
+          <td>
+              <select id="datasource">
+                <option value="0">请选择</option>
+              </select>
+          </td>
+        </tr>
+        <tr>
+          <th colspan="2">标题</th>
+        </tr>
+        <tr>
+          <td colspan="2">
+              <select id="datatitle" class="datafiled">
+                  <option value="0">请选择</option>
+              </select>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <script type="text/javascript">
+        var oNode = null,
+            gdataSource=null,
+            control_name=null,
+            nodeId=null,
+            thePlugins = 'recordlabel';        
+            window.onload = function () {
+                $G('orgname').select();
+                var nodeParentId = $( '#nodeParentId', window.parent.document ).val();
+                nodeId = $('#node_id',window.parent.document).val();
+                var userinfo=window.localStorage['user']?JSON.parse(window.localStorage['user']):null; 
+                if ( UE.plugins[ thePlugins ].editdom ) {
+                    oNode = UE.plugins[ thePlugins ].editdom;
+                    $G( 'orgname' ).value = oNode.getAttribute( 'title' );
+                    var datasource = oNode.getAttribute( 'datasource' );                
+                    var datatitle = oNode.getAttribute( 'datatitle' );
+                    var name = oNode.getAttribute( 'name' );
+                    control_name=name;   
+                    $G( 'pluName' ).value = name;             
+                    if(datasource !='0'){
+                        var datasources=datasource.split(":");
+                        $( "#datasource" ).prepend( '<option value="' + datasource +'" selected>' + datasources[1] + '</option>');
+                        $.ajax({
+                            url: prevent_HOST + 'pageDesignQueryFacade/getPageEditorData?id=' + datasources[0],
+                            method:"GET",
+                            success:function(res){                           
+                                var title='';
+                                $( ".datafiled").html('<option value="0">请选择</option>');
+                                $.each( res.msg, function ( index, value ) {                            
+                                    if(datatitle==value.value){
+                                        title+='<option value="' + value.value+'" selected>' + value.text + '</option>';
+                                    }else{
+                                        title+='<option value="' + value.value+'">' + value.text + '</option>';
+                                    }
+                                })                            
+                                $("#datatitle").append(title);                            
+                            }
+                        })
+                    }
+                }  
+                
+
+                  var datasource=window.localStorage['datasource_'+userinfo.id]?window.localStorage['datasource_'+userinfo.id]:null;
+                  if(datasource==null){
+                    setDataSource(userinfo.id);              
+                  }else{
+                      $( "#datasource" ).append(datasource);
+                  }
+                  $(document).on("change","#datasource",function(e){
+                    var nodeParentId = $(this).val().split(":");
+                      $(".datafiled").html('<option value="0">请选择</option>');
+                      $.ajax({
+                        url: prevent_HOST + 'pageDesignQueryFacade/getPageEditorData?id=' + nodeParentId[0],
+                        method:"GET",
+                        success:function(res){
+                          $.each( res.msg, function ( index, value ) {
+                                    $( ".datafiled").append( '<option value="' + value.value+'">' + value.text + '</option>' );
+                                })
+                        }
+                      })
+                  });
+            }
+
+        dialog.oncancel = function () {
+          
+          if ( UE.plugins[ thePlugins ].editdom ) {
+              delete UE.plugins[ thePlugins ].editdom;
+          }
+        };
+        dialog.onok = function () {
+          var gName = $G( 'orgname' ).value.replace( /\"/g, "&quot;" );
+          var datasource=$("#datasource").val();            
+          var datatitle=$("#datatitle").val();
+
+          if ( gName == '' ) {
+                alert( '控件名称不能为空' );
+                $G( 'orgname' ).focus();
+                return false;
+            }
+          var PN=$('#pluName');
+              cupy=PN.val();
+              if(cupy==''){
+                getPY($G( 'orgname' ).value);
+              }
+
+          if ( !oNode ) {
+                try {
+                    oNode = createElement( 'input', cupy );
+                    oNode.setAttribute( 'leipiPlugins', thePlugins );
+                    oNode.setAttribute( 'type', 'text' );
+                    oNode.setAttribute( 'value', gName );
+                    oNode.setAttribute( 'title', gName );
+                    oNode.setAttribute( 'datasource', datasource );
+                    oNode.setAttribute( 'datatitle', datatitle );
+                    editor.execCommand( 'insertHtml', oNode.outerHTML );
+                    var editNewData={"node_id": nodeId,"title":gName,"control_name": cupy}
+                      $.ajax({
+                        url: prevent_HOST + `pageDesignOperatorFacade/insertControl`,
+                        type: 'POST',
+                        dataType: 'json',
+                        contentType: 'application/json; charset=UTF-8',
+                        data: JSON.stringify(editNewData),
+                        async: false,
+                        success: function ( res ) {
+                        }
+                      })
+                    return true;
+                } catch ( e ) {
+                    try {
+                        editor.execCommand( 'error' );
+                    } catch ( e ) {
+                        alert( '控件异常，请反馈或寻求帮助！' );
+                    }
+                    return false;
+                }
+            } else {
+                //修改
+                oNode.setAttribute( 'leipiPlugins', thePlugins );
+                oNode.setAttribute( 'name', cupy );
+                oNode.setAttribute( 'value', gName );
+                oNode.setAttribute( 'title', gName );
+                oNode.setAttribute( 'datasource', datasource );                
+                oNode.setAttribute( 'datatitle', datatitle );               
+                delete UE.plugins[ thePlugins ].editdom; //使用后清空这个对象，变回新增模式
+                var editNewData={"node_id": nodeId,"title":gName,"control_name": control_name,"new_control_name": cupy}
+                    $.ajax({
+                        url: prevent_HOST + `pageDesignOperatorFacade/updateControl`,
+                        type: 'POST',
+                        dataType: 'json',
+                        contentType: 'application/json; charset=UTF-8',
+                        data: JSON.stringify(editNewData),
+                        async: false,
+                        success: function ( res ) {
+                        }
+                    })
+            }
+        }
+    </script>
+</body>
+</html>

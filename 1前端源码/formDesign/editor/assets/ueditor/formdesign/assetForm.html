@@ -1,0 +1,107 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+	<head>
+		<title>村集体资产明细表</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+		<link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
+		<link rel="stylesheet" href="leipi.style.css">
+		<link rel="stylesheet" href="self/listone/css/css.css">
+		<script type="text/javascript" src="../dialogs/internal.js"></script>
+		<script type="text/javascript" src="./jquery-3.2.1.min.js"></script>
+		<script type="text/javascript" src="../httpData.config.js"></script>
+		<script src="self/js/py.js"></script>
+	</head>
+	<body>
+		<script type="text/javascript">
+			function createElement(type, name) {
+				var element = null;
+				try {
+					element = document.createElement('<' + type + ' name="' + name + '">');
+				} catch (e) {}
+				if (element == null) {
+					element = document.createElement(type);
+					element.name = name;
+				}
+				return element;
+			}
+		</script>
+
+		<div class="content">
+			<table class="table table-bordered table-striped table-hover">
+					<tr>
+							<th>
+								<span>村庄名</span>
+							</th>
+							<th>
+								<span>资产明细表记录时间</span>
+							</th>
+						</tr>
+				<!-- 	<tr>
+							<td>
+								<select id="village" onchange="record(this.value)">
+									<option value="">请选择村庄</option>
+								</select>
+							</td>
+							<td>
+								<select id="record">
+									<option value="">请选择记录时间</option>
+								</select>
+							</td>
+					</tr> -->
+			</table>
+		</div>
+		<script type="text/javascript">
+			var oNode = null,
+				gdataSource = null,
+				control_name = null,
+				nodeId = null,
+				thePlugins = 'iconrouter';
+			// var host = 'http://' + localHost + ':8081/Asset/assets/';
+			var host = 'http://asset.1388w.cn/Asset/assets/';
+			window.onload = function(){
+
+      }
+
+			// 取消
+			dialog.oncancel = function() {
+						if (UE.plugins[thePlugins].editdom) {
+							delete UE.plugins[thePlugins].editdom;
+						}
+					}
+
+
+			dialog.onok = function(){
+
+				var gTitle = '';
+				var cupy = 'assetdetail';
+				var myname = 'assetdetail';	// ww 自定义名字，仅用于该资产明细表
+				if (!oNode) {
+					try {
+						oNode = createElement( 'input', cupy );
+						oNode.setAttribute( 'leipiPlugins', myname );
+						oNode.setAttribute( 'placeholder','资产明细表');
+						editor.execCommand('insertHtml', oNode.outerHTML);
+						return true;
+
+					}catch (e){
+						try {
+							editor.execCommand('error');
+						} catch (e) {
+							alert('控件异常，请反馈或寻求帮助！');
+						}
+							return false;
+					}
+					//try end
+				}else{
+					//修改
+					oNode.setAttribute( 'leipiPlugins', myname );
+					oNode.setAttribute( 'placeholder','资产明细表');
+					delete UE.plugins[thePlugins].editdom; //使用后清空这个对象，变回新增模式
+					return true;
+				}
+				}
+		</script>
+	</body>
+
+</html>

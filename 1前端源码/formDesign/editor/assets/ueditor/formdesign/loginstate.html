@@ -1,0 +1,173 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+
+<head>
+    <title></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+     <link rel="stylesheet" href="bootstrap/css/bootstrap.css">
+     <link rel="stylesheet" href="bootstrap/css/bootstrap.same.css">
+    <!--[if lte IE 6]>
+    <link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap-ie6.css">
+    <![endif]-->
+    <!--[if lte IE 7]>
+    <link rel="stylesheet" type="text/css" href="bootstrap/css/ie.css">
+    <![endif]-->
+    <link rel="stylesheet" href="leipi.style.css">
+    <script type="text/javascript" src="../dialogs/internal.js"></script>
+    <script type="text/javascript" src="jquery-3.2.1.min.js" ></script>
+    <script type="text/javascript" src="../httpData.config.js"></script>
+        <link rel="stylesheet" href="bootstrap/css/bootstrap.same.css">
+
+    <style>
+        label{
+            display: inline-block;
+            margin-left:10px;
+        }
+
+    </style>
+
+    <script type="text/javascript">
+        /* Thank you by
+                                    http://www.alt-tag.com/blog/2006/02/ie-dom-bugs/ */
+        function createElement( type, name ) {
+            var element = null;
+            try {
+                element = document.createElement( '<' + type + ' name="' + name + '">' );
+            } catch ( e ) {}
+            if ( element == null ) {
+                element = document.createElement( type );
+                element.name = name;
+            }
+            return element;
+
+        }
+
+
+
+    </script>
+</head>
+
+<body>
+    <div class="content">
+        <table class="table table-bordered table-striped table-hover">
+            <tr>
+                <th>
+                    <span>登录URL</span>
+                    <span style="color:red; font-size:18px;"><strong>*</strong></span>
+                </th>
+                <th>
+                    <span>注册URL</span>
+                    <span style="color:red; font-size:18px;"><strong>*</strong></span>
+                </th>
+            </tr>
+            <tr>
+                <td>
+                    <input id="loginlink" type="text" style="width:250px; height:35px;" class="input-small span1" placeholder="请输入登录地址" value=""/>
+                </td>
+                <td>
+                    <input id="registerlink" type="text" style="width:250px; height:35px;" class="input-small span1" placeholder="请输入注册地址" value=""/>
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    <span>宽：</span>
+                </th>
+                <th>
+                    <span>高：</span>
+                </th>
+            </tr>
+            <tr>
+                <td>
+                    <input id="orgwidth" value="100" style="width:100px; height:30px;" type="text" class="input-small" placeholder="auto" value="" onclick="this.value=this.value.replace(/\D/g,'')" />
+                    <select id="orgvarfontwidth" style="width:60px;">
+                        <option value="px">PX</option>
+                        <option value="%" selected>%</option>
+                    </select>
+                    
+                </td>
+                <td>
+                    <input id="orgheight" value="40" style="width:100px; height:30px;" type="text" class="input-small" placeholder="auto" />
+                    <select id="orgvarfontheight" style="width:65px;">
+                        <option value="px">PX</option>
+                        <option value="%">%</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    <span>字体大小</span>
+                </th>
+                <th>
+                </th>
+            </tr>
+            <tr>
+                <td>
+                    <input id="orgfontsize" style="height:30px;" type="text" value="16" class="input-small span1" placeholder="auto" />
+                    <select id="orgvarfontsize" style="width:75px;">
+                        <option value="PX">PX</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <th colspan="2">
+                    <span>字体颜色</span>
+                </th>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <input id="orgfzcolor" name="leipiNewField" type="color" style="width:200px; height:35px;" class="input-samll span1">
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <script type="text/javascript">
+        window.onload = function(){
+            $G( 'orgfontsize' ).value = gFontSize;
+            $G( "orgheight" ).value = gHeight.replace(/\D/g,'');
+            $G( "orgwidth" ).value = gWidth.replace(/\D/g,'');
+        }
+
+        dialog.onok = function(){
+            var orgvarfontsize = $("#orgvarfontsize").val();
+            var orgvarfontheight = $("#orgvarfontheight").val();
+            var orgvarfontwidth = $("#orgvarfontwidth").val();
+            var orgheight = $G( 'orgheight' ).value+orgvarfontheight;
+            var orgwidth = $G( 'orgwidth' ).value+orgvarfontwidth;
+            var gFontSize = $G( 'orgfontsize' ).value+orgvarfontsize;
+
+            var loginlik = $("#loginlink").val();
+            var registerlink = $("#registerlink").val();
+            var afzcolor = document.getElementById( "orgfzcolor" ).value;
+
+            var gUser = window.localStorage['user']?JSON.parse(window.localStorage['user']):null;
+
+            if ( $G( 'loginlink' ).value == '' ) {
+                alert( '请输入登录URL' );
+                return false;
+            }else if($G( 'registerlink' ).value == ''){
+                alert( '请输入注册URL' );
+                return false;
+            }
+            
+            var html = " <span id='nologin' style='display:inline; width:"+ orgwidth +"; height:"+ orgheight +"; text-align:center; line-height:"+ orgheight +"; white-space:nowrap'> <a href='"+ loginlik +"' style='margin-right:25px; color:"+ afzcolor +"; font-size:"+ gFontSize +";'>登录</a> <a href='"+ registerlink +"' style='color:"+ afzcolor +"; font-size:"+ gFontSize +";'>注册</a> </span> <span id='islogin' style='display:inline;width:"+ orgwidth +"; height:"+ orgheight +";  text-align:center; line-height:"+ orgheight +"; white-space:nowrap'> <a href='"+ loginlik +"' style='margin-right:25px; color:"+ afzcolor +"; font-size:"+ gFontSize +";'><span id='userName' style=' font-size:"+ gFontSize +";'>已登录</span></a><span id='userPosition'>无</span> <a href='/mobile/tpl/login/out.html' style='color:"+ afzcolor +"; font-size:"+ gFontSize +";'>退出</a> </span>";
+                // html += "<div class='isLogInState' style='width:100%; height:50px; background:"+ abgcolor +"; text-align:center; line-height:50px;'> <span style='float:left; margin-left:10px; color:"+ afzcolor +";'>"+ userName +"</span> <span style='float:right; margin-right:20px; color:"+ afzcolor +";'>退出</span> </div>";
+
+            editor.execCommand( 'insertHtml', html );
+
+            // var html2 = "<div class='isLogInState' style='width:100%; height:50px; background:"+ abgcolor +"; text-align:center; line-height:50px;'> <span style='float:left; margin-left:10px; color:"+ afzcolor +";'>"+ userName +"</span> <span style='float:right; margin-right:20px; color:"+ afzcolor +";'>退出</span> </div>";
+            // editor.execCommand( 'insertHtml', html2 );
+
+            // if(cookie != ""){
+                // var cookie = window.localStorage['user']?JSON.parse(window.localStorage['user']):null;
+                // var userName = cookie.userName;
+            
+            // }else{
+            // }
+        }
+
+    </script>
+</body>
+
+</html>

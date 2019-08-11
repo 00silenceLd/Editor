@@ -1,0 +1,271 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+	<head>
+		<title>页面关键字与描述</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+		<meta name="generator" content="www.leipi.org" />
+		<link rel="stylesheet" href="bootstrap/css/bootstrap.css">
+		<link rel="stylesheet" href="leipi.style.css">
+		<script type="text/javascript" src="../dialogs/internal.js"></script>
+		<script type="text/javascript" src="jquery-3.2.1.min.js"></script>
+		<script src="self/js/py.js"></script>
+		<script type="text/javascript" src="../httpData.config.js"></script>
+
+	</head>
+	<body>
+		<div class="content">
+			<table class="table table-bordered table-striped table-hover">
+				<tr>
+					<th>页面标题</th>
+				</tr>
+				<tr>
+
+					<td>
+						<label for="pageTitleId">格式：当前页面名(必填)-当前父节点页面名(如有可填)，如：实时接收-智校园家。</label>
+						<textarea style="resize:none;" rows="2" cols="20" name="pagetitle" wrap="hard" class="input-block-level" id="pagetitleId"
+						 placeholder=""></textarea>
+					</td>
+				</tr>
+				<tr>
+					<th>页面关键字与内容描述：主要是便于搜索引擎机器人可以更快地搜索到该网页。</th>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<label for="keywordsId">关键字：如政治,经济,科技,文化,卫生,情感,胜网,坤智,智校园家等。</label>
+						<textarea style="resize:none;" rows="2" cols="20" name="keywords" wrap="hard" class="input-block-level" id="keywordsId"
+						 placeholder="注:关键字之间用','隔开"></textarea>
+					</td>
+
+				</tr>
+				<tr>
+					<td colspan="2">
+						<label for="descriptionId">内容描述:如该页面内容简介或公司介绍等。</label>
+						<textarea style="resize:none;" rows="3" cols="20" name="description" wrap="hard" class="input-block-level" id="descriptionId"
+						 placeholder=""></textarea>
+					</td>
+				</tr>
+
+			</table>
+		</div>
+		<script>
+			//读取cookie
+			var cookieStr = unescape(document.cookie);
+			var arr = cookieStr.split("|");
+			var cookieWidth = "";
+			var cookieHeight = "";
+			if (cookieStr != "") {
+				for (var i = 0; i < arr.length; i++) {
+					var temp = arr[i].split("=");
+					if (temp[0] == "width") {
+						// debugger;
+						cookieWidth = temp[1];
+						$("#orgvarfontwidth").val(cookieWidth);
+					} else if (temp[0] == "height") {
+						cookieHeight = temp[1];
+						$("#orgvarfontheight").val(cookieHeight);
+					}
+				}
+			}
+			var gVarfontwidth = $("#orgvarfontwidth").val();
+			$("#orgvarfontwidth").change(function() {
+				gVarfontwidth = $("#orgvarfontwidth").val();
+				var height = "";
+				var str = unescape(document.cookie);
+				//存在height
+				if (str.indexOf("height") != -1) {
+					var arr = str.split("|");
+					for (var i = 0; i < arr.length; i++) {
+						var temp = arr[i].split("=");
+						if (temp[0] == "height") {
+							height = temp[1];
+						}
+					}
+				} else { //不存在就清空
+					document.cookie = "";
+				}
+				//保存cookie
+				if (height != "") {
+					document.cookie = "width=" + gVarfontwidth + "|" + "height=" + height + "|";
+				} else {
+					document.cookie = "width=" + gVarfontwidth + "|";
+				}
+			});
+			var gVarfontheight = $("#orgvarfontheight").val();
+			$("#orgvarfontheight").change(function() {
+				gVarfontheight = $("#orgvarfontheight").val();
+				var width = "";
+				var str = unescape(document.cookie);
+				//存在height
+				if (str.indexOf("width") != -1) {
+					var arr = str.split("|");
+					for (var i = 0; i < arr.length; i++) {
+						var temp = arr[i].split("=");
+						if (temp[0] == "width") {
+							width = temp[1];
+						}
+					}
+				} else { //不存在就清空
+					document.cookie = "";
+					width = $("#orgvarfontwidth").val();
+				}
+				document.cookie = "width=" + width + "|" + "height=" + gVarfontheight + "|";
+			});
+		</script>
+		<script type="text/javascript">
+			var oNode = null,
+				control_name = null,
+				nodeId = null;
+			//dataZid,
+			//gdataField,
+			thePlugins = 'pagekeywords';
+
+			window.onload = function() {
+
+
+
+				// $G('orgname').select();
+				//弹出窗口初始化函数
+				if (UE.plugins[thePlugins].editdom) {
+					oNode = UE.plugins[thePlugins].editdom;
+					// $G('orgname').value = oNode.getAttribute('title');
+					var pagetitle = oNode.getAttribute('pagetitle');
+					var keywords = oNode.getAttribute('keywords');
+					var description = oNode.getAttribute('description');
+					// alert("dsfsd")
+					console.log("pagetitle=" + pagetitle);
+					console.log("keywords=" + keywords);
+					console.log("description=" + description);
+					if (pagetitle != undefined && pagetitle != "") {
+						$("#pagetitleId").val(pagetitle);
+					}
+					if (keywords != undefined && keywords != "") {
+						$("#keywordsId").val(keywords);
+					}
+					if (description != undefined && description != "") {
+						$("#descriptionId").val(description);
+					}
+
+				}
+			}
+
+
+
+
+
+
+
+
+			function createElement(type, name) {
+				var element = null;
+				try {
+					element = document.createElement('<' + type + ' name="' + name + '">');
+				} catch (e) {}
+				if (element == null) {
+					element = document.createElement(type);
+					element.name = name;
+				}
+				return element;
+			}
+
+
+
+			dialog.oncancel = function() {
+				if (UE.plugins[thePlugins].editdom) {
+					delete UE.plugins[thePlugins].editdom;
+				}
+			};
+
+
+			dialog.onok = function() {
+				// alert("fdsaf")
+				// var gName = $G('orgname').value.replace(/\"/g, "&quot;");
+				var pagetitle = $("#pagetitleId").val();
+				var keywords = $("#keywordsId").val();
+				var description = $("#descriptionId").val();
+
+				console.log("pagetitle=" + pagetitle);
+				console.log("keywords=" + keywords);
+				console.log("description=" + description);
+				if (keywords != undefined && keywords != "") {
+					keywords = keywords.replace('，', ',');
+				}
+				if (description != undefined && description != "") {
+					description = description.replace('，', ',');
+				}
+				console.log("keywords=" + keywords);
+				console.log("description=" + description);
+
+				var gTitle = '';
+				if (!oNode) {
+					try {
+						oNode = createElement('input', thePlugins);
+						oNode.setAttribute('leipiPlugins', thePlugins);
+						oNode.setAttribute('type', 'text');
+						oNode.setAttribute('title', "页面关键字与描述");
+						oNode.setAttribute('value', pagetitle);
+						oNode.setAttribute('pagetitle', pagetitle);
+						oNode.setAttribute('keywords', keywords);
+						oNode.setAttribute('description', description);
+
+
+
+
+
+						//oNode.style.width="60px";
+						editor.execCommand('insertHtml', oNode.outerHTML);
+						// 						var editNewData = {
+						// 							"node_id": nodeId,
+						// 							"title": gName,
+						// 							"control_name": cupy
+						// 						}
+						// 						$.ajax({
+						// 							url: prevent_HOST + `pageDesignOperatorFacade/insertControl`,
+						// 							type: 'POST',
+						// 							dataType: 'json',
+						// 							contentType: 'application/json; charset=UTF-8',
+						// 							data: JSON.stringify(editNewData),
+						// 							async: false,
+						// 							success: function(res) {}
+						// 						})
+						return true;
+					} catch (e) {
+						try {
+							editor.execCommand('error');
+						} catch (e) {
+							alert('控件异常，请反馈或寻求帮助！');
+						}
+						return false;
+					}
+				} else {
+					//修改
+					oNode.setAttribute('leipiPlugins', thePlugins);
+					oNode.setAttribute('type', 'text');
+					oNode.setAttribute('title', "页面关键字与描述");
+					oNode.setAttribute('value', pagetitle);
+					oNode.setAttribute('pagetitle', pagetitle);
+					oNode.setAttribute('keywords', keywords);
+					oNode.setAttribute('description', description);
+
+					delete UE.plugins[thePlugins].editdom; //使用后清空这个对象，变回新增模式
+
+					// 					var editNewData = {
+					// 						"node_id": nodeId,
+					// 						"title": gName,
+					// 						"control_name": control_name,
+					// 						"new_control_name": cupy
+					// 					}
+					// 					$.ajax({
+					// 						url: prevent_HOST + `pageDesignOperatorFacade/updateControl`,
+					// 						type: 'POST',
+					// 						dataType: 'json',
+					// 						contentType: 'application/json; charset=UTF-8',
+					// 						data: JSON.stringify(editNewData),
+					// 						async: false,
+					// 						success: function(res) {}
+					// 					})
+				}
+			};
+		</script>
+	</body>
+</html>

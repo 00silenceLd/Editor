@@ -1,0 +1,823 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+
+<head>
+    <title>二级菜单</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta name="generator" content="www.leipi.org" />
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.css">
+    <!--[if lte IE 6]>
+    <link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap-ie6.css">
+    <![endif]-->
+    <!--[if lte IE 7]>
+    <link rel="stylesheet" type="text/css" href="bootstrap/css/ie.css">
+    <![endif]-->
+    <link rel="stylesheet" href="leipi.style.css">
+    <link rel="stylesheet" href="./self/css/secondNav.css">
+    <script type="text/javascript" src="jquery-3.2.1.min.js"></script>
+    <script src="self/js/py.js"></script>
+
+    <script src="../httpData.config.js"></script>
+    <script type="text/javascript" src="../dialogs/internal.js"></script>
+    <script type="text/javascript">
+        function createElement( type, name ) {
+            var element = null;
+            try {
+                element = document.createElement( '<' + type + ' name="' + name + '">' );
+            } catch ( e ) {}
+            if ( element == null ) {
+                element = document.createElement( type );
+                element.name = name;
+            }
+            return element;
+        }
+
+        //checkboxs
+        function isIE() {
+            if ( window.attachEvent ) {
+                return true;
+            }
+            return false;
+        }
+        //moveRow在IE支持而在火狐里不支持！以下是扩展火狐下的moveRow
+        if ( !isIE() ) {
+            function getTRNode( nowTR, sibling ) {
+                while ( nowTR = nowTR[ sibling ] )
+                    if ( nowTR.tagName == 'TR' ) break;
+                return nowTR;
+            }
+            if ( typeof Element != 'undefined' ) {
+                Element.prototype.moveRow = function ( sourceRowIndex, targetRowIndex ) //执行扩展操作
+                {
+                    if ( !/^(table|tbody|tfoot|thead)$/i.test( this.tagName ) || sourceRowIndex === targetRowIndex ) return false;
+                    var pNode = this;
+                    if ( this.tagName == 'TABLE' ) pNode = this.getElementsByTagName( 'tbody' )[ 0 ]; //firefox会自动加上tbody标签，所以需要取tbody，直接table.insertBefore会error
+                    var sourceRow = pNode.rows[ sourceRowIndex ],
+                        targetRow = pNode.rows[ targetRowIndex ];
+                    if ( sourceRow == null || targetRow == null ) return false;
+                    var targetRowNextRow = sourceRowIndex > targetRowIndex ? false : getTRNode( targetRow, 'nextSibling' );
+                    if ( targetRowNextRow === false ) pNode.insertBefore( sourceRow, targetRow ); //后面行移动到前面，直接insertBefore即可
+                    else { //移动到当前行的后面位置，则需要判断要移动到的行的后面是否还有行，有则insertBefore，否则appendChild
+                        if ( targetRowNextRow == null ) pNode.appendChild( sourceRow );
+                        else pNode.insertBefore( sourceRow, targetRowNextRow );
+                    }
+                }
+            }
+        }
+
+        /*删除tr*/
+        function fnDeleteRow( obj ) {
+            var objtable = obj;
+            while ( objtable.tagName != 'TABLE' ) {
+                objtable = objtable.parentNode;
+            }
+            var tableid = objtable.getAttribute("id");
+            var oTable = document.getElementById( tableid );
+            var oTable2 = document.getElementById( "options_table2" );  //二级菜单根目录
+            while ( obj.tagName != 'TR' ) {
+                obj = obj.parentNode;
+            }
+            var curRowIndex = obj.rowIndex;
+            oTable.deleteRow( curRowIndex );
+            if( tableid == "options_table" ){     //id是一级菜单时，连二级一起操作
+                $( oTable2 ).find( "div.deletediv" ).eq( curRowIndex-1 ).remove();
+
+            }
+        }
+        /*上移*/
+        function fnMoveUp( obj ) {
+            var oTable2 = document.getElementById( "options_table2" );  //二级菜单根目录
+            var objtable = obj;
+            while ( objtable.tagName != 'TABLE' ) {
+                objtable = objtable.parentNode;
+            }
+            var tableid = objtable.getAttribute("id");
+            var oTable = document.getElementById( tableid );
+            while ( obj.tagName != 'TR' ) {
+                obj = obj.parentNode;
+            }
+            var minRowIndex = 1;
+            var curRowIndex = obj.rowIndex;
+            var curRow =  $( "div.deletediv" )[ curRowIndex-1 ];
+            if ( curRowIndex - 1 >= minRowIndex ) {
+                oTable.moveRow( curRowIndex, curRowIndex - 1 );
+                if( tableid == "options_table" ){     //id是一级菜单时，连二级一起操作
+                    oTable2.insertBefore( curRow, curRow.previousSibling );
+                }
+            }
+
+        }
+        /*下移*/
+        function fnMoveDown( obj ) {
+            var oTable2 = document.getElementById( "options_table2" );  //二级菜单根目录
+            var nDiv = oTable2.getElementsByTagName( 'div' );
+
+
+            var objtable = obj;
+            while ( objtable.tagName != 'TABLE' ) {
+                objtable = objtable.parentNode;
+            }
+            var tableid = objtable.getAttribute("id");
+
+            var oTable = document.getElementById( tableid );
+            while ( obj.tagName != 'TR' ) {
+                obj = obj.parentNode;
+            }
+            var maxRowIndex = oTable.rows.length;
+            var curRowIndex = obj.rowIndex;
+            var curRow =  $( "div.deletediv" )[ curRowIndex-1 ];
+            if ( curRowIndex + 1 < maxRowIndex ) {
+                oTable.moveRow( curRowIndex, curRowIndex + 1 );
+
+                if( tableid == "options_table" ){     //id是一级菜单时，连二级一起操作
+                    oTable2.insertBefore( curRow.nextSibling , curRow );
+                }
+            }
+        }
+
+        var  generatetableId=0;
+        /*生成tr*/
+        function fnAddComboTr( obj ) {
+            var sType = 'image/jpeg,image/jpg,image/png,image/svg';
+            var oTable = document.getElementById( "options_table" );
+            var new_tr_node = oTable.insertRow( oTable.rows.length );
+            var new_td_node0 = new_tr_node.insertCell( 0 ),
+                new_td_node1 = new_tr_node.insertCell( 1 ),
+                new_td_node2 = new_tr_node.insertCell( 2 ),
+                new_td_node3 = new_tr_node.insertCell( 3 ),
+                new_td_node4 = new_tr_node.insertCell( 4 );
+
+
+            if ( !obj.name ) obj.name = '';
+            if ( !obj.value ) obj.value = '';
+            if ( !obj.link ) obj.link='';
+            if ( !obj.image_src ) obj.image_src='';
+
+            if( obj.tagName == "LI" ){       //重编辑时的标签为li，所以需要判断是不是重编辑
+                obj.value = $( obj ).find( "div.first_nav_title" ).eq(0).text(  );    //获取选项值
+                obj.image_src = $( obj ).find( "img" ).eq( 0 ).attr( "src" );       //获取小图标
+                obj.link = $( obj ).find( "a" ).eq( 0 ).attr( "href" );             //获取链接
+                //console.log( obj.value , obj.image_src ,obj.link );
+            }
+            new_td_node0.innerHTML = '<td ><input type="text" value="'+ obj.value +'"name="' + obj.name +
+                '" placeholder="选项值" onchange="change_h5_title(this)"></td>';
+            new_td_node1.innerHTML = '<td ><a class="btn btn-info width90"><input  type="file" accept="'+ sType +'"name="leipiNewField" onchange="imgPreview(this)">选择图片</a><img width:20px;height:20px; class="title-icon" src="'+ obj.image_src +'"></td>';
+            new_td_node2.innerHTML = '<td ><input type="text" value="'+ obj.link +'"  name="' + obj.name +'" placeholder="URL"></td>';
+            new_td_node3.innerHTML = '<td ><select style="width:90px;"><option>新窗口</option><option>本窗口</option></select></td>';
+            new_td_node4.innerHTML =
+                '<td><div class="btn-group"><a title="上移" class="btn btn-small btn-info" href="javascript:void(0);" onclick="fnMoveUp(this)"><i class="icon-white icon-arrow-up"></i>上移</a><a title="下移" class="btn btn-small btn-info" href="javascript:void(0);" onclick="fnMoveDown(this)"><i class="icon-white icon-arrow-down"></i>下移</a><a title="删除" class="btn btn-small btn-default" href="javascript:void(0);" onclick="fnDeleteRow(this)"><i class="icon-ban-circle"></i>删除</a></div></td>';
+
+            //点击之后也添加二级选项
+            var oTable2 = document.getElementById( "options_table2" );
+            var html="";
+            html = '<div class="deletediv"><h5 class="first_title">'+ obj.value +'</h5><span class="table_area"><table class="table table-hover table-condensed" id="ceate_table'+ (++generatetableId) +'"><th>标题</th><th>图标</th><th>跳转地址</th><th>跳转方式</th><th>操作</th></table><a title="添加选项" class="btn btn-primary" onclick="fnAddComboTrtwo( this );">二级菜单+</a></span></div>';
+            oTable2.innerHTML += html;
+           return true;
+        }
+
+
+        //二级菜单生成
+        function fnAddComboTrtwo( obj , i ) {
+            var oTable;
+            i=i+1;
+            var sType = 'image/jpeg,image/jpg,image/png,image/svg';
+            if( obj.tagName == "LI" ){       //重编辑时的标签为li，所以需要判断是不是重编辑
+                oTable = document.getElementById( 'ceate_table'+i );
+                console.log( oTable );
+                obj.value = $( obj ).find( "div.first_nav_title" ).eq(0).text(  );    //获取选项值
+                obj.image_src = $( obj ).find( "img" ).eq( 0 ).attr( "src" );       //获取小图标
+                obj.link = $( obj ).find( "a" ).eq( 0 ).attr( "href" );             //获取链接
+                //console.log( obj.value , obj.image_src ,obj.link );
+            }else{
+                    if( obj.tagName != "span" ){        //a（二级菜单+按钮）的父元素span
+                        obj = obj.parentNode;
+                    }
+                //第一次传obj 为 a
+                oTable = $( obj ).find( "table" )[0];
+            }
+            var new_tr_node = oTable.insertRow( oTable.rows.length );
+
+            var new_td_node0 = new_tr_node.insertCell( 0 ),
+                new_td_node1 = new_tr_node.insertCell( 1 ),
+                new_td_node2 = new_tr_node.insertCell( 2 ),
+                new_td_node3 = new_tr_node.insertCell( 3 ),
+                new_td_node4 = new_tr_node.insertCell( 4 );
+
+            if( !obj.value ) obj.value = "";
+            if( !obj.image_src ) obj.image_src = "";
+            if( !obj.link ) obj.link = "";
+
+
+            new_td_node0.innerHTML = '<td ><input type="text" value="'+ obj.value +'"  placeholder="选项值"></td>';
+            new_td_node1.innerHTML = '<td ><a class="btn btn-info width90"><input  type="file"  accept="'+ sType +'"name="leipiNewField" onchange="imgPreview(this)">选择图片</a><img width=20px;height=20px; class="title-icon" src="'+ obj.image_src +'"></td>';
+            new_td_node2.innerHTML = '<td ><input type="text" value="' + obj.link + '" placeholder="URL"></td>';
+            new_td_node3.innerHTML = '<td><select style="width:90px;"><option >新窗口</option><option>本窗口</option></select></td>';
+            new_td_node4.innerHTML =
+                '<td><div class="btn-group"><a title="上移" class="btn btn-small btn-info" href="javascript:void(0);" onclick="fnMoveUp(this)"><i class="icon-white icon-arrow-up"></i>上移</a><a title="下移" class="btn btn-small btn-info" href="javascript:void(0);" onclick="fnMoveDown(this)"><i class="icon-white icon-arrow-down"></i>下移</a><a title="删除" class="btn btn-small btn-default" href="javascript:void(0);" onclick="fnDeleteRow(this)"><i class="icon-ban-circle"></i>删除</a></div></td>';
+            return true;
+        }
+        //一级菜单标题改变时二级对应菜单也要改变
+        function change_h5_title( obj ){
+            var value = obj.value;
+            while( obj.tagName != 'TR' ){
+                obj = obj.parentNode;
+            }
+            var curRowIndex = obj.rowIndex;
+
+            var oDiv=document.getElementById( "options_table2" );
+            $( oDiv ).find( "h5" ).eq( curRowIndex-1 ).text( "--" +value+ "--" );
+
+        }
+        /*组合checkbox*/
+            function fnParseOptions( ) {
+                var oTable = document.getElementById( 'options_table' );
+                //图标大小
+                var icon_width = document.getElementById( 'orgwidth_icon_1' ).value;
+                var icon_height = document.getElementById( 'orgheight_icon_1' ).value;
+                //控件样式
+                var aWidth = document.getElementById( "orgwidth" ).value;
+                var aHeight = document.getElementById( "orgheight" ).value;
+                var abgcolor = document.getElementById( "orgbgcolor" ).value;
+                var afzcolor = document.getElementById( "orgfzcolor" ).value;
+                var image_position_2 = document.getElementById( "image_position_1" ).value;   //获取图片位置
+                var nTr = oTable.getElementsByTagName( 'tr' ),
+                    trLength = nTr.length,
+                    html = "";
+                    html += '<ul class="second_nav_box" style="color:'+ afzcolor +';background-color:'+ abgcolor  +';width:'+aWidth+';height:'+ aHeight +'">';
+                for ( var i = 0; i < trLength; i++ ) {
+                    var inputs = nTr[ i ].getElementsByTagName( 'input' );
+                    if ( inputs.length > 0 ) {   //tr有input框的时候才执行循环
+                        if ( !inputs[ 0 ].value ){
+                          alert("一级选项值可能没填写哦");
+                          //inputs[ 0 ].value.select();
+                          return false;
+                        }
+                          //判断控件位置决定一级菜单的排列方式
+                        var g_position = document.getElementById( "org_position" ).value;
+
+                            if( g_position == "上" || g_position == "下" ){
+
+                                html += '<li class="second_nav_list"  type="secondnav" style="display:inline-block;width:'+ parseInt( aWidth/(trLength-1) ) + gVarfontwidth  + ';height:' + aHeight  + gVarfontheight + ';line-height:' + aHeight  + gVarfontheight + '">';
+                            }
+                            if(g_position == "左" || g_position == "右"  ){
+                                html += '<li class="second_nav_list" src="' +  + '" type="secondnav" style="display:block;color:'+ afzcolor +';background-color:'+ abgcolor  +';width:'+ aWidth + gVarfontwidth  + ';height:' + parseInt( aHeight/(trLength-1) )  + gVarfontheight +'">';
+                            }
+                                var image_target = inputs[2].nextSibling;
+                                //判断有没有URL链接
+                                if( inputs[2].value != "" ){
+                                    html += '<a class="second_nav_link" style="color:'+ afzcolor +'"  href="' + inputs[2].value + '"target=';
+                                     //获取跳转方式的节点
+                                        var atarget_select_node = inputs[2].parentNode.nextSibling.childNodes;
+                                        if( $( atarget_select_node ).val() == "新窗口" )
+                                            html += '"_black">';
+                                        if( $( atarget_select_node ).val() == "本窗口" )
+                                            html += '"_self">';
+                                }
+                                else{
+                                    html += '<a class="second_nav_link" style="color:'+ afzcolor +'">';
+                                }
+                                //判断有没有图片
+                                if( inputs[ 1 ].value != ""  ){
+                                    //获取img节点 设置src属性
+                                    image_src = inputs[ 1 ].parentNode.nextSibling;
+                                    //判断图片和文字的排列方式
+                                    if( image_position_2 == "上" ){
+                                        html += '<div class="second_nav_img_box"><img style="height:' + icon_height + ';width:'+ icon_width +'"; src='+ image_src.src +'></div>';
+                                        html += '<div class="second_nav_text_box">' + inputs[ 0 ].value + '</div>';
+                                    }
+                                    if( image_position_2 == "下" ){
+                                        html += '<div class="second_nav_img_box">' + inputs[ 0 ].value + '</div>';
+                                        html += '<div class="second_nav_text_box"><img style="height:' + icon_height + ';width:'+ icon_width +'"; src='+ image_src.src +'></div>';
+                                    }
+                                    if( image_position_2 == "左" ){
+                                        html += '<span class="second_display_inline" style="height:' + icon_height + ';width:'+ icon_width +'" ><img style="height:' + icon_height + ';width:'+ icon_width +'"; src='+ image_src.src +'></span>';
+                                        html += '<span class="second_display_inline" >' + inputs[ 0 ].value + '</span>';
+                                    }
+                                    if( image_position_2 == "右" ){
+                                        html += '<span class="second_display_inline" >' + inputs[ 0 ].value + '</span>';
+                                        html += '<span class="second_display_inline" style="height:' + icon_height + ';width:'+ icon_width +'"><img style="height:' + icon_height + ';width:'+ icon_width +'"; src='+ image_src.src +'></span>';
+
+                                    }
+                                }
+                                else{
+                                    //没有图片属性则加上标题就OK
+                                    html += '<div class="first_nav_title">' + inputs[ 0 ].value + '</div>';
+                                }
+                                html += '</a>';
+                                //插入二级菜单
+                                //传入li的下标和高度
+                                var second_list = fnParseOptionstwo( i , aHeight );
+                                if( !second_list ){
+                                    if( second_list == "" ){
+                                        html += '</li>';
+                                    }
+                                    else
+                                        return false;
+                                }
+                                else
+                                    html += second_list;
+                                html += '</li>';
+
+                    }
+                }
+                html += '</ul>';
+                //alert(html);
+                return html;
+            }
+
+
+
+
+            //二级菜单组合
+        function fnParseOptionstwo( li_index , li_height  ) {
+                var oTable = document.getElementById( 'ceate_table'+ li_index );
+                //图标大小
+                var icon_width = document.getElementById( 'orgwidth_icon_2' ).value;
+                var icon_height = document.getElementById( 'orgheight_icon_2' ).value;
+                //背景颜色和字体颜色
+                var abgcolor = document.getElementById( "orgbgcolor" ).value;
+                var afzcolor = document.getElementById( "orgfzcolor" ).value;
+                //PX或者%
+                var icon_width_unit = document.getElementById( 'orgvarfontwidth_icon_2' ).value;
+                var icon_height_unit = document.getElementById( 'orgvarfontheight_icon_2' ).value;
+                //控件样式
+                var image_position_2 = document.getElementById( "image_position_2" ).value;   //获取图片位置
+                var nTr = oTable.getElementsByTagName( 'tr' ),
+                    trLength = nTr.length,
+                    html = "";
+                    //console.log( trLength );
+                    //二级可以没有选项,没有直接返回空值
+                    if ( trLength <= 1 ){
+                        return html;
+                    }
+                    else{
+                        //判断一级菜单的位置决定二级菜单的位置
+                        html += '<ul class="second_nav_children_box" style="display:none;color:'+ afzcolor +';background-color:'+ abgcolor  +';height:'+ li_height*(trLength-1) +'px;';
+                        var g_position = document.getElementById( "org_position" ).value;
+                        if( g_position == "上" || g_position == "下" ){
+                            html+=' top:100%;">';
+                        }
+                        if(g_position == "左" ){
+                            html += 'left:100%;">';
+                        }
+                        if(g_position == "右"){
+                            html += 'right:100%;">';
+                        }
+                        for ( var i = 0; i < trLength; i++ ){
+                            var inputs = nTr[ i ].getElementsByTagName( 'input' );
+                            if ( inputs.length > 0 ) {
+                                    if ( !inputs[ 0 ].value ){
+                                    alert("请输入二级选项值，没有可以选择删除选项哦")
+                                    return false;   //----待测试;
+                                    }
+                                        //开始添加二级选项
+                                html += '<li type="secondnav_2" style="height:'+ parseInt( 100/(trLength-1) )  +'%;width:100%;">';
+                                var image_target = inputs[2].nextSibling;
+                                //判断有没有URL链接
+                                if( inputs[2].value != "" ){
+                                html += '<a class="second_nav_link" style="color:'+ afzcolor +'" href="' + inputs[2].value + '"target=';
+                                //获取跳转方式的节点
+                                var atarget_select_node = inputs[2].parentNode.nextSibling.childNodes;
+                                if( $( atarget_select_node ).val() == "新窗口" )
+                                    html += '"_black">';
+                                if( $( atarget_select_node ).val() == "本窗口" )
+                                    html += '"_self">';
+                                }
+                                //判断有没有图片
+                                if( inputs[ 1 ].value != ""  ){
+                                    //获取img节点 设置src属性
+                                    image_src = inputs[ 1 ].parentNode.nextSibling;
+                                    //判断图片和文字的排列方式
+                                    if( image_position_2 == "上" ){
+                                        html += '<div class="second_nav_img_box"><img style="height:' + icon_height + icon_height_unit+';width:'+ icon_width + icon_width_unit +'"; src='+ image_src.src +'></div>';
+                                        html += '<div class="second_nav_text_box">' + inputs[ 0 ].value + '</div>';
+                                    }
+                                    if( image_position_2 == "下" ){
+                                        html += '<div class="second_nav_text_box">' + inputs[ 0 ].value + '</div>';
+                                        html += '<div class="second_nav_img_box"><img style="height:' + icon_height + icon_height_unit+';width:'+ icon_width + icon_width_unit +'"; src='+ image_src.src +'></div>';
+                                    }
+                                    if( image_position_2 == "左" ){
+                                        html += '<div class="second_display_inline" style="line-height:normal"><img style="height:' + icon_height + icon_height_unit+';width:'+ icon_width + icon_width_unit +'"; src='+ image_src.src +'></div>';
+                                        html += '<span style="display:inline-block;text-align:center" >' + inputs[ 0 ].value + '</span>';
+                                    }
+                                    if( image_position_2 == "右" ){
+                                        html += '<span class="second_display_inline">' + inputs[ 0 ].value + '</span>';
+                                        html += '<div class="second_display_inline" style="line-height:normal"><img style="height:' + icon_height + icon_height_unit+';width:'+ icon_width + icon_width_unit +'"; src='+ image_src.src +'></div>';
+                                    }
+                                }
+                                else{
+                                    //没有图片属性则加上标题就OK
+                                    html += '<div class="first_nav_title">' + inputs[ 0 ].value + '</div>';
+                                }
+                                //alert(html);
+                            }
+                        }
+                        html += '</li>';
+                        html += '</ul>';
+                        return html;
+                    }
+                }
+        //判断是不是图片文件
+        function imgPreview( fileDom ){
+            var obj = fileDom;
+            while( obj.tagName != 'TD' ){
+                obj = obj.parentNode;
+            }
+            var file = fileDom.files[0];
+            if( !/^image\//.test( file.type ) ){
+                alert( "只能选择图片文件哦！");
+                $( fileDom ).wrap('<form></form>');
+                $( fileDom ).parent()[0].reset();       //选错文件就清空
+                $( fileDom ).unwrap();
+            }
+            else{
+
+                var reader = new FileReader();
+                reader.readAsDataURL( file );
+                reader.onload=function(f){
+
+                //右边显示选择的图片
+                $( obj ).find( "img" ).attr( "src" , this.result );
+                $( obj ).find( "img" ).css( "display" , "inline-block" );
+
+                //图片属性淡出来
+                $( 'tr.display_none' ).fadeIn( 2000 );
+                }
+            }
+        }
+
+    </script>
+</head>
+
+<body>
+    <div class="content">
+        <table class="table table-bordered table-striped">
+            <tr>
+                <th>
+                    <span>控件名称</span>
+                    <span class="label label-important">*</span>
+                    <span>字段拼音</span>
+                </th>
+                <th>
+                    <span>控件位置</span>
+                </th>
+            </tr>
+            <tr>
+                <td>
+                    <input id="orgname" placeholder="必填项" onclick="javascript:this.select()" type="text" value="二级菜单" onblur="getPY(this.value)" />
+                    <input type="text" class="span2" id="pluName" placeholder="字段" value="" >
+                </td>
+                <td>
+                     <select id="org_position">
+                         <option>上</option>
+                         <option>下</option>
+                         <option>左</option>
+                         <option>右</option>
+                     </select>
+                </td>
+            </tr>
+
+            <tr>
+                <th colspan="2">
+                    <span>控件样式</span>
+                </th>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    宽:
+                    <input id="orgwidth" name="leipiNewField" type="text" class="input-samll span1" value="100" placeholder="auto" onclick="this.value=this.value.replace(/\D/g,'')" onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')">
+                    <select id="orgvarfontwidth" style="width:75px;">
+                            <option>PX</option>
+                            <option selected>%</option>
+                    </select>
+                    &nbsp;&nbsp;&nbsp;高:
+                    <input id="orgheight" name="leipiNewField" type="text" class="input-samll span1" value="40" placeholder="auto" onclick="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')">
+                    <select id="orgvarfontheight" style="width:75px;">
+                            <option>PX</option>
+                    </select>
+                    &nbsp;&nbsp;字体大小
+                    <input id="orgfontsize" name="leipiNewField" type="text" class="input-samll span1" value="16" placeholder="auto" onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')">
+                    <select  style="width:75px;">
+                        <option>PX</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <th colspan="2">
+                    <span>控件颜色</span>
+                </th>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    背景颜色:
+                    <input id="orgbgcolor" name="leipiNewField" type="color" class="input-samll span1">
+                    &nbsp;&nbsp;&nbsp;&nbsp;字体颜色:
+                    <input id="orgfzcolor" name="leipiNewField" type="color" class="input-samll span1">
+                    &nbsp;&nbsp;&nbsp;&nbsp;鼠标移入后的背景颜色:
+                    <input id="orghoverbgcolor" name="leipiNewField" type="color" class="input-samll span1">
+                    &nbsp;&nbsp;&nbsp;&nbsp;鼠标移入后的文字颜色:
+                    <input id="orghoverfzcolor" name="leipiNewField" type="color" class="input-samll span1">
+
+                </td>
+            </tr>
+            <tr>
+                <th colspan="4">
+                    一级菜单
+                </th>
+            </tr>
+            <tr class="display_none">
+                <td colspan="4">
+                    一级菜单图标大小：
+                    &nbsp;&nbsp;&nbsp;宽:
+                    <input id="orgwidth_icon_1" name="leipiNewField" type="text" class="input-samll span1" value="20px" placeholder="auto" >
+
+                    &nbsp;&nbsp;&nbsp;高:
+                    <input id="orgheight_icon_1" name="leipiNewField" type="text" class="input-samll span1" value="20px" placeholder="auto" >
+                    &nbsp;&nbsp;&nbsp;图标位置：
+                    <select id="image_position_1" style="width:90px;">
+                        <option >上</option>
+                        <option>下</option>
+                        <option selected>左</option>
+                        <option>右</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <table class="table table-hover table-condensed" id="options_table">
+                        <tr>
+                            <th>标题</th>
+                            <th>图标</th>
+                            <th>跳转地址</th>
+                            <th>跳转方式</th>
+                            <th>操作</th>
+                        </tr>
+
+                    </table>
+                    <a title="添加选项" class="btn btn-primary" onclick="fnAddComboTr( this );">一级菜单+</a>
+                </td>
+            </tr>
+            <tr>
+                <th colspan="4">
+                    二级菜单
+                </th>
+            </tr>
+            <tr class="display_none">
+                    <td colspan="4" >
+                        二级菜单图标大小：
+                        &nbsp;&nbsp;&nbsp;宽:
+                        <input id="orgwidth_icon_2" name="leipiNewField" type="text" class="input-samll span1" value="20" placeholder="auto" onclick="this.value=this.value.replace(/\D/g,'')" onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')">
+                        <select id="orgvarfontwidth_icon_2" style="width:75px;">
+                                <option>PX</option>
+                                <option>%</option>
+                        </select>
+                        &nbsp;&nbsp;&nbsp;高:
+                        <input id="orgheight_icon_2" name="leipiNewField" type="text" class="input-samll span1" value="20" placeholder="auto" onclick="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')">
+                        <select id="orgvarfontheight_icon_2" style="width:75px;">
+                                <option>PX</option>
+                                <option>%</option>
+                        </select>
+                        &nbsp;&nbsp;&nbsp;图标位置：
+                        <select id="image_position_2" style="width:90px;">
+                            <option >上</option>
+                            <option>下</option>
+                            <option selected>左</option>
+                            <option>右</option>
+                        </select>
+                    </td>
+                </tr>
+        </table>
+        <div id="options_table2">
+
+
+             <!--<table class="table table-hover table-condensed">
+                <tr>
+                    <th>标题</th>
+                    <th>图标</th>
+                    <th>跳转地址</th>
+                    <th>操作</th>
+                </tr>
+
+             </table>
+              <a title="添加选项" class="btn btn-primary" onclick="fnAdd();">二级菜单+</a>-->
+
+
+        </div>
+    </div>
+    <script type="text/javascript">
+    //改input框的颜色值
+        var gVarfontwidth = $("#orgvarfontwidth option:selected").val();
+        $("#orgvarfontwidth").click(function(){
+           gVarfontwidth = $("#orgvarfontwidth option:selected").val();
+        });
+        var gVarfontheight = $("#orgvarfontheight option:selected").val();
+        $("#orgvarfontheight").click(function(){
+           gVarfontheight = $("#orgvarfontheight option:selected").val();
+        });
+
+
+    </script>
+    <script type="text/javascript">
+        var oNode = null,
+            thePlugins = 'secondnav';
+        window.onload = function () {
+            //该type="color"的初始颜色
+            document.getElementById( 'orgfzcolor' ).value = '#ffffff';
+            document.getElementById( 'orghoverfzcolor' ).value = '#ffffff';
+
+            $G( 'orgname' ).select();
+            if ( UE.plugins[ thePlugins ].editdom ) {
+                oNode = UE.plugins[ thePlugins ].editdom;
+                console.log( oNode );
+                var gTitle = oNode.getAttribute( 'title' ).replace( /&quot;/g, "\"" ),
+                     gWidth = oNode.getAttribute( 'orgwidth' ),
+                     gHeight =oNode.getAttribute( 'orgheight' ),
+                     gFontSize = oNode.getAttribute( 'orgfontsize' ),
+                     gHoverbgcolor = oNode.getAttribute( 'orghoverbgcolor' ),
+                     gHoverfzcolor = oNode.getAttribute( 'orghoverfzcolor' ),
+                     name = oNode.getAttribute( 'name' ),
+
+                //checked == '0' ? $G( 'orgchecked1' ).checked = true : $G( 'orgchecked0' ).checked = true,
+                liTags = $(oNode).find( '.second_nav_list' ),
+                length = liTags.length;
+                $G( 'orgname' ).value = gTitle;
+                $G( 'orgwidth' ).value = parseInt( gWidth );
+                $G( 'orgheight' ).value = parseInt( gHeight );
+                $G( 'orgfontsize').value = parseInt( gFontSize );
+                $G( 'orghoverbgcolor').value = gHoverbgcolor;
+                $G( 'orghoverfzcolor').value = gHoverfzcolor;
+                $G('pluName').value = name;
+                var alis = [];
+                //生成二级菜单
+                for ( var i = 0; i < length; i++ ) {
+                    //testEle.setAttribute("test","aaa"); // 自定义属性 设置
+                    //testEle.attributes["test"].nodeValue; // 获得
+                    if ( liTags[ i ].type == 'secondnav' ){
+                        fnAddComboTr( liTags[ i ] );
+                        var liTags_1  = liTags[i].getElementsByTagName( 'li' );
+                        length_1 = liTags_1.length;
+                        for( var j = 0; j < length_1; j++){
+                            fnAddComboTrtwo( liTags_1[ j ] ,i );
+                        }
+                    }
+                }
+
+
+            }
+            /*
+             * 数据源链接后台获取 数据链接
+             *
+             */
+            var nodeParentId = $( '#nodeParentId', window.parent.document ).val();
+            var nodeId = $("#node_id",window.parent.document).val();
+            $.ajax( {
+                url: prevent_HOST + 'nodeQueryFacade/getDataSourcePage?nodeId='+nodeId,
+                method: 'GET',
+                success: function ( res ) {
+                    $.each( res.msg, function ( index, value ) {
+                        $( "#datasource" ).append( '<option value=' + value.id + '>' + value.value + '</option>' );
+                    } )
+                },
+                error: function ( res ) {
+                    alert( '抱歉！获取 数据链接 失败！因为您好像还没有选择表哦！' )
+                }
+            } );
+            $( document ).on( "change", "#datasource", function ( e ) {
+                var nodeParentId = $( this ).val();
+                $( "#datazid" ).empty();
+                $.ajax( {
+                    url: prevent_HOST + 'pageDesignQueryFacade/getPageEditorData?id=' + nodeParentId,
+                    method: "GET",
+                    success: function ( res ) {
+                        $.each( res.msg, function ( index, value ) {
+                            $( "#datazid" ).append( '<option value=' + value.value + '>' + value.text + '</option>' );
+                        } )
+                    }
+                } )
+            } );
+
+        }
+        dialog.oncancel = function () {
+            if ( UE.plugins[ thePlugins ].editdom ) {
+                delete UE.plugins[ thePlugins ].editdom;
+            }
+        };
+        dialog.onok = function () {
+            if ( $G( 'orgname' ).value == '' ) {
+                alert( '控件名称不能为空' );
+                return false;
+            }
+            var PN=$('#pluName');
+            cupy=PN.val();
+            if(cupy==''){
+              getPY(gTitle);
+            }
+            var gTitle = $G( 'orgname' ).value.replace( /\"/g, "&quot;" ),
+                 gWidth = $G( 'orgwidth' ).value,
+                 gHeight = $G( 'orgheight' ).value,
+                 gFontSize = $G( 'orgfontsize' ).value,
+                 gHoverbgcolor = $G( 'orghoverbgcolor' ).value,
+                 gHoverfzcolor = $G( 'orghoverfzcolor' ).value;
+                //gChecked = '1';
+            //if ( $G( 'orgchecked1' ).checked ) gChecked = '0';
+            if ( !oNode ) {
+                try {
+
+                    if( gWidth != '' ) {
+                        if( gVarfontwidth == "PX"){
+                            gWidth = gWidth + 'px';
+                        }
+                        if( gVarfontwidth == "%" ){
+                            gWidth = gWidth + '%';
+                        }
+                    } else{
+                        gWidth = "";
+                    }
+                    if( gHeight != '' ) {
+                        if( gVarfontheight == "PX"){
+                           gHeight = gHeight + 'px';
+
+                        }
+                        if( gVarfontheight == "%" ){
+                            gHeight = gHeight + '%';
+
+                        }
+                    } else{
+                        gHeight = "";
+                    }
+                        if( gFontSize != '' ){
+                            gFontSize = gFontSize + 'px';
+                        }
+                    var options = fnParseOptions();
+                        if ( !options ) {
+                            alert( '请添加选项' );
+                            return false;
+                         }
+                    //{|- 使用边界，防止用户删除了span标签，程序处理要把边界替换为空
+                        var html ="";
+                        html += "<span leipiplugins='secondnav' style='display:inline-block;width:"+gWidth+";height:"+gHeight+";font-size:"+gFontSize+"'";
+                         console.log( "1" );
+                        html += "orghoverfzcolor='"+ gHoverfzcolor +"'orghoverbgcolor='" + gHoverbgcolor + "'orgwidth='" + gWidth + "'orgheight='" + gHeight + "'orgfontsize='"+ gFontSize + "'title='" + gTitle + "'name='leipiNewField'>" + options;
+                        html += '</span>';
+                        /*var html = '{|-<span leipiplugins="checkboxs" style="display:inline-block;width:'+gWidth+';height:'+gHeight+';font-size:'+gFontSize+ '" title="' + gTitle + '"orgwidth="'+ gWidth +'"orgheight="'+ gHeight +'"orgfontsize="'+ gFontSize +'" orderby=' + gChecked + ' selected=' +
+                        selectValue + '>';
+                    html += options;
+                    html += '</span>-|}';*/
+                    editor.execCommand( 'insertHtml', html );
+                    return true;
+                } catch ( e ) {
+                    try {
+                        editor.execCommand( 'error' );
+                    } catch ( e ) {
+                        alert( '控件异常，请到 [雷劈网] 反馈或寻求帮助！' );
+                    }
+                    return false;
+                }
+            } else {
+                oNode.setAttribute( 'title', gTitle );
+                oNode.setAttribute( 'name', cupy );
+                if( gWidth != '' ) {
+                    if( gVarfontwidth == "PX"){
+                        oNode.style.width = gWidth + 'px';
+                        oNode.setAttribute( 'orgwidth' , gWidth );
+                    }
+                    if( gVarfontwidth == "%" ){
+
+                        oNode.style.width = gWidth + '%';
+                        oNode.setAttribute( 'orgwidth' , gWidth );
+                    }
+                }
+                if( gHeight != '' ){
+                    if( gVarfontheight == "PX"){
+                        oNode.style.height = gHeight + 'px';
+                        oNode.setAttribute( 'orgheight' , gHeight );
+                    }
+                    if( gVarfontheight == "%" ){
+                        oNode.style.height = gHeight + '%';
+                        oNode.setAttribute( 'orgheight' , gHeight );
+                    }
+                }
+                if( gFontSize != '' ){
+                    oNode.style.fontSize = gFontSize + 'px';
+                    oNode.setAttribute( 'orgfontsize' , gFontSize );
+                }
+                oNode.innerHTML = fnParseOptions( );
+                var input = document.getElementsByName( 'leipiNewField' ),
+                    selectValue = "";
+                input.forEach( function ( value, index, obj ) {
+                    if ( value.checked ) {
+                        selectValue += obj[ index + 1 ].value + "`";
+                    }
+                } )
+                oNode.setAttribute( 'selected', selectValue );
+                delete UE.plugins[ thePlugins ].editdom;
+                return true;
+            }
+        };
+
+    </script>
+</body>
+
+</html>
+

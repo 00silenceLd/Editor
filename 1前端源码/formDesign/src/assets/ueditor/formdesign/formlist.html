@@ -1,0 +1,460 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+	<head>
+		<title>列表控件属性</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+		<meta name="generator" content="www.leipi.org" />
+		<link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
+		<link rel="stylesheet" href="leipi.style.css">
+		<script type="text/javascript" src="../dialogs/internal.js"></script>
+		<script type="text/javascript" src="./jquery-3.2.1.min.js"></script>
+		<script type="text/javascript" src="../httpData.config.js"></script>
+		<script src="self/js/py.js"></script>
+		<script type="text/javascript">
+			function createElement(type, name) {
+				var element = null;
+				try {
+					element = document.createElement('<' + type + ' name="' + name + '">');
+				} catch (e) {}
+				if (element == null) {
+					element = document.createElement(type);
+					element.name = name;
+				}
+				return element;
+			}
+		</script>
+		<link rel="stylesheet" href="self/formlist/css/css.css">
+	</head>
+	<body>
+		<div class="content">
+			<table class="table table-bordered table-striped table-hover">
+				<thead>
+					<tr>
+						<th width="40%">
+							<span>名称 ：</span>
+							<input id="orgname" onclick="javascript:this.select()" placeholder="必填项" type="text" class="span2 input-medium"
+							 value="列表控件" onblur="getPY(this.value)" />
+							<span class="label label-important">*</span>
+							<input type="text" class="span2" id="pluName" placeholder="字段" value="">
+						</th>
+						<th>
+							<span>条件：</span>
+							<select id="condition-opt">
+								<option value="all">所有</option>
+								<option value="New">最新</option>
+								<option value="byId">ID</option>
+								<option value="inclusionChar">包涵字符</option>
+							</select>
+							<input id="condition-val" type="text" class="input-medium" />
+							<div>URL：<input type="text" name="url"></div>
+							<div>搜索：<select name="searchcon" id="searchcon">
+									<option value=''>选支持搜索字段</option>
+								</select>
+								<input type="text" class="span2" name="seardelval" id="seardelval" value="" placeholder="默认搜索内容"></div>
+							<!-- 新增单选按钮 1 根据id来查询  2 根据name来查询-->
+							<div>
+								<input type="radio" name="searchbyidorname" value="no" checked />不选择
+								<input type="radio" name="searchbyidorname" value="byid" />默认id搜索
+								<input type="radio" name="searchbyidorname" value="byname" />默认用户名搜索
+							</div>
+							<!--<label title="控件占页面的宽度">-->
+							<!--宽-->
+							<!--<input title="控件占页面的宽度" id="orgwidth" type="text" value="100%" class="input-small span1" placeholder="auto" />-->
+							<!--</label>-->
+						</th>
+					</tr>
+					<tr>
+						<th>
+							<span>数据源</span>
+						</th>
+						<th>
+							<span>数据字段</span>
+						</th>
+					</tr>
+					<tr>
+						<td>
+							<select id="datasource">
+								<option value="0">请选择</option>
+							</select>
+						</td>
+						<td>
+							<!--<select id="datazid">
+                           <option value="0">请选择</option>
+                       </select>-->
+							<div id="datazid"></div>
+							<div>图片大小：
+								宽：<input type="text" class="span2" name="listpicw" value="" placeholder="如:30px">
+								高：<input type="text" class="span2" name="listpich" value="" placeholder="如:30px">
+								<br>
+								字体大小：<input type="text" class="span2" name="listfontsize" value="" placeholder="如:14px">
+								行高：<input type="text" class="span2" name="listheight" value="26px" placeholder="如:26px">
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<th>
+							<span>页数</span>
+						</th>
+						<th>
+							<span>功能选择</span>
+						</th>
+					</tr>
+					<tr>
+						<td>
+							<input name="pagesize" type="number" value="5">
+						</td>
+						<td>
+							<input type="checkbox" value="1" name="frmhead"> 是否显示表头
+							<input type="checkbox" value="1" name="frmedit"> 编辑
+							<input type="checkbox" value="1" name="frmdel"> 删除
+							<input type="checkbox" value="1" name="frmexa"> 审核
+							<input type="checkbox" value="1" name="personage_info"> 只显示个人信息
+							<input type="checkbox" value="1" name="center">居中显示
+              <input type="checkbox" value="1" name="theaderbackground">显示表头背景颜色
+							<!-- <div style="border: 0.5px solid #dddddd;">
+                        <input type="radio" name="approval" id="approval_all">
+                        <input type="radio" name="approval" id="approval_">
+                        <input type="radio" name="approval" id="">
+                    </div> -->
+						</td>
+					</tr>
+					<tr>
+						<th colspan="2">
+							<span>模板</span>
+							&nbsp;&nbsp;&nbsp;<input type="checkbox" name="showpage" value="on"> 支持分页
+						</th>
+					</tr>
+					<tr>
+						<td colspan="2">
+							<input type="radio" name="tplselect" value="li" checked> 列表
+							<input type="radio" name="tplselect" value="table_td"> 表格 横
+							<input type="radio" name="tplselect" value="table_vd"> 表格 竖
+							<input type="radio" name="tplselect" value="span"> 单列
+							<input type="radio" name="tplselect" value="nolink"> 无链接
+						</td>
+					</tr>
+				</thead>
+			</table>
+			<div class="listtype">
+				<!--<dl>
+          <dt><img src="self/formlist/img/tpl1.png"/></dt>
+          <dd><input type="radio" name="tplselect" value="gtpl" checked> 普通</dd>
+        </dl>
+        <dl>
+          <dt><img src="self/formlist/img/tpl1.png"/></dt>
+          <dd><input type="radio" name="tplselect" value="gtpl2"> 普通2</dd>
+        </dl>-->
+			</div>
+		</div>
+		<script type="text/javascript">
+			var oNode = null,
+				gdataSource = null,
+				control_name = null,
+				nodeId = null,
+				searchcon = null,
+				datafield = [],
+				thePlugins = 'formlist',
+				/*存储本地用户的id或name*/
+				searchText = null;
+
+			window.onload = function() {
+				$G('orgname').select();
+
+				//弹出窗口初始化函数
+				if (UE.plugins[thePlugins].editdom) {
+					oNode = UE.plugins[thePlugins].editdom;
+					$G('orgname').value = oNode.getAttribute('title');
+					var datasource = oNode.getAttribute('datasource');
+					datafield = oNode.getAttribute('datafield');
+					var pagesize = oNode.getAttribute('pagesize');
+					var headshow = oNode.getAttribute('headshow');
+					var frmedit = oNode.getAttribute('frmedit');
+					var frmdel = oNode.getAttribute('frmdel');
+					var frmexa = oNode.getAttribute('frmexa');
+					var tpl = oNode.getAttribute('tpl');
+					var name = oNode.getAttribute('name');
+					control_name = name;
+					var searchbyidorname = oNode.getAttribute('searchbyidorname');
+					var showpage = oNode.getAttribute('showpage');
+					var listpicw = oNode.getAttribute('listpicw');
+					var listpich = oNode.getAttribute('listpich');
+					var listurl = oNode.getAttribute('url');
+					searchcon = oNode.getAttribute('searchcon');
+					var listfontsize = oNode.getAttribute('listfontsize');
+					var seardelval = oNode.getAttribute('seardelval');
+
+					var listheight = oNode.getAttribute('listheight');
+					var personage_info = oNode.getAttribute('personage_info');
+					var center = oNode.getAttribute('center');
+          var theaderbackground = oNode.getAttribute('theaderbackground');
+					$G('pluName').value = name;
+					var datasource2 = datasource.split(":");
+					$("#datasource").prepend('<option value="' + datasource + '" selected>' + datasource2[1] + '</option>');
+
+					datafield = datafield.substr(1).split(",");
+					$.ajax({
+						url: prevent_HOST + 'pageDesignQueryFacade/getPageEditorData?id=' + datasource2[0],
+						method: "GET",
+						success: function(res) {
+							// console.log('get')
+							var html = '';
+							var flag = '';
+							$("#datazid").html('');
+							var nd_value = '';
+							var sear_select = "";
+							$.each(res.msg, function(index, value) {
+								sear_select = "";
+								if (searchcon == value.value) sear_select = ' selected';
+								$("#searchcon").append('<option value="' + value.value + '"' + sear_select + '>' + value.text +
+									'</option>');
+								flag = '';
+								nd_value = value.value + ":" + value.text;
+								for (var i = 0; i < datafield.length; i++) {
+									if (nd_value == datafield[i]) {
+										flag = 'checked';
+										break;
+									}
+								}
+								html = '<input type="checkbox" name="nd_' + value.value + '" value="' + value.value + ':' + value.text +
+									'" ' + flag + '>' + value.text + ' ';
+								$("#datazid").append(html);
+							})
+						}
+					})
+					$("input[name=pagesize]").val(pagesize);
+					if (headshow == "1") $("[name='frmhead']").attr("checked", 'true');
+					if (frmedit == "1") $("[name='frmedit']").attr("checked", 'true');
+					if (frmdel == "1") $("[name='frmdel']").attr("checked", 'true');
+					if (frmexa == "1") $("[name='frmexa']").attr("checked", 'true');
+					if (personage_info == "1") $("[name='personage_info']").attr("checked", 'true');
+					if (center == "1") $("[name='center']").attr("checked", 'true');
+          if (theaderbackground == "1") $("[name='theaderbackground']").attr("checked", 'true');
+					if (listfontsize != "null") $("[name='listfontsize']").val(listfontsize);
+
+					$("input[value='" + tpl + "']").attr("checked", 'true');
+					$("input[value='" + searchbyidorname + "']").attr("checked", 'true');
+					if (listheight != 'null') {
+						$("input[name='listheight']").val(listheight);
+					}
+					if (showpage != undefined && showpage == 'on') {
+						$("input[name=showpage]").attr("checked", "true");
+					}
+					if (listpicw != undefined && listpicw != '') {
+						$("input[name=listpicw]").val(listpicw);
+					}
+					if (listpich != undefined && listpich != '') {
+						$("input[name=listpich]").val(listpich);
+					}
+					if (listurl != undefined && listurl != '') {
+						$("input[name=url]").val(listurl);
+					}
+					if (seardelval != 'null' && seardelval != '') {
+						$("#seardelval").val(seardelval);
+					}
+					$(function() {
+						$(":radio").click(function() {
+							$("#seardelval").val(null);
+						});
+					});
+				}
+
+				/*
+				 * 绑定数据源
+				 * 链接后台获取 数据链接
+				 * 原：http://192.168.0.213:20890/nodeQueryFacade/getDataSourcePage?nodeId=14916&uid=551
+				 */
+				var nodeParentId = $('#nodeParentId', window.parent.document).val();
+				nodeId = $('#node_id', window.parent.document).val();
+				var userinfo = window.localStorage['user'] ? JSON.parse(window.localStorage['user']) : null;
+				var datasource = window.localStorage['datasource_' + userinfo.id] ? window.localStorage['datasource_' + userinfo.id] :
+					null;
+				if (datasource == null) {
+					setDataSource(userinfo.id);
+				} else {
+					$("#datasource").append(datasource);
+				}
+
+				$(document).on("change", "#datasource", function(e) {
+					var nodeParentId = $(this).val().split(":");
+					$("#datazid").empty();
+					$("#searchcon").html("<option value=''>选支持搜索字段</option>");
+
+					$.ajax({
+						url: prevent_HOST + 'pageDesignQueryFacade/getPageEditorData?id=' + nodeParentId[0],
+						method: "GET",
+						success: function(res) {
+							// console.log('get')
+							$.each(res.msg, function(index, value) {
+								flag = '';
+								nd_value = value.value + ":" + value.text;
+								for (var i = 0; i < datafield.length; i++) {
+									if (nd_value == datafield[i]) {
+										flag = 'checked';
+										break;
+									}
+								}
+								$("#datazid").append('<input type="checkbox" name="nd_' + value.value + '" value="' + value.value + ':' +
+									value.text + '" ' + flag + '>' + value.text + ' ');
+								sear_select = "";
+								if (searchcon == value.value) sear_select = ' selected';
+								$("#searchcon").append('<option value="' + value.value + '"' + sear_select + '>' + value.text +
+									'</option>');
+							})
+						}
+					})
+				});
+			}
+
+			dialog.oncancel = function() {
+				if (UE.plugins[thePlugins].editdom) {
+					delete UE.plugins[thePlugins].editdom;
+				}
+			};
+
+			dialog.onok = function() {
+				var gName = $G('orgname').value.replace(/\"/g, "&quot;");
+				var datasource = $("#datasource").val();
+				var datafield = '';
+				var pagesize = $("input[name=pagesize]").val();
+				var headshow = $("input[name=frmhead]").is(':checked') ? 1 : 0;
+				var frmedit = $("input[name=frmedit]").is(':checked') ? 1 : 0;
+				var frmdel = $("input[name=frmdel]").is(':checked') ? 1 : 0;
+				var frmexa = $("input[name=frmexa]").is(':checked') ? 1 : 0;
+				var personage_info = $("input[name=personage_info]").is(':checked') ? 1 : 0;
+				var center = $("input[name=center]").is(':checked') ? 1 : 0;
+        var theaderbackground = $("input[name=theaderbackground]").is(':checked') ? 1 : 0;
+				var tpl = $("input[name=tplselect]:checked").val();
+				var showpage = $("input[name=showpage]:checked").val();
+				/*单选框的选择  Id  Or  Name*/
+				var searchbyidorname = $("input[name=searchbyidorname]:checked").val();
+				var listpicw = $("input[name=listpicw]").val();
+				var listpich = $("input[name=listpich]").val();
+				var listurl = $("input[name=url]").val();
+				var listfontsize = $("input[name='listfontsize']").val();
+				var listheight = $("input[name='listheight']").val();
+
+				var searchcon = $("#searchcon").val();
+				var seardelval = $("#seardelval").val();
+
+				if (gName == '') {
+					alert('控件名称不能为空');
+					$G('orgname').focus();
+					return false;
+				}
+				if (datasource == '0') {
+					alert('没有选择数据源');
+					return false;
+				}
+				if (showpage == undefined) showpage = 'off';
+				$("#datazid input:checked").each(function() {
+					datafield += "," + $(this).val();
+				});
+
+				var gTitle = '';
+				var PN = $('#pluName');
+				cupy = PN.val();
+				if (cupy == '') {
+					getPY($G('orgname').value);
+				}
+				if (!oNode) {
+					try {
+						oNode = createElement('input', cupy);
+						oNode.setAttribute('leipiPlugins', thePlugins);
+						oNode.setAttribute('type', 'text');
+						oNode.setAttribute('value', gName);
+						oNode.setAttribute('title', gName);
+						oNode.setAttribute('datasource', datasource);
+						oNode.setAttribute('datafield', datafield);
+						oNode.setAttribute('pagesize', pagesize);
+						oNode.setAttribute('headshow', headshow);
+						oNode.setAttribute('tpl', tpl);
+						oNode.setAttribute('searchbyidorname', searchbyidorname);
+						oNode.setAttribute('frmedit', frmedit);
+						oNode.setAttribute('frmdel', frmdel);
+						oNode.setAttribute('frmexa', frmexa);
+						oNode.setAttribute('showpage', showpage);
+						oNode.setAttribute('listpicw', listpicw);
+						oNode.setAttribute('listpich', listpich);
+						oNode.setAttribute('url', listurl);
+						oNode.setAttribute('searchcon', searchcon);
+						oNode.setAttribute('listfontsize', listfontsize);
+						oNode.setAttribute('seardelval', seardelval);
+
+						oNode.setAttribute('listheight', listheight);
+						oNode.setAttribute('personage_info', personage_info);
+						oNode.setAttribute('center', center);
+            oNode.setAttribute('theaderbackground', theaderbackground);
+						oNode.style.width = "80px";
+						editor.execCommand('insertHtml', oNode.outerHTML);
+						var editNewData = {
+							"node_id": nodeId,
+							"title": gName,
+							"control_name": cupy
+						}
+						$.ajax({
+							url: prevent_HOST + `pageDesignOperatorFacade/insertControl`,
+							type: 'POST',
+							dataType: 'json',
+							contentType: 'application/json; charset=UTF-8',
+							data: JSON.stringify(editNewData),
+							async: false,
+							success: function(res) {}
+						})
+						return true;
+					} catch (e) {
+						try {
+							editor.execCommand('error');
+						} catch (e) {
+							alert('控件异常，请反馈或寻求帮助！');
+						}
+						return false;
+					}
+				} else {
+					//修改
+					oNode.setAttribute('leipiPlugins', thePlugins);
+					oNode.setAttribute('name', cupy);
+					oNode.setAttribute('title', gName);
+					oNode.setAttribute('datasource', datasource);
+					oNode.setAttribute('datafield', datafield);
+					oNode.setAttribute('pagesize', pagesize);
+					oNode.setAttribute('headshow', headshow);
+					oNode.setAttribute('showpage', showpage);
+					oNode.setAttribute('tpl', tpl);
+					oNode.setAttribute('searchbyidorname', searchbyidorname);
+					oNode.setAttribute('frmedit', frmedit);
+					oNode.setAttribute('frmdel', frmdel);
+					oNode.setAttribute('frmexa', frmexa);
+					oNode.setAttribute('listpicw', listpicw);
+					oNode.setAttribute('listpich', listpich);
+					oNode.setAttribute('url', listurl);
+					oNode.setAttribute('personage_info', personage_info);
+					oNode.setAttribute('center', center);
+          oNode.setAttribute('theaderbackground', theaderbackground);
+					oNode.setAttribute('searchcon', searchcon);
+					oNode.setAttribute('listfontsize', listfontsize);
+					oNode.setAttribute('seardelval', seardelval);
+					oNode.setAttribute('listheight', listheight);
+					delete UE.plugins[thePlugins].editdom; //使用后清空这个对象，变回新增模式
+
+					var editNewData = {
+						"node_id": nodeId,
+						"title": gName,
+						"control_name": control_name,
+						"new_control_name": cupy
+					}
+					$.ajax({
+						url: prevent_HOST + `pageDesignOperatorFacade/updateControl`,
+						type: 'POST',
+						dataType: 'json',
+						contentType: 'application/json; charset=UTF-8',
+						data: JSON.stringify(editNewData),
+						async: false,
+						success: function(res) {}
+					})
+				}
+			};
+		</script>
+	</body>
+
+</html>

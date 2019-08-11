@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="swtech.pageDesignControl.mapper.HtCategoryMapper" >
+  <resultMap id="BaseResultMap" type="swtech.pageDesignControl.entity.HtCategory" >
+    <id column="cid" property="cid" jdbcType="INTEGER" />
+    <result column="categoryname" property="categoryname" jdbcType="VARCHAR" />
+    <result column="relevance" property="relevance" jdbcType="INTEGER" />
+    <result column="state" property="state" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    cid, categoryname, relevance, state
+  </sql>
+
+  <select id="all" resultType="swtech.pageDesignControl.entity.HtCategory">
+    SELECT cid, categoryname from ht_category
+  </select>
+
+  <insert id="insertSelectiveIn" parameterType="swtech.pageDesignControl.entity.HtCategory" >
+    insert into ht_category
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="cid != null" >
+        cid,
+      </if>
+      <if test="categoryname != null" >
+        categoryname,
+      </if>
+      <if test="relevance != null" >
+        relevance,
+      </if>
+      <if test="state != null" >
+        state,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="cid != null" >
+        #{cid,jdbcType=INTEGER},
+      </if>
+      <if test="categoryname != null" >
+        #{categoryname,jdbcType=VARCHAR},
+      </if>
+      <if test="relevance != null" >
+        #{relevance,jdbcType=INTEGER},
+      </if>
+      <if test="state != null" >
+        #{state,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+
+</mapper>

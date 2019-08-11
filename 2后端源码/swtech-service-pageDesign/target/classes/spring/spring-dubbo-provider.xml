@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans  
+            http://www.springframework.org/schema/beans/spring-beans.xsd  
+            http://code.alibabatech.com/schema/dubbo  
+            http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+	<!-- 使用zookeeper注册中心暴露服务地址 -->
+	<!-- <dubbo:registry address="zookeeper://127.0.0.1:2181" /> -->
+	<dubbo:registry address="${dubbo.registry.address}" />
+	<!-- 用dubbo协议在20880端口暴露服务 -->
+
+	<dubbo:protocol name="rest" port="${dubbo.port}"
+		threads="5000" server="tomcat" contextpath="" accepts="5000"
+		keepalive="true"
+		extension="swtech.facade.pageDesign.service.filter.CorsDubboResponseFilter" />
+	<!-- <dubbo:protocol name="rest" port="20890" threads="5000" server="tomcat" 
+		contextpath="" accepts="5000" keepalive="true" extension="swtech.facade.pageDesign.service.filter.CorsDubboResponseFilter" 
+		/> -->
+	<!-- <dubbo:monitor protocol="registry" /> -->
+	<!-- url拦截做权限管理 -->
+	<!-- <dubbo:provider timeout= "30000" threadpool="fixed" threads="100" accepts="1000" 
+		filter="urlFilter" /> -->
+	<!-- <dubbo:provider filter="jwtUrlFilter"></dubbo:provider> -->
+
+	<!-- filter="jwtUrlFilter" -->
+	<!-- 和本地bean一样实现服务 -->
+	<!-- 声明需要暴露的服务接口 -->
+
+	<dubbo:service retries="0"
+
+		interface="swtech.facade.pageDesign.service.NodeQueryFacade"
+		ref="nodeQueryFacade" protocol="rest" />
+
+	<dubbo:service retries="0"
+		interface="swtech.facade.pageDesign.service.NodeOperatorFacade"
+		ref="nodeOperatorFacade" protocol="rest" />
+
+	<dubbo:service retries="0"
+		interface="swtech.facade.pageDesign.service.TreeNodeQueryFacade"
+		ref="treeNodeQueryFacade" protocol="rest" />
+	<dubbo:service retries="0"
+		interface="swtech.facade.pageDesign.service.TreeNodeOperatorFacade"
+		ref="treeNodeOperatorFacade" protocol="rest" />
+	<dubbo:service retries="0"
+		interface="swtech.facade.pageDesign.service.PageDesignQueryFacade"
+		ref="pageDesignQueryFacade" protocol="rest" />
+	<dubbo:service retries="0"
+		interface="swtech.facade.pageDesign.service.PageDesignOperatorFacade"
+		ref="pageDesignOperatorFacade" protocol="rest" />
+	<dubbo:service retries="0"
+		interface="swtech.facade.pageDesign.service.UploadFile"
+		ref="uploadFile" protocol="rest" />
+	<dubbo:service retries="0"
+		interface="swtech.facade.pageDesign.service.HerdNodeQueryFacade"
+		ref="herdNodeQueryFacade" protocol="rest" />
+	<dubbo:service retries="0"
+		interface="swtech.facade.pageDesign.service.HerdNodeOperatorFacade"
+		ref="herdNodeOperatorFacade" protocol="rest" />
+	<dubbo:service retries="0"
+		interface="swtech.facade.pageDesign.service.ArticleFacade"
+		ref="articleFacade" protocol="rest" />
+	<dubbo:service retries="0"
+		interface="swtech.facade.pageDesign.service.CommentFacade"
+		ref="commentFacade" protocol="rest" />
+	<dubbo:service retries="0"
+		interface="swtech.facade.pageDesign.service.ClassifyFacade"
+		ref="classifyFacade" protocol="rest" />
+	<dubbo:service retries="0"
+		interface="swtech.facade.pageDesign.service.ScoreFacade"
+		ref="scoreFacade" protocol="rest" />
+	<dubbo:service retries="0"
+		interface="swtech.facade.pageDesign.service.HtCategoryFacade"
+		ref="htCategoryFacade" protocol="rest" />
+	<dubbo:service retries="0"
+		interface="swtech.facade.pageDesign.service.HtProductsFacade"
+		ref="htProductsFacade" protocol="rest" />
+	<dubbo:service retries="0"
+		interface="swtech.facade.pageDesign.service.HtShopcarFacade"
+		ref="htShopcarFacade" protocol="rest" />
+	<dubbo:service retries="0"
+		interface="swtech.facade.pageDesign.service.HtReservationFacade"
+		ref="htReservationFacade" protocol="rest" />
+	<dubbo:service retries="0"
+		interface="swtech.facade.pageDesign.service.HtReseatFacade"
+		ref="htReseatFacade" protocol="rest" />
+	<dubbo:service retries="0"
+		interface="swtech.facade.pageDesign.service.WebUrlManageFacade"
+		ref="webUrlManageFacade" protocol="rest" />
+	<dubbo:service retries="0"
+		interface="swtech.facade.pageDesign.service.ApproveInfoFacae"
+		ref="approveInfoFacae" protocol="rest" />
+	<dubbo:service retries="0"
+		interface="swtech.facade.pageDesign.service.AssetDetailFacae"
+		ref="assetDetailFacae" protocol="rest" />
+	<dubbo:service retries="0"
+		interface="swtech.facade.pageDesign.service.MyStoreManagementFacade"
+		ref="myStoreManagementFacade" protocol="rest" />
+</beans>  

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="swtech.service.pageDesign.dao.impl.PageRuntimeDaoImpl">	 
+	 <select id="getFormRecordsByPageName" parameterType="java.util.Map" resultType="java.util.Map" statementType="STATEMENT"> 
+       		select ${columnStr} from  ${pageName} ${whereStr} limit ${pageNumber},${preTotle}
+	 </select>
+	 <delete id="deleteTableData" parameterType="java.util.Map" statementType="STATEMENT">  
+    	<![CDATA[ 
+        	delete from ${pageName}  
+         		   where is_delete=1 
+         ]]>  
+	</delete>  
+	 
+</mapper>

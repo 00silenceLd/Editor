@@ -1,0 +1,521 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+	namespace="swtech.service.pageDesign.dao.impl.NodeDaoImpl">
+	<sql id="table">ht_node</sql>
+	<resultMap id="nodeMap"
+		type="swtech.facade.pageDesign.entity.Node">
+		<id column="id" property="id" />
+		<result column="version" property="version" />
+		<result column="is_delete" property="is_delete" />
+		<result column="node_name" property="value" />
+		<result column="node_level" property="node_level" />
+		<result column="node_type" property="node_type" />
+		<result column="parent_id" property="parent_id" />
+		<result column="node_sore" property="node_sore" />
+		<result column="createrUid" property="createrUid" />
+		<result column="url" property="url" />
+		<result column="isFolder" property="isFolder" />
+		<result column="type" property="type" />
+		<result column="is_public" property="is_public" />
+		<result column="is_approve" property="is_approve" />
+		<result column="is_popularize" property="is_popularize" />
+		<result column="page_classify" property="page_classify" />
+		<result column="module_classify" property="module_classify" />
+		<result column="is_project" property="is_project" />
+		<result column="page_path" property="page_path" />
+	</resultMap>
+
+	<resultMap id="node_Map"
+		type="swtech.facade.pageDesign.entity.Node">
+		<id column="id" property="id" />
+		<result column="version" property="version" />
+		<result column="is_delete" property="is_delete" />
+		<result column="node_name" property="value" />
+		<result column="node_level" property="node_level" />
+		<result column="node_type" property="node_type" />
+		<result column="parent_id" property="parent_id" />
+		<result column="node_sore" property="node_sore" />
+		<result column="createrUid" property="createrUid" />
+		<result column="url" property="url" />
+		<result column="isFolder" property="isFolder" />
+		<result column="type" property="type" />
+		<collection property="children" column="id"
+			ofType="swtech.facade.pageDesign.entity.Node"
+			select="selectNodeChildrenById"></collection>
+	</resultMap>
+
+	<!-- 查询自定义资源库节点 -->
+	<select id="searchType" parameterType="int" resultMap="nodeMap">
+		select *
+		from ht_node where is_delete = 0 And type = #{type}
+	</select>
+
+	<!-- 再递归查询出一级部门下的所有子部门 -->
+	<select id="selectNodeChildrenById" resultMap="node_Map"
+		parameterType="long">
+		select * from ht_node where is_delete=0 And
+		parent_id =
+		#{id} And type = 2 order by node_sore
+	</select>
+
+	<select id="getUpSiteChildrenById" resultMap="node_Map"
+		parameterType="long">
+		select * from ht_up_site_node where is_delete=0 And
+		parent_id = #{pid} order by node_sore
+	</select>
+	<!-- 插入wqgl网群管理表 -->
+	<insert id="insertNode"
+		parameterType="swtech.facade.pageDesign.entity.Node">
+		insert into
+		ht_node_wqgl(id,version,is_delete,node_name,node_level,node_type,parent_id,node_sore,createrUid,url,type)
+		values
+		(#{id},#{version},#{is_delete},#{value},#{node_level},#{node_type},#{parent_id},#{node_sore},#{createrUid},#{url},#{type})
+	</insert>
+
+	<!-- 查询pid下所有对象 -->
+	<select id="getOneNode" parameterType="java.lang.Integer"
+		resultMap="node_Map">
+		select * from ht_node where is_delete = 0 And parent_id =
+		#{pid} And type =
+		2 order by node_sore
+	</select>
+
+	<!-- 查询ID -->
+	<select id="getById" parameterType="java.lang.Integer"
+		resultMap="nodeMap">
+		select * from ht_node where is_delete = 0 and id = #{id} And
+		type = 2
+	</select>
+	<!-- 查询ID -->
+	<select id="getUpWebsiteNodeById"
+		parameterType="java.lang.Integer" resultMap="nodeMap">
+		select * from
+		ht_up_site_node where is_delete = 0 and id =
+		#{id}
+	</select>
+	<!-- 查询ID -->
+	<select id="getNode" parameterType="java.lang.Integer"
+		resultMap="nodeMap">
+		SELECT * FROM ht_node where is_delete = 0 and node_name =
+		#{nodeName} And type = 2
+	</select>
+
+	<!-- 查询所有ht_node is_delete = 0 And -->
+	<select id="FindByNode" resultMap="nodeMap">
+		select * from ht_node where
+		type = 2 and is_delete = 0 and userPrivate !=0
+		and userPrivate =1
+	</select>
+
+
+
+	<!-- 查询所有ht_node is_delete = 0 And -->
+	<!-- <select id="FindUpWebsiteByNode" resultMap="nodeMap"> select * from 
+		ht_up_site_node where type = 2 and is_delete = 0 </select> -->
+
+	<!-- 1388w 模板查询节点表 -->
+	<select id="FindUpWebsiteByNode" resultMap="nodeMap">
+		select
+		id,node_name,parent_id from
+		ht_node where type = 2 and is_delete = 0
+	</select>
+
+	<!-- 查询可关联数据表 -->
+	<select id="getDataSourcePage" resultMap="nodeMap">
+		select * from ht_node
+		where is_delete = 0 And type = 2
+	</select>
+
+	<!-- 查询与Node对象交替前的Node对象 -->
+	<select id="selectNodeSore" parameterType="java.util.Map"
+		resultMap="nodeMap">
+		select * from ht_node where is_delete = 0 and parent_id =
+		#{pid} and node_sore = #{newNodeSore}
+	</select>
+
+	<!-- 添加树节点 -->
+	<insert id="insertTreeNode"
+		parameterType="swtech.facade.pageDesign.entity.Node"
+		useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+		insert into
+		ht_node(version,is_delete,node_name,node_level,node_type,parent_id,node_sore,createrUid,url,isFolder,type,userPrivate,is_public,is_approve,create_time,is_popularize,is_slave_page,page_classify,module_classify,is_project,page_path)
+		values
+		(#{version},#{is_delete},#{value},#{node_level},#{node_type},#{parent_id},#{node_sore},#{createrUid},#{url},#{isFolder},2,#{userPrivate},#{is_public},#{is_approve},#{create_time},#{is_popularize},#{is_slave_page},#{page_classify},#{module_classify},#{is_project},#{page_path})
+
+	</insert>
+
+	<!-- 修改树节点 -->
+	<update id="updateTreeNode"
+		parameterType="swtech.facade.pageDesign.entity.Node">
+		update ht_node
+		<trim prefix="set" suffixOverrides=",">
+			<if test="version != null">
+				version = #{version,jdbcType=INTEGER}+1,
+			</if>
+			<if test="value != null">
+				node_name = #{value,jdbcType=VARCHAR},
+			</if>
+			<if test="node_type != null">
+				node_type = #{node_type,jdbcType=INTEGER},
+			</if>
+			<if test="node_sore != null">
+				node_sore = #{node_sore,jdbcType=INTEGER},
+			</if>
+			<if test="parent_id != null">
+				parent_id = #{parent_id,jdbcType=INTEGER},
+			</if>
+			<if test="node_level != null">
+				node_level = #{node_level,jdbcType=CHAR},
+			</if>
+			<if test="is_delete != null">
+				is_delete = #{is_delete,jdbcType=BIT},
+			</if>
+			<if test="url != null">
+				url = #{url,jdbcType=VARCHAR},
+			</if>
+			<if test="isFolder != null">
+				isFolder = #{isFolder,jdbcType=BIT},
+			</if>
+			<if test="type != null">
+				type = #{type,jdbcType=INTEGER},
+			</if>
+			<if test="userPrivate != null">
+				userPrivate = #{userPrivate,jdbcType=BIT},
+			</if>
+		</trim>
+		<where>
+			id = #{id}
+		</where>
+	</update>
+
+	<!-- 删除树节点 -->
+	<delete id="deleteTreeNode" parameterType="java.lang.Integer">
+		delete from ht_node
+		where id = #{id}
+	</delete>
+
+	<!-- 查询子节点总和 -->
+	<select id="getCountByPId" parameterType="java.lang.Integer"
+		resultType="java.lang.Integer">
+		select count(id) from ht_node where is_delete=0 and
+		parent_id = #{parent_id} And type = 2
+	</select>
+
+	<!-- 根据ID查询对象信息 -->
+	<select id="getByNodeName" resultMap="nodeMap">
+		select
+		id,version,is_delete,node_name,node_level,
+		node_type,parent_id,node_sore,createrUid,url,isFolder,
+		type,resource_id,userPrivate,page_classify,module_classify,is_project,page_path
+		from ht_node where
+		id = #{nodeId} and
+		is_delete=0 And type = 2
+	</select>
+
+	<select id="getNameByNodeId" resultType="string">
+		select node_name from
+		ht_node where id =#{nodeId} and is_delete =0
+	</select>
+
+	<!-- 获取用户对应的权限 注释是因为购买组织时需要注释 -->
+	<select id="getSiteHasNodes" parameterType="java.lang.Integer"
+		resultType="swtech.facade.pageDesign.entity.UserHasNode">
+		SELECT h.id,h.nodeId,h.is_delete from ht_user_has_node h
+		LEFT JOIN
+		ht_node n on h.nodeId = n.id
+		WHERE h.uId =#{uid} and
+		<!-- h.is_delete = 0 and -->
+		n.is_delete =0 <!-- and n.userPrivate = 1 -->
+	</select>
+
+
+	<select id="FindNodeByUid" resultMap="nodeMap">
+		<!-- select n.* from ht_node n left join ht_user_has_node u on n.id = u.nodeId 
+			where n.type = 2 and n.is_delete = 0 and u.is_delete = 0 and u.uId = #{uId} -->
+		<!-- 7.19注释 -->
+		<!-- select DISTINCT(n.id),n.version,n.is_delete,n.node_name,n.node_level,n.node_type,n.parent_id,n.node_sore,n.createrUid,n.url,n.div_id,n.isFolder,n.isFirst,n.type,n.resource_id 
+			from ht_node n left join ht_user_has_node u on n.id = u.nodeId where n.type 
+			= 2 and n.is_delete = 0 and u.is_delete = 0 and u.uId = #{uId} OR n.id in 
+			(SELECT node_id from ht_position_node WHERE pos_id in (SELECT pos_id FROM 
+			ht_position_user where user_id = #{uId})) -->
+		SELECT
+		DISTINCT(id),version,is_delete,node_name,node_level,node_type,parent_id,node_sore,createrUid,url,div_id,isFolder,isFirst,type,resource_id,is_public,is_approve,is_popularize,page_classify,module_classify,is_project,page_path
+		FROM(
+		select
+		n.id,n.version,n.is_delete,n.node_name,n.node_level,n.node_type,n.parent_id,n.node_sore,n.createrUid,n.url,n.div_id,n.isFolder,n.isFirst,n.type,n.resource_id,n.is_public,n.is_approve,n.is_popularize,n.page_classify,n.module_classify,n.is_project,n.page_path
+
+		from ht_node n left join ht_user_has_node u on n.id = u.nodeId
+		where
+		n.type = 2 and n.is_delete = 0 and u.is_delete = 0 and n.is_slave_page
+		= 0
+		and u.uId = #{uId}
+		UNION
+
+		select
+		n.id,n.version,n.is_delete,n.node_name,n.node_level,n.node_type,n.parent_id,n.node_sore,n.createrUid,n.url,n.div_id,n.isFolder,n.isFirst,n.type,n.resource_id,n.is_public,n.is_approve,n.is_popularize,n.page_classify,n.module_classify,n.is_project,n.page_path
+		from ht_node n left join ht_user_has_node u on n.id = u.nodeId
+		where
+		n.id in
+		(SELECT node_id from ht_position_node WHERE pos_id in (SELECT
+		pos_id FROM
+		ht_position_user where user_id = #{uId})
+		AND node_id not in
+		(SELECT nodeId from ht_node_except where pId = pos_id AND uId =
+		#{uId})
+		)
+		)as c
+
+	</select>
+
+	<!--<select id="FindNodeByUid" resultMap="nodeMap"> select n.* from ht_node 
+		n left join ht_user_has_node u on n.id = u.nodeId where n.type = 2 and n.is_delete 
+		= 0 u.is_delete = 0 and u.uId = #{uid} </select> -->
+	<!-- 获取用户对应的权限，返回节点id -->
+	<select id="getSiteHasNodesReturnNodeId"
+		parameterType="java.lang.Integer" resultType="java.lang.Integer">
+		select distinct(nodeId)
+		from ht_user_has_node where uId
+		=#{uid} and is_delete=0
+	</select>
+
+	<!-- 删除之前购买过的节点 -->
+	<delete id="delNodeToSiteByUid">
+		delete from ht_user_has_node where uId =
+		#{uId,jdbcType=INTEGER}
+	</delete>
+
+	<!-- 批量插入购买节点 -->
+	<insert id="insetNodeToSitebyListNode">
+		insert into ht_user_has_node
+		(uId,nodeId,is_delete,addTime,roleId,posId,createUid)
+		values
+		<foreach collection="nodeIdList" index="index" item="item"
+			separator=",">
+			(#{addNode.uId},#{item},#{addNode.is_delete},#{addNode.addTime},#{addNode.roleId},#{addNode.posId},#{addNode.createUid})
+		</foreach>
+	</insert>
+
+
+
+	<!-- 插入权限节点 -->
+	<insert id="addNodeToSite"
+		parameterType="swtech.facade.pageDesign.entity.UserHasNode">
+		insert into
+		ht_user_has_node(id,uId,nodeId,is_delete,addTime,roleId,posId,createUid)
+		values(#{id},#{uId},#{nodeId},#{is_delete},#{addTime},#{roleId},#{posId},#{createUid})
+	</insert>
+
+	<!-- 修改用户权限树 -->
+	<update id="updateNodeForSite"
+		parameterType="swtech.facade.pageDesign.entity.UserHasNode">
+		update ht_user_has_node
+		<trim prefix="set" suffixOverrides=",">
+			<if test="uId != null">
+				uId = #{uId,jdbcType=INTEGER},
+			</if>
+			<if test="nodeId != null">
+				nodeId = #{nodeId,jdbcType=INTEGER},
+			</if>
+			<if test="is_delete != null">
+				is_delete = #{is_delete,jdbcType=INTEGER},
+			</if>
+		</trim>
+		<where>
+			id = #{id}
+		</where>
+	</update>
+
+	<!-- 添加用户默认首030页 -->
+	<insert id="addUserIndexPage" parameterType="java.util.Map">
+		insert into
+		ht_user_index_page (pId,nodeId,roleId,nodeType)
+		values(#{pId},#{nodeId},#{roleId},#{nodeType})
+	</insert>
+
+	<select id="selectIndexPageByRoleAndPid"
+		resultType="java.lang.Integer">
+		select id
+		from ht_user_index_page where pId = #{pId} and
+		roleId=#{roleId}
+	</select>
+
+	<delete id="delUserIndexPage" parameterType="java.lang.Integer">
+		delete from
+		ht_user_index_page where id =#{id}
+	</delete>
+
+	<delete id="delExceptNode" parameterType="java.util.Map">
+		delete from
+		ht_node_except where uId=#{uId} and roleId =#{roleId} and pId = #{pId}
+	</delete>
+
+	<insert id="insertExceptNode" parameterType="java.util.Map">
+		insert into
+		ht_node_except(uId,roleId,pId,nodeId)
+		values(#{uId},#{roleId},#{pId},#{nodeId})
+	</insert>
+
+	<select id="getExceptNode" resultType="java.util.Map"
+		parameterType="java.util.Map">
+		select id from ht_node_except where uId=#{uId} and
+		roleId =#{roleId} and pId = #{pId}
+	</select>
+
+	<select id="getUserNodeIdByPidAndRoleId"
+		resultType="java.lang.Integer" parameterType="java.util.Map">
+		SELECT node_id from
+		ht_position_node where pos_id =
+		#{pId} AND node_id NOT in
+		(
+		SELECT nodeId
+		from ht_node_except where uId
+		= #{uId} and pId = #{pId} and
+		roleId =
+		#{roleId}
+		)
+	</select>
+
+	<!-- 通过node_id查询node_name -->
+	<select id="getNodeByNodeId" parameterType="java.lang.Long"
+		resultType="java.util.Map">
+		SELECT id as node_id,node_name from ht_node where
+		id=#{nodeId}
+	</select>
+	<!-- 2018/10/09 获取数据源 -->
+	<select id="getDataSourceByUid" resultMap="nodeMap">
+		SELECT
+		DISTINCT(id),node_name,parent_id,url,page_classify,module_classify,is_project,page_path
+		FROM(
+		select
+		n.id,n.is_delete,n.node_name,n.parent_id,n.url,n.type,n.page_classify,n.module_classify,n.is_project,n.page_path
+
+		from
+		ht_node n
+		left join ht_user_has_node u on n.id = u.nodeId
+		where
+		n.type =
+		2 and
+		n.is_delete = 0 and u.is_delete = 0 and n.is_slave_page= 0
+		and
+		u.uId = #{uId}
+
+		UNION
+		select
+		n.id,n.is_delete,n.node_name,n.parent_id,n.url,n.type,n.page_classify,n.module_classify,n.is_project,n.page_path
+		from
+		ht_node n
+		where
+		n.type = 3 and n.is_delete = 0
+		and n.parent_id=88888888 and
+		n.is_slave_page= 0
+
+		UNION
+
+		select
+		n.id,n.is_delete,n.node_name,n.parent_id,n.url,n.type,n.page_classify,n.module_classify,n.is_project,n.page_path
+		from
+		ht_node n
+		left join ht_user_has_node u on n.id = u.nodeId
+		where
+		n.id in
+		(SELECT
+		node_id from ht_position_node WHERE pos_id in (SELECT
+		pos_id
+		FROM
+		ht_position_user where user_id = #{uId})
+		AND node_id not in
+		(SELECT
+		nodeId from ht_node_except where pId = pos_id AND uId =
+		#{uId})
+		)
+		)as c
+	</select>
+
+	<select id="getIdByNodeName" resultType="java.lang.Integer"
+		parameterType="java.util.Map">
+		SELECT id from ht_node WHERE node_name=#{classname}
+		ORDER BY id DESC LIMIT 0,1
+	</select>
+
+	<select id="getApproveById" resultType="java.lang.Integer"
+		parameterType="int">
+		select is_approve from ht_node where id = #{node_id}
+		LIMIT 0,1
+	</select>
+
+	<select id="getNotApprovePage"
+		resultType="swtech.facade.pageDesign.entity.ApprovePage">
+		select id,node_name,is_approve,createrUid,create_time
+		from
+		ht_node
+		where is_approve=0 ORDER BY id desc
+
+	</select>
+
+	<update id="agreeSavePage" parameterType="int">
+		UPDATE ht_node set
+		is_approve = 1 where id = #{node_id}
+	</update>
+
+	<delete id="deletePageEditor" parameterType="int">
+		delete from
+		ht_pageEditor
+		where node_id = #{id}
+	</delete>
+
+	<select id="getUserByUid" parameterType="int"
+		resultType="java.util.Map">
+		select username,chinese_name from ht_user where uid =
+		#{uid}
+	</select>
+
+	<select id="getIspublicByNodeId" parameterType="int"
+		resultType="int">
+		select is_public from ht_node where id = #{node_id}
+	</select>
+
+	<select id="getPopularizeById" resultType="java.lang.Integer"
+		parameterType="int">
+		select is_popularize from ht_node where id = #{nodeId}
+		LIMIT 0,1
+	</select>
+
+	<insert id="saveMasterAndSlaveRel"
+		parameterType="swtech.facade.pageDesign.entity.Node">
+
+		insert into
+		ht_master_slave_page_rel
+		(master_node_id,slave_node_id)
+		values(#{parent_id},#{id})
+
+	</insert>
+	<delete id="deleteMasterAndSlaveRel"
+		parameterType="swtech.facade.pageDesign.entity.Node">
+
+		delete from ht_master_slave_page_rel
+		where master_node_id
+		= #{parent_id}
+
+	</delete>
+
+	<select id="getSlavePageIdByMasterId" parameterType="Integer"
+		resultType="Integer">
+		select slave_node_id from ht_master_slave_page_rel where
+		master_node_id =
+		#{nodeId}
+	</select>
+	<select id="getSlavePageNameBySlaveId" parameterType="Integer"
+		resultType="String">
+		select node_name from ht_node where
+		id =
+		#{slaveId}
+	</select>
+	<update id="updateSlavePageName"
+		parameterType="swtech.facade.pageDesign.entity.Node">
+		update ht_node set node_name = #{value}
+		where id = #{id}
+
+	</update>
+
+</mapper>

@@ -1,0 +1,378 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+	namespace="swtech.pageDesignControl.mapper.CJDJUserExMapper">
+	
+	<resultMap id="CJDJUserExtMap"
+		type="swtech.pageDesignControl.entity.CJDJUserEx">
+		<id column="id" property="id"/>
+		<result column="user_id" property="userId"  />
+		<result column="name" property="name"  />
+		<result column="sex" property="sex"  />
+		<result column="birthday" property="birthday"
+			/>
+		<result column="age" property="age" />
+		<result column="degree" property="degree" />
+		<result column="join_party_time" property="joinPartyTime"
+			/>
+		<result column="score_result" property="scoreResult"
+			 />
+		<result column="party_branch" property="partyBranch"
+			 />
+		<result column="regular_time" property="regularTime"
+			/>
+		<result column="address" property="address"  />
+		<result column="party_member_type" property="partyMemberType"
+			 />
+		<result column="condolences_situation"
+			property="condolencesSituation"  />
+		<result column="is_outflow" property="isOutflow"
+			 />
+		<result column="outflow_time" property="outflowTime"
+			/>
+		<result column="outflow_address" property="outflowAddress"
+			 />
+		<result column="nation" property="nation"  />
+		<result column="id_num" property="idNum" />
+		<result column="phone_num" property="phoneNum"
+			/>
+		<result column="industry" property="industry"
+			 />
+		<result column="develop_type" property="developType"
+			 />
+		<result column="vigorous_time" property="vigorousTime"
+			/>
+		<result column="develop_object_time"
+			property="developObjectTime" />
+		<result column="ready_party_member_time"
+			property="readyPartyMemberTime" />
+		<result column="remarks" property="remarks"  />
+	</resultMap>
+	
+	
+	
+	
+	<sql id="CJDJUserExt_Column_List">
+		id, user_id, name, sex, birthday, age, degree, join_party_time,
+		score_result, party_branch,
+		regular_time, address, party_member_type, condolences_situation, is_outflow,
+		outflow_time,
+		outflow_address, nation, id_num, phone_num, industry, develop_type, vigorous_time,
+		develop_object_time, ready_party_member_time, remarks
+	</sql>
+	<select id="selectCJDJUserExById" resultMap="CJDJUserExtMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="CJDJUserExt_Column_List" />
+		from ht_cjdj_user_ex
+		where id = #{id}
+	</select>
+	<delete id="deleteCJDJUserById"
+		parameterType="java.lang.Integer">
+		delete from ht_cjdj_user_ex
+		where id = #{id}
+	</delete>
+	<insert id="insertCJDJUserEx"
+		parameterType="swtech.pageDesignControl.entity.CJDJUserEx">
+		insert into ht_cjdj_user_ex (id, user_id, name,
+		sex, birthday, age,
+		degree, join_party_time, score_result,
+		party_branch, regular_time, address,
+		party_member_type, condolences_situation, is_outflow,
+		outflow_time, outflow_address, nation,
+		id_num, phone_num, industry,
+		develop_type, vigorous_time, develop_object_time,
+		ready_party_member_time, remarks)
+		values (#{id}, #{userId},
+		#{name},
+		#{sex}, #{birthday}, #{age},
+		#{degree}, #{joinPartyTime},
+		#{scoreResult},
+		#{partyBranch}, #{regularTime}, #{address},
+		#{partyMemberType},
+		#{condolencesSituation}, #{isOutflow},
+		#{outflowTime}, #{outflowAddress},
+		#{nation},
+		#{idNum}, #{phoneNum}, #{industry},
+		#{developType}, #{vigorousTime},
+		#{developObjectTime},
+		#{readyPartyMemberTime},
+		#{remarks})
+	</insert>
+	<insert id="insertCJDJUserExSelective"
+		parameterType="swtech.pageDesignControl.entity.CJDJUserEx">
+		insert into ht_cjdj_user_ex
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				id,
+			</if>
+			<if test="userId != null">
+				user_id,
+			</if>
+			<if test="name != null">
+				name,
+			</if>
+			<if test="sex != null">
+				sex,
+			</if>
+			<if test="birthday != null">
+				birthday,
+			</if>
+			<if test="age != null">
+				age,
+			</if>
+			<if test="degree != null">
+				degree,
+			</if>
+			<if test="joinPartyTime != null">
+				join_party_time,
+			</if>
+			<if test="scoreResult != null">
+				score_result,
+			</if>
+			<if test="partyBranch != null">
+				party_branch,
+			</if>
+			<if test="regularTime != null">
+				regular_time,
+			</if>
+			<if test="address != null">
+				address,
+			</if>
+			<if test="partyMemberType != null">
+				party_member_type,
+			</if>
+			<if test="condolencesSituation != null">
+				condolences_situation,
+			</if>
+			<if test="isOutflow != null">
+				is_outflow,
+			</if>
+			<if test="outflowTime != null">
+				outflow_time,
+			</if>
+			<if test="outflowAddress != null">
+				outflow_address,
+			</if>
+			<if test="nation != null">
+				nation,
+			</if>
+			<if test="idNum != null">
+				id_num,
+			</if>
+			<if test="phoneNum != null">
+				phone_num,
+			</if>
+			<if test="industry != null">
+				industry,
+			</if>
+			<if test="developType != null">
+				develop_type,
+			</if>
+			<if test="vigorousTime != null">
+				vigorous_time,
+			</if>
+			<if test="developObjectTime != null">
+				develop_object_time,
+			</if>
+			<if test="readyPartyMemberTime != null">
+				ready_party_member_time,
+			</if>
+			<if test="remarks != null">
+				remarks,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id},
+			</if>
+			<if test="userId != null">
+				#{userId},
+			</if>
+			<if test="name != null">
+				#{name},
+			</if>
+			<if test="sex != null">
+				#{sex},
+			</if>
+			<if test="birthday != null">
+				#{birthday},
+			</if>
+			<if test="age != null">
+				#{age},
+			</if>
+			<if test="degree != null">
+				#{degree},
+			</if>
+			<if test="joinPartyTime != null">
+				#{joinPartyTime},
+			</if>
+			<if test="scoreResult != null">
+				#{scoreResult},
+			</if>
+			<if test="partyBranch != null">
+				#{partyBranch},
+			</if>
+			<if test="regularTime != null">
+				#{regularTime},
+			</if>
+			<if test="address != null">
+				#{address},
+			</if>
+			<if test="partyMemberType != null">
+				#{partyMemberType},
+			</if>
+			<if test="condolencesSituation != null">
+				#{condolencesSituation},
+			</if>
+			<if test="isOutflow != null">
+				#{isOutflow},
+			</if>
+			<if test="outflowTime != null">
+				#{outflowTime},
+			</if>
+			<if test="outflowAddress != null">
+				#{outflowAddress},
+			</if>
+			<if test="nation != null">
+				#{nation},
+			</if>
+			<if test="idNum != null">
+				#{idNum},
+			</if>
+			<if test="phoneNum != null">
+				#{phoneNum},
+			</if>
+			<if test="industry != null">
+				#{industry},
+			</if>
+			<if test="developType != null">
+				#{developType},
+			</if>
+			<if test="vigorousTime != null">
+				#{vigorousTime},
+			</if>
+			<if test="developObjectTime != null">
+				#{developObjectTime},
+			</if>
+			<if test="readyPartyMemberTime != null">
+				#{readyPartyMemberTime},
+			</if>
+			<if test="remarks != null">
+				#{remarks},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateCJDJUserExBySelective"
+		parameterType="swtech.pageDesignControl.entity.CJDJUserEx">
+		update ht_cjdj_user_ex
+		<set>
+			<if test="userId != null">
+				user_id = #{userId},
+			</if>
+			<if test="name != null">
+				name = #{name},
+			</if>
+			<if test="sex != null">
+				sex = #{sex},
+			</if>
+			<if test="birthday != null">
+				birthday = #{birthday},
+			</if>
+			<if test="age != null">
+				age = #{age},
+			</if>
+			<if test="degree != null">
+				degree = #{degree},
+			</if>
+			<if test="joinPartyTime != null">
+				join_party_time = #{joinPartyTime},
+			</if>
+			<if test="scoreResult != null">
+				score_result = #{scoreResult},
+			</if>
+			<if test="partyBranch != null">
+				party_branch = #{partyBranch},
+			</if>
+			<if test="regularTime != null">
+				regular_time = #{regularTime},
+			</if>
+			<if test="address != null">
+				address = #{address},
+			</if>
+			<if test="partyMemberType != null">
+				party_member_type = #{partyMemberType},
+			</if>
+			<if test="condolencesSituation != null">
+				condolences_situation = #{condolencesSituation},
+			</if>
+			<if test="isOutflow != null">
+				is_outflow = #{isOutflow},
+			</if>
+			<if test="outflowTime != null">
+				outflow_time = #{outflowTime},
+			</if>
+			<if test="outflowAddress != null">
+				outflow_address = #{outflowAddress},
+			</if>
+			<if test="nation != null">
+				nation = #{nation},
+			</if>
+			<if test="idNum != null">
+				id_num = #{idNum},
+			</if>
+			<if test="phoneNum != null">
+				phone_num = #{phoneNum},
+			</if>
+			<if test="industry != null">
+				industry = #{industry},
+			</if>
+			<if test="developType != null">
+				develop_type = #{developType},
+			</if>
+			<if test="vigorousTime != null">
+				vigorous_time = #{vigorousTime},
+			</if>
+			<if test="developObjectTime != null">
+				develop_object_time = #{developObjectTime},
+			</if>
+			<if test="readyPartyMemberTime != null">
+				ready_party_member_time = #{readyPartyMemberTime},
+			</if>
+			<if test="remarks != null">
+				remarks = #{remarks},
+			</if>
+		</set>
+		where id = #{id}
+	</update>
+	<update id="updateCJDJUserExById"
+		parameterType="swtech.pageDesignControl.entity.CJDJUserEx">
+		update ht_cjdj_user_ex
+		set user_id = #{userId},
+		name = #{name},
+		sex = #{sex},
+		birthday = #{birthday},
+		age = #{age},
+		degree = #{degree},
+		join_party_time = #{joinPartyTime},
+		score_result = #{scoreResult},
+		party_branch = #{partyBranch},
+		regular_time = #{regularTime},
+		address = #{address},
+		party_member_type = #{partyMemberType},
+		condolences_situation = #{condolencesSituation},
+		is_outflow = #{isOutflow},
+		outflow_time = #{outflowTime},
+		outflow_address = #{outflowAddress},
+		nation = #{nation},
+		id_num = #{idNum},
+		phone_num = #{phoneNum},
+		industry = #{industry},
+		develop_type = #{developType},
+		vigorous_time = #{vigorousTime},
+		develop_object_time = #{developObjectTime},
+		ready_party_member_time = #{readyPartyMemberTime},
+		remarks = #{remarks}
+		where id = #{id}
+	</update>
+</mapper>

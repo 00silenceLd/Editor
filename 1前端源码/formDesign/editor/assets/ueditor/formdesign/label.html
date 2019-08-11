@@ -1,0 +1,235 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+
+<head>
+    <title>标签</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+     <link rel="stylesheet" href="bootstrap/css/bootstrap.css">
+    <!--[if lte IE 6]>
+    <link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap-ie6.css">
+    <![endif]-->
+    <!--[if lte IE 7]>
+    <link rel="stylesheet" type="text/css" href="bootstrap/css/ie.css">
+    <![endif]-->
+    <link rel="stylesheet" href="leipi.style.css">
+    <script type="text/javascript" src="../dialogs/internal.js"></script>
+    <script type="text/javascript" src="jquery-3.2.1.min.js" ></script>    
+    <script type="text/javascript" src="../httpData.config.js"></script>
+
+    <script type="text/javascript">
+        /* Thank you by
+                                    http://www.alt-tag.com/blog/2006/02/ie-dom-bugs/ */
+
+        function createElement( type, name ) {
+            var element = null;
+            try {
+                element = document.createElement( '<' + type + ' name="' + name + '">' );
+            } catch ( e ) {}
+            if ( element == null ) {
+                element = document.createElement( type );
+                element.name = name;
+            }
+            return element;
+        }
+
+    </script>
+
+</head>
+
+<body>
+    <div class="content">
+        <table class="table table-bordered table-striped table-hover">
+            <tr>
+                <th>
+                    <span>控件名称</span>
+                    <span class="label label-important">*</span>
+                </th>
+                <th>
+                    <span>条件</span>
+                </th>
+            </tr>
+            <tr>
+                <td>
+                    <input type="text" class="span2" id="orgname" onclick="javascript:this.select()" placeholder="必填项" value="标签">
+                </td>
+                <td>
+                    <select id='condition-opt'>
+                        <option value="new">最新</option>
+                        <option value="byId">ID</option>
+                    </select>
+                    <input type="text" class="span2" id="condition-val" placeholder="默认为最新" value="">
+                </td>
+            </tr>
+                 <tr>
+            	<th>
+                    <span>数据源</span>
+                </th>
+                <th>
+                    <span>数据字段</span>
+                </th>
+            </tr>
+            <tr>
+            	 <td>
+                    <select id="datasource">
+                        <option value="0">请选择</option>
+
+                    </select>
+                </td>
+                <td>
+                    <select id="datazid">
+                        <option value="0">请选择</option>
+
+                    </select>
+                </td>
+            </tr>
+
+        </table>
+    </div>
+        <script>
+          //读取cookie
+          var cookieStr = unescape(document.cookie);
+          var arr = cookieStr.split("|");
+          var cookieWidth="";
+          var cookieHeight="";
+          if(cookieStr!=""){
+            for(var i=0;i<arr.length;i++){
+              var temp = arr[i].split("=");
+              if(temp[0]=="width"){
+                // debugger;
+                cookieWidth = temp[1];
+                $("#orgvarfontwidth").val(cookieWidth);
+              }else if(temp[0]=="height"){
+                cookieHeight=temp[1];
+                $("#orgvarfontheight").val(cookieHeight);
+              }
+            }
+          }
+          var gVarfontwidth = $("#orgvarfontwidth").val();
+            $("#orgvarfontwidth").change(function(){
+                gVarfontwidth = $("#orgvarfontwidth").val();
+              var height="";
+              var str=unescape(document.cookie);
+                //存在height
+                if(str.indexOf("height")!= -1){
+                  var arr = str.split("|");
+                  for(var i=0;i<arr.length;i++){
+                    var temp = arr[i].split("=");
+                    if(temp[0]=="height"){
+                      height=temp[1];
+                    }
+                  }
+                }else{//不存在就清空
+                  document.cookie="";
+                }
+              //保存cookie
+              if(height!=""){
+                document.cookie="width="+gVarfontwidth+"|"+"height="+height+"|";
+              }else{
+                document.cookie="width="+gVarfontwidth+"|";
+              }
+            });
+          var gVarfontheight = $("#orgvarfontheight").val();
+            $("#orgvarfontheight").change(function(){
+                gVarfontheight = $("#orgvarfontheight").val();
+              var width="";
+              var str=unescape(document.cookie);
+              //存在height
+              if(str.indexOf("width")!= -1){
+                var arr = str.split("|");
+                for(var i=0;i<arr.length;i++){
+                  var temp = arr[i].split("=");
+                  if(temp[0]=="width"){
+                    width=temp[1];
+                  }
+                }
+              }else{//不存在就清空
+                document.cookie="";
+                width=$("#orgvarfontwidth").val();
+              }
+                document.cookie="width="+width+"|"+"height="+gVarfontheight+"|";
+            });
+        </script>
+
+        <script type="text/javascript">
+            var oNode = null,
+                gdataSource=null,
+                //gdataid,
+                //gdataField,
+                thePlugins = 'text';
+            window.onload = function () {                
+                /*
+                * 链接后台获取 数据链接
+                *
+                */
+
+                var nodeParentId = $( '#nodeParentId', window.parent.document ).val();
+                var nodeId = $('#node_id',window.parent.document).val();
+                var userinfo=window.localStorage['user']?JSON.parse(window.localStorage['user']):null;
+                $.ajax( {
+                    url: prevent_HOST + 'nodeQueryFacade/getDataSourcePage?nodeId='+nodeId+"&uid="+userinfo.id,
+                    method: 'GET',
+                    success: function ( res ) {
+                        $.each( res.msg, function ( index, value ) {
+                            $( "#datasource" ).append( '<option value=' + value.id +'>' + value.value + '</option>' );
+                        } )
+
+                        //$('#datasource').find('option[value='+gdataid+']').attr('selected','true');
+
+                    },
+                    error: function ( res ) {
+                        alert( '抱歉！获取 数据链接 失败！因为您好像还没有选择表哦！' )
+                    }
+                } );
+                $(document).on("change","#datasource",function(e){
+                    var nodeParentId = $(this).val();
+                    $("#datazid").empty();
+                    $.ajax({
+                        url: prevent_HOST + 'pageDesignQueryFacade/getPageEditorData?id=' + nodeParentId,
+                        method:"GET",
+                        success:function(res){
+                            // console.log('get')
+                            $.each( res.msg, function ( index, value ) {
+                                $( "#datazid").append( '<option value=' + value.value +'>' + value.text + '</option>' );
+                            })
+                        // $('#datazid').find('option[value='+gdataField+']').attr('selected','true');
+                        }
+                    })
+                });
+            }
+
+            dialog.oncancel = function () {
+                if ( UE.plugins[ thePlugins ].editdom ) {
+                    delete UE.plugins[ thePlugins ].editdom;
+                }
+            };
+            dialog.onok = function () {
+                if ( $G( 'orgname' ).value == '' ) {
+                    alert( '请输入控件名称' );
+                    return false;
+                }              
+               
+                var gTitle = $G( 'orgname' ).value.replace( /\"/g, "&quot;" ),                   
+                    datasource;
+                if ($G('datasource').value == 0 ) {
+                 var   gdataS = "",
+                       dataId = 0
+                } else {
+                    gdataS = $("#datasource option:selected").text();
+                    dataId = $("#datasource option:selected").val();
+                }
+                if ($G('datazid').value == 0) {
+                  var  gdataId = "";
+                     // dataField = 0;
+                } else {
+                    gdataId = $G('datazid').value;
+                    //dataField = $("#datazid option:selected").val();
+                }
+                datasource = '{\"data\":\"' + gdataS + '\",\"field\":\"' + gdataId + '\"}';
+                var html="<div class='plu-label' data-source='"+datasource+"'>"+gTitle+"</div>";
+                editor.execCommand( 'insertHtml', html );                
+            };
+        </script>
+</body>
+
+</html>

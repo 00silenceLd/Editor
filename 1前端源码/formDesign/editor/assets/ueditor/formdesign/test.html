@@ -1,0 +1,119 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+
+<head>
+    <title>文本框</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta name="generator" content="www.leipi.org" />
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.css">
+    <!-- <link rel="stylesheet" href="bootstrap/css/bootstrap.same.css"> -->
+    <link rel="stylesheet" href="bootstrap/js/bootstrap.min.js">
+    <!--[if lte IE 6]>
+  <link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap-ie6.css">
+  <![endif]-->
+    <!--[if lte IE 7]>
+  <link rel="stylesheet" type="text/css" href="bootstrap/css/ie.css">
+  
+  <![endif]-->
+  
+    <link rel="stylesheet" href="leipi.style.css">
+    <script type="text/javascript" src="jquery-3.2.1.min.js" ></script>
+    <script type="text/javascript" src="../dialogs/internal.js"></script>
+      
+</head>
+
+<body>
+    <span id="demo">
+        <div>学校：<span id="demo1"></span></div>
+        <div>年级：<span id="demo2"></span></div>  
+        <div>班级：<span id="demo3"></span></div>
+        <div>个人：<span id="demo4"></span></div>
+        <div>表情：<span id="demo5"></span></div>
+        <span class="glyphicon glyphicon-star"></span>
+
+    </span>
+
+
+    <input name="date8" type="radio" value="1">1
+    <input name="date8" type="radio" value="2">2
+    <div id="test">
+      <select id="data2">
+        <option value="text">请选择学校</option>
+      </select>
+      <select id="data3">
+          <option value="text">请选择年级</option>
+      </select>
+      <select id="data4">
+          <option >请选择班级</option>
+      </select>
+      <select id="data5">
+          <option value="text">请选择学生</option>
+      </select>
+      <div>
+        <label><input name="radios" type="radio" checked>哈哈</label>
+        <label><input name="radios" type="radio">呵呵</label>
+      </div>
+      <div id="btn" class="btn  btn-info">保存</div>
+    </div>
+</body>
+
+<script type="text/javascript">
+  var user=window.localStorage['user']?JSON.parse(window.localStorage['user']):null;
+  console.log( user );
+  $( "#btn" ).bind( "click", function(){
+                /*var user=window.localStorage['user']?JSON.parse(window.localStorage['user']):null;
+                var openid = "",
+                    uId = user.id,
+                    username = user.username,
+                    password = user.password,
+                    chinese_name = $( "input#data5" ).val(),    //用户名字
+                    moblie = $( "input#data6" ).val();         //电话or账号 
+              //判断是否微信绑定
+                /*if( surper_curstom_global_var_getWxUserCode == "是" ){
+                    wxpush = 1;
+                    alert( wxpush );
+                  $.ajax( {
+                        url:'http://htjy.kz38.cn:20896/htWeiXinService/getWxUserCode?uid=570' ,
+                        method:"get",
+                        success:function( res ){
+                            alert(res);
+                          //openid = res.msg.openid;
+                          console.log( res );
+                          alert("恭喜哦，微信用户授权成功");
+                        },
+                        error:function(){
+                            alert(res);
+                          alert( "微信用户授权失败，请重试" );
+                        }
+                      })
+                }*/
+               // alert("11");//测试程序运行
+
+            //var user_info = [];
+            var user_info = {
+             //"openid" : "",      //微信用户唯一标识
+              "uId" : 570,         //用户的登陆账号
+              //"username" : "",      //角色代码        
+              //"password" : "",    //角色名称  
+              "moblie" : "15874890087",   //号码
+              "wxpush" : 1       //班级
+            };
+            console.log( user_info );
+            $.ajax( {
+              url:"http://htjy.kz38.cn:20896/htUserService/udpateUserInfo",       //保存时的端口
+              method:"post",
+              data: JSON.stringify( user_info ),
+              dataType:"JSON",
+              contentType: "application/json; charset=UTF-8;",
+              success: function( res ){
+                  alert( "11111" );
+              },
+              error:function(){
+                  alert("00000");
+              }
+            } )
+          })
+</script>
+
+</html>

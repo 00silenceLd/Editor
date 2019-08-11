@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="swtech.service.pageDesign.dao.impl.HtReseatDaoImpl" >
+  <resultMap id="BaseResultMap" type="swtech.facade.pageDesign.entity.HtReseat" >
+    <id column="seat_id" property="seatId" jdbcType="INTEGER" />
+    <result column="seat_num" property="seatNum" jdbcType="VARCHAR" />
+    <result column="seat_status" property="seatStatus" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    seat_id, seat_num, seat_status
+  </sql>
+  <select id="resertall" resultMap="BaseResultMap">
+  	select  * from ht_reseat
+  </select>
+  <delete id="delseat" parameterType="java.lang.Integer">
+  		DELETE FROM ht_reseat WHERE seat_id = (
+			SELECT t.seat_id FROM (
+			SELECT MAX(seat_id)AS seat_id FROM ht_reseat 
+			)t
+		)
+  </delete>
+  
+  <select id="selno" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+  	SELECT seat_id,seat_num FROM ht_reseat WHERE seat_status=#{seatStatus,jdbcType=INTEGER}
+  </select>
+  
+  <update id="updseat" parameterType="Map">
+  	UPDATE ht_reseat SET seat_status=#{updsert,jdbcType=INTEGER} WHERE seat_num IN
+  	<foreach collection="seatnum" index="index" item="item" separator="," open="(" close=")">
+      #{item}
+   </foreach>
+  </update>
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from ht_reseat
+    where seat_id = #{seatId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from ht_reseat
+    where seat_id = #{seatId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="swtech.facade.pageDesign.entity.HtReseat" >
+    insert into ht_reseat (seat_id, seat_num, seat_status
+      )
+    values (#{seatId,jdbcType=INTEGER}, #{seatNum,jdbcType=VARCHAR}, #{seatStatus,jdbcType=INTEGER}
+      )
+  </insert>
+  <insert id="insertSelectiveReseat" parameterType="swtech.facade.pageDesign.entity.HtReseat" >
+    insert into ht_reseat
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="seatId != null" >
+        seat_id,
+      </if>
+      <if test="seatNum != null" >
+        seat_num,
+      </if>
+      <if test="seatStatus != null" >
+        seat_status,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="seatId != null" >
+        #{seatId,jdbcType=INTEGER},
+      </if>
+      <if test="seatNum != null" >
+        #{seatNum,jdbcType=VARCHAR},
+      </if>
+      <if test="seatStatus != null" >
+        #{seatStatus,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="swtech.facade.pageDesign.entity.HtReseat" >
+    update ht_reseat
+    <set >
+      <if test="seatNum != null" >
+        seat_num = #{seatNum,jdbcType=VARCHAR},
+      </if>
+      <if test="seatStatus != null" >
+        seat_status = #{seatStatus,jdbcType=INTEGER},
+      </if>
+    </set>
+    where seat_id = #{seatId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="swtech.facade.pageDesign.entity.HtReseat" >
+    update ht_reseat
+    set seat_num = #{seatNum,jdbcType=VARCHAR},
+      seat_status = #{seatStatus,jdbcType=INTEGER}
+    where seat_id = #{seatId,jdbcType=INTEGER}
+  </update>
+</mapper>

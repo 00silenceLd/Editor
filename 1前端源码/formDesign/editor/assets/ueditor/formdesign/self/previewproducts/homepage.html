@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta content="yes" name="apple-mobile-web-app-capable">
+    <meta content="yes" name="apple-touch-fullscreen">
+    <meta name="format-detection" content="telphone=no, email=no" />
+    <meta name="renderer" content="webkit">
+    <!-- <meta name="keywords" content=""/>
+    <meta name="description" content=""/> -->
+    <!-- <link rel="stylesheet" type="text/css" href="./self/commentControl/css/bootstrap.min.css"> -->
+    <link rel="stylesheet" type="text/css" href="../../self/commentControl/css/commentController.css">
+    <!-- Bootstrap 图标-->
+    <link rel="stylesheet" href="../../bootstrap/css/bootstrap.same.css">
+
+    <title>处理中...</title>
+    <!-- jQuery -->
+    <script src="../../self/js/jquery-3.2.1.min.js"></script>
+    <!-- 请求 前缀 配置文件 -->
+    <script src="../../../httpData.config.js"></script>
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="../../bootstrap/css/bootstrap.css">
+    <script src="../../bootstrap/js/bootstrap.js"></script>
+    <!--  本页面的样式 -->
+    <link rel="stylesheet" href="../../self/css/style.css">
+    <link rel="stylesheet" href="../../self/swiper/swiper-4.2.2.min.css">
+    <!-- Loading样式的css -->
+    <link rel="stylesheet" href="../../self/css/loading.css">
+
+
+
+    <style type="text/css">
+        /*登陆框*/
+        #loginbox {
+            display: none;
+            width: 360px;
+            height: 405px;
+            background: #fff;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            margin-left: -175px;
+            margin-top: -150px;
+            /*text-align: center;*/
+        }
+
+        #loginbox label {
+            display: block;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+
+        #loginbox label input {
+            width: 300px;
+            height: 40px;
+            color: #cccccc;
+        }
+
+        #loginbox #btn {
+            width: 278px;
+            height: 30px;
+        }
+
+        #loginbox #btn button {
+            width: 120px;
+            height: 30px;
+            background: #0B5AA6;
+            border-radius: 3px;
+            border: none;
+            margin-top: 30px;
+            color: #fff;
+        }
+
+        #close {
+            font-size: 18px;
+            position: absolute;
+            top: 0;
+            right: 5px;
+            cursor: pointer;
+        }
+
+        /*登陆框结束*/
+        #tip {
+            margin: 40px 0 40px 0;
+        }
+
+        #over {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            opacity: 0.7;
+            display: none;
+            z-index: 6;
+        }
+
+        #next {
+            display: inline-block;
+            width: 300px;
+            height: 20px;
+            margin-left: 30px;
+        }
+
+        #zhuce {
+            width: 360px;
+            height: 60px;
+            background: #f0f6ff;
+            margin-top: 22px;
+        }
+
+        a:hover {
+            opacity: 0.7;
+        }
+    </style>
+
+</head>
+
+<body class="mnPhone">
+
+    <div id="lian" style="width: 110px;height: 110px;position: fixed;right: 10px;bottom: 200px;display: none;">
+        <p id="close1"
+            style="position: absolute;right: 1px;top: -16px;color: black;font-size: 12px;width: 25px;height: 20px;z-index: 1;cursor: pointer;">
+            关闭</p>
+    </div>
+
+    <section class="container phone">
+        <form id="insertForm" onkeydown="if(event.keyCode==13)return false;">
+            <div class="bodyContent">
+                <style>
+                    .numtxt {
+                        width: 40px;
+                        margin-left: -3px;
+                        margin-right: -3px;
+                        height: 20px;
+                        border: 1px #666 solid;
+                        text-align: center;
+                        /* border-radi */
+                    }
+
+                    .numjian {
+                        width: 20px;
+                        height: 20px;
+                        vertical-align: middle;
+                        color: #000;
+                        font-size: 16px;
+                        font-family: Courier;
+                        border-radius: 55%;
+                        margin-right: 5px;
+                    }
+
+                    .numjia {
+                        width: 20px;
+                        height: 20px;
+                        vertical-align: middle;
+                        color: #000;
+                        font-size: 16px;
+                        font-family: Courier;
+                        border-radius: 55%;
+                        margin-left: 5px;
+                    }
+                </style>
+                <table width="357">
+                    <tbody>
+                        <tr class="firstRow">
+                            <td style="border-color: rgb(48, 45, 62); background-color: rgb(48, 45, 62); height: 48px; word-break: break-all;"
+                                width="123" valign="middle" align="left">
+                                <a href="javascript:history.go(-1)" target="_self">
+                                    <img src="../../self/previewproducts/15514287821041543307245145返回.png" width="32"
+                                        height="32" title=""></a><br></td>
+                            <td style="border-color:  #302d3e; word-break: break-all; background-color:  #302d3e;"
+                                width="123" valign="middle" align="center"><span
+                                    style="color: rgb(255, 255, 255); font-size: 20px;">点餐服务</span><br></td>
+                            <td style="border-color: #302d3e; background-color:  #302d3e;" width="123" valign="middle"
+                                align="center"><br></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <table width="357" data-sort="sortDisabled">
+                    <tbody>
+                        <tr class="firstRow">
+                            <td valign="top" colspan="2" rowspan="1"
+                                style="border-color: rgb(255, 255, 255); word-break: break-all;">
+                                <img src="../../self/previewproducts/1551839817750ss_02.jpg" title="" alt="ss_02.jpg"
+                                    style="width:100%"></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <p><br></p>
+                <!-- <table style="margin-top: 14px; width:98%" data-sort="sortDisabled" width="357">
+                    <tbody> -->
+                <div style="width: 25%;  float: left; display: inline-block;">
+                    <table style="width: 100%" id="left">
+
+                    </table>
+                </div>
+                <div id="canpin" style="width: 75%; display: inline-block;">
+                    <!-- // '<table width="305px" id="canpin"></table> -->
+                </div>
+                <!-- </tbody>
+                </table> -->
+                <!-- /**
+                 * 点击购物车,显示操作
+                 * 袁君选
+                 */ -->
+                <!-- // '<p><br></p>'+
+                // '<p><br></p>'+
+                // '<p><br><br><br><br><br></p>'+ -->
+                <div id="shopall" style="position:absolute;bottom:0;width:400px;" class="gogogo">
+                    <div id="onnone" style="display:none">
+                        <table width="355" style="left: 0px; bottom: 182px; " data-sort="sortDisabled">
+                            <tbody>
+                                <tr class="firstRow" style="height:40px;">
+                                    <td valign="middle"
+                                        style="word-break: break-all; border-color: rgb(254, 243, 215); background-color: rgb(254, 243, 215);"
+                                        width="103">购物车</td>
+                                    <td valign="middle"
+                                        style="word-break: break-all; border-color: rgb(254, 243, 215); background-color: rgb(254, 243, 215);"
+                                        align="right" width="103">
+                                        <a href="#" onclick="emptyCart()">
+                                            清空购物车</a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id=shopdisplay style="display: none;">
+
+
+                    </div>
+                    <div id="bottomframe">
+                        <table style="left: 0px; bottom: 0px;width:400px;" class="gogogo">
+                            <tbody>
+                                <tr class="firstRow">
+                                    <td id="price"
+                                        style="border-color: rgb(255, 255, 255); word-break: break-all; height:50px; background:#403e3f; color:#fff;width:30%"
+                                        width="29" valign="middle" align="center">
+                                        &nbsp; 共￥0</td>
+                                    <td style="border-color: rgb(255, 255, 255); word-break: break-all; background:#fccd5b; color:#fff;width:35%"
+                                        width="25" valign="middle" align="center" id="statuspage">
+
+                                    </td>
+                                    <td style="border-color: rgb(255, 255, 255); word-break: break-all; background:#403e3f; color:#fff; width:25%"
+                                        width="18" valign="middle" align="center">
+                                        <a href="#" target="_self" onclick="upshopcar()">
+                                            <span style="color: rgb(255, 255, 255);">购物车</span></a><img
+                                            src="../../self/previewproducts/1558683886199未标题-1.png" title=""
+                                            alt="未标题-1.png">
+                                        &nbsp;<span
+                                            style="font-family: 微软雅黑, &quot;Microsoft YaHei&quot;;color:#f5f5f5;background-color:red;border-radius:13px;"
+                                            id="allnum"><br>0</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </form>
+    </section>
+
+
+    <!-- <script type="text/javascript" src="https://cdn-hangzhou.goeasy.io/goeasy.js"></script> -->
+    <script type="text/javascript">
+    //     var goeasy=new GoEasy({
+    //         appkey:'BC-143d5aeaad5543f49e00a45b44c691b9'
+    //     });
+    //     goeasy.subscribe({
+    //         channel:'demo',
+    //         onMessage: function (message) {
+    //             // var ss=[];
+    //            alert('收到'+message.content);
+    //             // ss=message.content.split("}");
+    //             // alert("sadsa"+ss[0]+"num2"+ss[2]);
+    // //            $.each(ss,function (index,value) {
+    // //
+    // //            })
+    //         }
+    //     });
+        
+
+        $(function () {
+            /**
+             * 动态渲染页面
+             * 袁君选
+             */
+            // var statuspage = window.location.search.split("?")[1];
+            var loc = location.href;
+            var n1 = loc.length;//地址的总长度
+            var n2 = loc.indexOf("=");//取得=号的位置
+            var id = decodeURI(loc.substr(n2 + 1, n1 - n1 + 1));//从=号后面的内容
+            var iddeng=0;
+           
+            
+
+            if (id == 0) {
+                $("#statuspage").html('<a href="../htreservation/html/htreservation.html" target="_self">' +
+                    '<span style="font-size: 16px; color: rgb(12, 12, 12);">提交订单</span>' +
+                    '</a>' +
+                    '<span style="font-size: 16px; color: rgb(12, 12, 12);">' +
+                    '<a href="http://gzdjd.m13w.cn/editor/assets/ueditor/formdesign/preview.html?link=120"' +
+                    'target="_self">&nbsp;&nbsp;' +
+                    '</a></span>' +
+                    '<br>');
+            } else if (id == 1) {
+                iddeng =window.location.search.split('?')[1].split('&&')[1].split('=')[1];
+                /**
+               * 监听视窗宽高
+               */
+
+                $(window).resize(function () { //当浏览器大小变化时
+                    console.log($(window).width());
+                    if ($(window).width() > 500) {
+                        $(".mnPhone").css("width", window.innerWidth + "px");
+                        $("#insertForm").css("width", window.innerWidth + "px");
+                        $(".gogogo").css("width", window.innerWidth + "px");
+                    }
+                })
+                window.addEventListener('load', function () {
+                    console.log(window.innerWidth);
+                    if (window.innerWidth > 500) {
+                        $(".mnPhone").css("width", window.innerWidth + "px");
+                        $("#insertForm").css("width", window.innerWidth + "px");
+                        $(".gogogo").css("width", window.innerWidth + "px");
+                    }
+
+                    // window.addEventListener('resize', function() {
+                    //     console.log(window.innerWidth);
+
+                    // })
+
+                })
+                $("#statuspage").html('<a href="../htevmorderfood/html/gopay.html?seat='+iddeng+'" target="_self">' +
+                    '<span style="font-size: 16px; color: rgb(12, 12, 12);">去支付</span>' +
+                    '</a>' +
+                    '<span style="font-size: 16px; color: rgb(12, 12, 12);">' +
+                    '<a href="http://gzdjd.m13w.cn/editor/assets/ueditor/formdesign/preview.html?link=120"' +
+                    'target="_self">&nbsp;&nbsp;' +
+                    '</a></span>' +
+                    '<br>');
+
+            }
+            /**
+             * 遍历类别
+             * 袁君选
+             */
+            $.ajax({
+                url: prevent_HOST + "htCategoryFacade/all",
+                type: "post",
+                dataType: "json",
+                success: function (res) {
+                    if (res != null) {
+                        // let that=this;
+                        $.each(res, function (index, value) {
+                           
+                            $("#left").append('<tr >' +
+                                '<td style="border-color: rgb(255, 255, 255); word-break: break-all; text-align: center;height: 40px; background: rgb(245, 245, 245);"' +
+                                'valign="middle" align="left" width="87">' +
+
+                                '<a href="#" onclick="allProducts(' + value.cid + ')">' +
+                                '<span style="font-size: 14px; text-decoration: none;" id="lei"  value=' +
+                                value.cid + '>' + value.categoryname + '</span>' +
+                                '</a>' +
+                                '<span style="font-size: 14px; display: none;color:#f5f5f5;background-color:red;border-radius:13px;" class="clean" id=' + "lei" + value.cid + ' >0</span>' +
+                                '<span style="font-size: 14px; text-decoration: none;"><br></span></td>' +
+                                '</tr>');
+                        })
+                        $("#left").append(
+                            '<tr><td style="border-color: rgb(255, 255, 255); word-break: break-all; height: 40px; background: rgb(245, 245, 245);"' +
+                            'valign="middle" align="left" width="87"></td></tr>' +
+                            '<tr><td style="border-color: rgb(255, 255, 255); word-break: break-all; height: 40px; background: rgb(245, 245, 245);"' +
+                            'valign="middle" align="left" width="87"></td></tr>'
+                        );
+
+                        allProducts(res[0].cid);
+                        previewjudgment();
+                    } else {
+                        alert("无数据,请到添加类别添加需要的信息")
+                    }
+                },
+                errer: function () {
+                    alert("请求失败");
+                }
+            });
+
+        })
+
+
+        /**
+        * 遍历餐品
+        * 袁君选
+        */
+        function allProducts(cid) {
+            var aa = '';
+            $.ajax({
+                url: prevent_HOST + "htProductsFacade/allProducts?productsCategory=" + cid,
+                type: "post",
+                dataType: "json",
+                success: function (res) {
+                    if (res != "" && res != null) {
+                        $.each(res, function (index, value) {
+                            aa += ' <div style="float:left ;width:30%;height: 80px;">' +
+                                '<td style="border-color: rgb(255, 255, 255); word-break: break-all;  width:30%" rowspan="2" colspan="1" valign="middle"' +
+                                'align="center" width="109">' +
+                                '<span style="font-size: 14px;">' +
+                                '<img class="currentImg" id="currentImg" src="' + value.productsPicture + '" style="width: 102px; height: 76px;"' +
+                                'title="" alt="" width="102" vspace="0" height="76" border="0"></span></td>' +
+                                ' </div>' +
+                                '<div style="width:40%;height: 80px;float:left;padding-top:20px">' +
+                                '<td style="border-color: rgb(255, 255, 255); word-break: break-all; ; height:40px" rowspan="2" colspan="1"' +
+                                'valign="middle" align="left" width="168">' +
+                                '<p>' +
+
+                                '<a href="/assets/ueditor/formdesign/self/previewproducts/previewproducts.html?productsId=' + value.productsId +
+                                '" target="_self" >' +
+
+                                '<span style="font-size: 14px;">' + value.productsName + '</span></p>' +
+                                '</a>' +
+                                '<p>' +
+                                '<span style="font-size: 14px; color: rgb(255, 0, 0);">￥' + value.prodyctsPrice +
+                                '&nbsp;</span>' +
+                                '</td>' +
+                                '</div>' +
+                                '<div  style="float:right ;width:30%;height: 80px;padding-top:30px">' +
+                                // '<span style="font-size: 14px;">&nbsp;&nbsp;&nbsp;&nbsp;' +
+                                // '&nbsp;&nbsp; &nbsp; &nbsp;&nbsp;&nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;' +
+
+                                '<button ' +
+                                'style="display:none;"' +
+                                ' ' + 'id=' + "numjian" + value.productsId + ' type="button"  class=' + "numjian" + ' onclick=' + "jianfunction(" + value.productsId + "," + cid + ")" + '>-</button>' +
+                                // '<input type='+"button" + '  value=' + "-" + '  class=' + "jian"+' onclick='+"jianfunction("+value.productsId+")" +'>'+
+                                '<input style="margin-bottom:0;width:25px;" type=' + "text" + ' class =' + "wenall" + ' id =' + "wen" + value.productsId + ' value=' + "0" + ' name=' + "aa" + '>' +
+                                '<button ' + 'id=' + "numjian" + value.productsId + ' type="button"  class=' + "numjia" + ' onclick=' + "jiafunction(" + value.productsId + "," + cid + ")" + '>+</button>' +
+                                // '<input type='+"button" + '  value=' + "+" + '  class=' + "jia" +' onclick='+"jiafunction("+value.productsId+")"+'>'+
+                                '</div>';
+
+                            $("#canpin").html(aa);
+                            car();
+
+                        })
+                    } else {
+                        alert("无数据,请添加此类别的商品信息")
+                    }
+                },
+                errer: function () {
+                    alert("请求失败");
+                }
+            });
+        }
+
+
+        function bb(productsid) {
+            var bb = $("#wen" + productsid).val();
+            if (bb > 0) {
+                $("#numjian" + productsid).show();
+            } else {
+                $("#numjian" + productsid).hide();
+            }
+        }
+        function aa() {
+            var aa = $("#allnum").text();
+            if (aa = "NaN") {
+                aa = 0;
+            }
+            var cc = parseInt(aa) + 1;
+            $("#allnum").text(cc);
+        }
+
+        /**
+       * 类别刷新数字操作
+       */
+        function refresh(cid) {
+            var fct = $("#lei" + cid).text();
+            var cc = parseInt(fct);
+            if (cc != 0) {
+                $("#lei" + cid).show();
+            } else {
+                $("#lei" + cid).hide();
+            }
+
+        }
+
+        /**
+         * 餐品加减操作
+         */
+
+        function jiafunction(productsid, cid) {
+            var num = '';
+            if (cid == 0) {
+                num = document.getElementById("wenqwe" + productsid);
+            } else {
+                num = document.getElementById("wen" + productsid);
+            }
+
+            
+            // var car = document.getElementById("gcar");	
+            num.value = parseInt(num.value) + 1;
+
+            var aa = $("#allnum").text();
+            var cc = parseInt(aa) + 1;
+            $("#allnum").text(cc);
+
+            var fct = $("#lei" + cid).text();
+            var cc = parseInt(fct) + 1;
+            $("#lei" + cid).text(cc);
+            refresh(cid)
+
+            bb(productsid);
+            var data = {
+                "productsId": productsid
+            }
+            $.ajax({
+                url: prevent_HOST + "htShopcarFacade/insertSelectiveShopCar",
+                type: "post",
+                dataType: "json",
+                data: JSON.stringify(data),
+                contentType: 'application/json; charset=UTF-8',
+                async: false,
+                success: function (res) {
+                    if (res != 0) {
+                        alert("进入数据库操作res=" + res)
+                        previewjudgment();
+                    } else {
+                        alert("购物车数据添加失败res=" + res)
+                    }
+                },
+                error: function () {
+                    alert("餐品加减操作失败");
+                }
+            });
+            car();
+            // car.value=parseInt(car.value)+1;
+            //        shopcar(productsid);
+        };
+
+
+
+        function jianfunction(productsid, cid) {
+
+            var num = '';
+            if (cid == 0) {
+                num = document.getElementById("wenqwe" + productsid);
+            } else {
+                num = document.getElementById("wen" + productsid);
+            }
+            // var num = document.getElementById("wen" + productsid);
+            // var car = document.getElementById("gcar");
+            num.value = parseInt(num.value) - 1;
+            refresh(cid);
+            var aa = $("#allnum").text();
+            var cc = parseInt(aa) - 1;
+            $("#allnum").text(cc);
+
+            var fct = $("#lei" + cid).text();
+            var cc = parseInt(fct) - 1;
+            $("#lei" + cid).text(cc);
+            refresh(cid)
+
+            bb(productsid);
+
+            $.ajax({
+                url: prevent_HOST + "htShopcarFacade/deleteByPrimaryKeyShopCar?productsId=" + productsid,
+                type: "post",
+                dataType: "json",
+                contentType: 'application/json; charset=UTF-8',
+                async: false,
+                success: function (res) {
+                    if (res != 0) {
+                        alert("进入数据库删除操作res=" + res)
+                        previewjudgment();
+                    } else {
+                        alert("购物车数据删除失败res=" + res)
+                    }
+                },
+                error: function () {
+                    alert("餐品加减操作失败");
+                }
+            });
+            car();
+            // var aa = num.value;
+            // var bb=$(this).prev().text();
+            // var xx=$("wen"+productsid).val();
+            // car.value=parseInt(car.value)+1;
+            //        shopcar(productsid);
+        };
+
+        /**
+         * 预览判断
+         */
+        function previewjudgment() {
+            // that.res;
+            // alert("测试res");
+            // alert(that.res)
+            var showprice = 0;
+            var num = 0;
+            $.ajax({
+                url: prevent_HOST + "htShopcarFacade/allHtShopcar",
+                type: "post",
+                dataType: "json",
+                contentType: 'application/json; charset=UTF-8',
+                async: false,
+                success: function (res) {
+                    if (res != "" && res != null) {
+                        $.each(res, function (index, value) {
+                            showprice += value.prodycts_price * value.number;
+                            num += value.number;
+                        })
+                        $("#allnum").text(num);
+                        $("#price").html("共￥" + showprice);
+                    }
+                }
+            })
+        }
+
+        function car() {
+            var showproducts = '';
+            var showprice = 0;
+            $.ajax({
+                url: prevent_HOST + "htShopcarFacade/allHtShopcar",
+                type: "post",
+                dataType: "json",
+                contentType: 'application/json; charset=UTF-8',
+                async: false,
+                success: function (res) {
+                    if (res != "" && res != null) {
+                        $.each(res, function (index, value) {
+                            showprice += value.prodycts_price * value.number;
+                            showproducts += '<table data-sort="sortDisabled" width="355" ' +
+                                'style="' +
+                                // 'position: absolute;'+
+                                // ' left: 0px;'+
+                                ' bottom: 118px;">' +
+                                '<tbody>' +
+                                '<tr class="firstRow">' +
+                                '<td valign="top" rowspan="2" style="word-break: break-all; border-color: rgb(255, 255, 255); padding: 2px; background-color: rgb(255, 255, 255);"' +
+                                'width="20%"><img class="currentImg" id="currentImg" src="' + value.products_picture + '" title="" alt="" width="81" vspace="0"' +
+                                'height="60" border="0" style="font-size: 12px; text-align: -webkit-center; white-space: normal; width: 81px; height: 60px;"></td>' +
+                                '<td valign="top" style="word-break: break-all; border-color: rgb(255, 255, 255); background-color: rgb(255, 255, 255);"' +
+                                'colspan="2" width="60%"><span style="font-size: 14px;">' + value.products_name + '</span></td>' +
+                                '<td valign="top" style="border-color: rgb(255, 255, 255); background-color: rgb(255, 255, 255);" width="20%"></td>' +
+                                '</tr>' +
+                                '<tr>' +
+                                '<td valign="top" style="word-break: break-all; border-color: rgb(255, 255, 255); background-color: rgb(255, 255, 255);"' +
+                                'width="8"><span style="color: rgb(255, 0, 0);">￥' + value.prodycts_price + '</span></td>' +
+                                '<td valign="top" style="border-color: rgb(255, 255, 255); background-color: rgb(255, 255, 255);" width="2"></td>' +
+                                '<td valign="top" style="border-color: rgb(255, 255, 255); word-break: break-all; background-color: rgb(255, 255, 255);"' +
+                                'width="undefined">' +
+                                '<button id=' + "numjianqwe" + value.products_id + ' type="button"  class=' + "numjian" + ' onclick=' + "jianfunction(" + value.products_id + "," + 0 + ")" + '>-</button>' +
+                                '<input type="text" value="' + value.number + '" class="numtxt"' + ' id =' + "wenqwe" + value.products_id +
+                                ' style="margin-bottom:0;width:26px;">' +
+                                '<button ' + 'id=' + "numjiaqwe" + value.products_id + ' type="button"  class=' + "numjia" + ' onclick=' + "jiafunction(" + value.products_id + "," + 0 + ")" + '>+</button>' +
+                                '</td>' +
+                                '</tr>' +
+                                '</tbody>' +
+                                '</table>';
+
+                        })
+
+                        $("#shopdisplay").html(showproducts);
+                        // $("#price").html("共￥" + showprice);
+                    } else {
+                        $("#shopdisplay").html("");
+                    }
+                },
+                error: function () {
+                    alert("购物车显示操作失败");
+                }
+            });
+        }
+
+        /**
+         * 购物车显示数据操作
+         */
+        function upshopcar() {
+            alert("进入购物车显示操作");
+            $("#onnone").show();
+            $("#shopdisplay").show();
+            // car();
+            // var showproducts = '';
+            // var showprice = 0;
+            // $.ajax({
+            //     url: prevent_HOST + "htShopcarFacade/allHtShopcar",
+            //     type: "post",
+            //     dataType: "json",
+            //     contentType: 'application/json; charset=UTF-8',
+            //     async: false,
+            //     success: function (res) {
+            //         if (res != "" && res != null) {
+            //             $.each(res, function (index, value) {
+            //                 showprice += value.prodycts_price * value.number;
+            //                 showproducts += '<table data-sort="sortDisabled" width="355" ' +
+            //                     'style="' +
+            //                     // 'position: absolute;'+
+            //                     // ' left: 0px;'+
+            //                     ' bottom: 118px;">' +
+            //                     '<tbody>' +
+            //                     '<tr class="firstRow">' +
+            //                     '<td valign="top" rowspan="2" style="word-break: break-all; border-color: rgb(255, 255, 255); padding: 2px; background-color: rgb(255, 255, 255);"' +
+            //                     'width="20%"><img class="currentImg" id="currentImg" src="' + value.products_picture + '" title="" alt="" width="81" vspace="0"' +
+            //                     'height="60" border="0" style="font-size: 12px; text-align: -webkit-center; white-space: normal; width: 81px; height: 60px;"></td>' +
+            //                     '<td valign="top" style="word-break: break-all; border-color: rgb(255, 255, 255); background-color: rgb(255, 255, 255);"' +
+            //                     'colspan="2" width="60%"><span style="font-size: 14px;">' + value.products_name + '</span></td>' +
+            //                     '<td valign="top" style="border-color: rgb(255, 255, 255); background-color: rgb(255, 255, 255);" width="20%"></td>' +
+            //                     '</tr>' +
+            //                     '<tr>' +
+            //                     '<td valign="top" style="word-break: break-all; border-color: rgb(255, 255, 255); background-color: rgb(255, 255, 255);"' +
+            //                     'width="8"><span style="color: rgb(255, 0, 0);">￥' + value.prodycts_price + '</span></td>' +
+            //                     '<td valign="top" style="border-color: rgb(255, 255, 255); background-color: rgb(255, 255, 255);" width="2"></td>' +
+            //                     '<td valign="top" style="border-color: rgb(255, 255, 255); word-break: break-all; background-color: rgb(255, 255, 255);"' +
+            //                     'width="undefined">' +
+            //                     '<button id=' + "numjian" + value.products_id + ' type="button"  class=' + "numjian" + ' onclick=' + "jianfunction(" + value.products_id +")" + '>-</button>' +
+            //                     '<input type="text" value="' + value.number + '" class="numtxt"' + ' id =' + "wen" + value.products_id +
+            //                     ' style="margin-bottom:0;width:26px;">' +
+            //                     '<button ' + 'id=' + "numjian" + value.products_id + ' type="button"  class=' + "numjia" + ' onclick=' + "jiafunction(" + value.products_id + ")" + '>+</button>' +
+            //                     '</td>' +
+            //                     '</tr>' +
+            //                     '</tbody>' +
+            //                     '</table>';
+
+            //             })
+
+            //             $("#shopdisplay").html(showproducts);
+            //             // $("#price").html("共￥" + showprice);
+            //         } else {
+            //             $("#shopdisplay").html("");
+            //         }
+            //     },
+            //     error: function () {
+            //         alert("购物车显示操作失败");
+            //     }
+            // });
+        }
+        /**
+         * 清空购物车
+         * 袁君选
+         */
+        function emptyCart() {
+            alert("进入清空购物车操作");
+            $("#allnum").text(0);
+            $.ajax({
+                url: prevent_HOST + "htShopcarFacade/emptyCart",
+                type: "post",
+                dataType: "json",
+                contentType: 'application/json; charset=UTF-8',
+                async: false,
+                success: function (res) {
+                    if (res > 0) {
+                        alert("清空购物车成功,一共清除" + res + "数据");
+                        $("#shopdisplay").html('');
+                        $("#price").html("共￥" + 0);
+                        $(".wenall").html(0);
+                        $(".clean").text(0);
+                        $(".clean").hide();
+                        $(".wenall").val(0);
+                    } else {
+                        alert("无数据清除");
+                    }
+                },
+                errer: function () {
+                    alert("清空购物车操作失败");
+                }
+            })
+        }
+
+    </script>
+    <script src="../../self/js/sCheckIn.js"></script>
+    <script src="../../self/swiper/swiper-4.2.2.min.js"></script>
+    <script src="../../self/js/use_bottom_preview.js"></script>
+    <script src="../../self/js/preview_logic.js"></script>
+    <script src="../../self/js/preview_other_config.js"></script>
+    <script src="../../self/tree/yntree.js"></script>
+    <!-- <script type="text/javascript" src="./self/commentControl/js/jquery-min.js"></script> -->
+    <script type="text/javascript" src="../../self/commentControl/js/commentController.js"></script>
+</body>
+
+</html>

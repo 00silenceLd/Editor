@@ -1,0 +1,448 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title>分类/级联控件</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <script src="self/ligerlib/jquery/jquery-1.11.1.min.js"></script>
+    <script src="self/js/py.js"></script>
+    <script src="self/ligerlib/ligerUI/js/ligerui.min.js"></script>
+    <script src="self/ligerlib/ligerUI/js/plugins/ligerTree.js"></script>
+    <link rel="stylesheet" href="self/ligerlib/ligerUI/skins/Aqua/css/ligerui-all.css">
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.css">
+    <!--[if lte IE 6]>
+    <link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap-ie6.css">
+    <![endif]-->
+    <!--[if lte IE 7]>
+    <link rel="stylesheet" type="text/css" href="bootstrap/css/ie.css">
+    <![endif]-->
+    <link rel="stylesheet" href="leipi.style.css">
+    <script src="../httpData.config.js"></script>
+    <script type="text/javascript" src="../dialogs/internal.js"></script>
+    <style type="text/css">
+      #nodeinfo{
+        width: 380px;
+        height: 60px;
+        margin-bottom: 3px;
+      }
+      #orgname,#pluid,#nextid{
+        margin-bottom: 3px;
+      }
+      .plu_option span{
+        display: inline-block;
+        width: 65px;
+      }
+      #classtreeare{
+        height: 412px;
+      }
+      #nodeedit{
+        display: none;
+        position: absolute;
+        left: 100px;
+        top: 100px;
+        width: auto;
+        height: auto;
+        border: 2px solid #ccc;
+        border-radius: 3px;
+        background-color: #ffffff;
+        padding: 20px;
+      }
+      #nodeedit div{
+        padding: 5px;
+      }
+      #nodeedit div span{
+        display: inline-block;
+        width: 60px;
+      }
+      #nodeedit div span.nodebtncmt,#nodeedit div span.nodebtncal{
+        display: inline-block;
+        width: auto;
+        height: 26px;
+        text-align: center;
+        line-height: 26px;
+        background-color: #d293d6;
+        color: #ffffff;
+        margin-left: 20px;
+        cursor: pointer;
+        padding: 0px 10px;
+        border-radius: 3px;
+      }
+      #nodeedit div span.nodebtncal{
+        background-color: #ccc;
+        color: #ffffff;
+      }
+    </style>
+    <script type="text/javascript">
+        function createElement( type, name ) {
+            var element = null;
+            try {
+                element = document.createElement( '<' + type + ' name="' + name + '">' );
+            } catch ( e ) {}
+            if ( element == null ) {
+                element = document.createElement( type );
+                element.name = name;
+            }
+            return element;
+        }
+    </script>
+</head>
+<body>
+    <div class="content">
+        <table class="table table-bordered table-striped table-hover">
+            <tr>
+              <td>
+                来源：
+                <select name="old_class" id="old_class" onchange="classChang(this.value);">
+                  <option value="0">--分类--</option>                  
+                </select>
+                <button onclick="addNewItem()">创建</button>
+              </td>
+              <td>
+                <span>控件名称*</span>
+                <input id="orgname" placeholder="必填项" onclick="javascript:this.select()" type="text" value="分类管理" onblur="getPY(this.value)">
+                <span>字段拼音*</span>
+                <input type="text" id="pluName" placeholder="字段" value="fenleiguanli" >
+              </td>
+            </tr>
+          <tr>
+            <td colspan="2">
+              <!-- <div>
+                <textarea name="nodeinfo" id="nodeinfo"></textarea>
+              </div>
+              <div>
+                 <button onclick="addItem()">新增</button> <button onclick="updateItem()">修改</button> <button onclick="delNode()">删除</button>
+              </div> -->
+              <div id="classtreeare">
+                <ul id="classtree"></ul>
+              </div>              
+            </td>            
+          </tr>            
+        </table>
+    </div>
+
+    <div id="nodeedit">
+      <div>
+        <span>父级：</span>
+        <select id="pid-select">
+          <option value="0">根节点</option>
+        </select>
+      </div>
+      <div><span>分类名：</span><input type="text" name="nodename" value="" class="span3"></div>
+      <div><span class="nodebtncmt" onclick="calDiv();">确定</span><span class="nodebtncal">取消</span></div>
+    </div>
+    <script type="text/javascript">
+        var oNode = null;
+        var control_name=null;
+        var nodeId=null;
+        var manager=null;
+        var thePlugins = 'classifymg';
+        var treedata = [];
+        var rootId=null;
+        var currNode=null;
+        var nodeinfo=$("#nodeedit");
+        var menu = $.ligerMenu({
+          top: 100, left: 100, width: 120, items: [
+            {text: '增加', click: addItem, icon: 'add'},
+            {text: '修改',click:updateItem},
+            {line: true},            
+            {text: '删除', click: delNode, icon: 'del'}
+          ]
+        });        
+
+        function getClass() {
+          $.ajax({
+            url: prevent_HOST + 'pageDesignQueryFacade/getclassifyByParentId?pid=0',
+            method: "GET",
+            success: function ( res ) {
+              if(res.status=='200'){
+                var html='<option value="0">--分类--</option>';
+                var html2='<option value="0">根节点</option>';
+                var list=res.msg;
+                if(list.length>0){
+                  for(var i=0;i<list.length;i++){
+                    html+='<option value="'+list[i].id+'">'+list[i].name+'</option>';
+                    html2+='<option value="'+list[i].id+'">'+list[i].name+'</option>';                    
+                  }
+                  $("#old_class").html(html);
+                  $("#pid-select").html(html2);
+                }
+              }
+            }
+          });
+        }
+        
+
+        function classChang(val) {
+          if(val==0){
+            rootId=0;
+            treedata=[];
+            manager.setData(treedata);
+          }else{
+            //rootId=val;
+            $.ajax({
+              url: prevent_HOST + 'pageDesignQueryFacade/getCascadeClassifyRecord?rootId='+val,
+              method: "GET",
+              success: function ( res ) {
+                if(res.status=="200") {
+                  treedata=[res.msg];
+                  rootId=val;
+                  manager.setData(treedata);
+                }else{
+                  alert(res.statusMsg);
+                }
+              }
+            });
+          }
+        }
+
+        function addNewItem() {
+          if(rootId!=null){
+            alert("根节点已经存在");
+            return;
+          }
+          $('.nodebtncmt').html("添加新分类");
+          nodeinfo.css('display','inline-block');
+          /* if(nodeinfo.val()!=''){
+            var formData={"parentId":0,"name":nodeinfo.val()};
+            $.ajax({
+              url: prevent_HOST + 'pageDesignOperatorFacade/addCascadeClassifyRecord',
+              method: "POST",
+              contentType: 'application/json;charset=UTF-8',
+              data: JSON.stringify(formData),
+              success: function ( res ) {
+                console.log(res);
+                if(res.status=="200") {
+                  rootId=res.msg;
+                  treedata=[{"id":res.msg,"parentId":0,"name":nodeinfo.val()}];
+                  nodeinfo.val('');
+                  manager.setData(treedata);
+                }else{
+                  alert(res.statusMsg);
+                }
+              }
+            });
+          }else{
+            nodeinfo.focus();
+          } */
+        }
+        function addItem()
+        {
+          var node = manager.getSelected();
+          if(node){
+            var nodes = [],newItem=nodeinfo.val();
+            if(newItem==''){
+              alert("填写新增节点名");
+              nodeinfo.focus();
+              return false;
+            }
+            var formData={ parentId:node.data.id,name: newItem };
+            $.ajax({
+              url: prevent_HOST + 'pageDesignOperatorFacade/addCascadeClassifyRecord',
+              method: "POST",
+              contentType: 'application/json;charset=UTF-8',
+              data: JSON.stringify(formData),
+              success: function ( res ) {
+                if(res.status=="200") {
+                  nodes.push({id:res.msg, parentId:node.data.id,name: newItem });
+                  manager.append(node.target, nodes);
+                  nodeinfo.val('');
+                }else{
+                  alert(res.statusMsg);
+                }
+              }
+            });
+          }else{
+            alert("没有选择节点");
+            return false;
+          }
+        }
+        function calDiv(){
+          currNode=null;
+          $('input[name="nodename"]').val('');
+          nodeinfo.css('display','none');
+        }
+        function delNode()
+        {
+          var node = manager.getSelected();
+          if (node){
+            $.ajax({
+              url: prevent_HOST + 'pageDesignOperatorFacade/delCascadeClassifyRecord?id='+node.data.id,
+              method: "GET",
+              success: function ( res ) {
+                if(res.status=="200") {
+                  manager.remove(node.target);
+                  nodeinfo.val('');
+                }else{
+                  alert(res.statusMsg);
+                }
+              }
+            });
+          }else{
+            alert('请先选择节点');
+          }
+            
+
+        }
+
+        function updateItem()
+        {
+          var node = manager.getSelected();
+          if (node){
+            var formData={id:node.data.id,name: nodeinfo.val()};
+            $.ajax({
+              url: prevent_HOST + 'pageDesignOperatorFacade/updateCascadeClassifyRecord',
+              method: "POST",
+              contentType: 'application/json;charset=UTF-8',
+              data: JSON.stringify(formData),
+              success: function ( res ) {
+                if(res.status=="200") {
+                  manager.update(node.target, { name: nodeinfo.val() });
+                  nodeinfo.val('');
+                }else{
+                  alert(res.statusMsg);
+                }
+              }
+            });
+          }
+        }
+
+        window.onload = function () {
+            //$G('orgname').select();
+            if ( UE.plugins[ thePlugins ].editdom ) {
+                oNode = UE.plugins[ thePlugins ].editdom;
+                var gTitle = oNode.getAttribute( 'title' ).replace( /&quot;/g, "\"" );
+                $G( 'orgname' ).value = gTitle;
+                name = oNode.getAttribute( 'name' );
+                control_name=name;
+                $G('pluName').value = name;
+                var nid = oNode.getAttribute( 'nid' ).replace( /&quot;/g, "\"" );
+                rootId=nid;
+                $.ajax({
+                  url: prevent_HOST + 'pageDesignQueryFacade/getCascadeClassifyRecord?rootId='+rootId,
+                  method: "GET",
+                  success: function ( res ) {
+                    if(res.status=="200") {
+                      treedata=[res.msg];
+                      manager.setData(treedata);
+                    }else{
+                      alert(res.statusMsg);
+                    }
+                  }
+                });
+            }else{
+              var timestamp = Date.parse(new Date());
+                  timestamp = 'plu' + timestamp / 1000;
+              pluid.val(timestamp);
+            }
+
+            nodeId = $("#node_id",window.parent.document).val();
+            manager = $("#classtree").ligerTree({
+              data:treedata,
+              idFieldName :'id',
+              textFieldName: 'name',
+              slide : false,
+              parentIDFieldName :'parentId',
+              checkbox:false,
+              parentIcon: null,
+              childIcon: null,
+              nodeWidth:312,
+              onclick:function(node){            
+                currNode=node.data;
+              },
+              onContextmenu: function (node, e) {
+                menu.show({top: e.pageY, left: e.pageX});
+                return false;
+              }
+            });
+            getClass();
+
+        }
+
+        dialog.oncancel = function () {
+            if ( UE.plugins[ thePlugins ].editdom ) {
+                delete UE.plugins[ thePlugins ].editdom;
+            }
+        }
+        dialog.onok = function () {
+            /*if (rootId == null ) {
+              alert( '控件没有关联任何分类' );
+              return false;
+            }*/
+            if ( $G( 'orgname' ).value == '' ) {
+                alert( '控件名称不能为空' );
+                return false;
+            }
+            var PN=$('#pluName');
+            cupy=PN.val();
+            if(cupy==''){
+              getPY(gTitle);
+            }
+            var pluidval=pluid.val();
+            if(pluidval==''){
+              alert("控件ID没有填写");
+              pluid.focus();
+              return false;
+            }
+            var nextidval=nextid.val();
+            var classtype=$('[name="classtype"]:checked').val();
+
+            var gTitle = $G( 'orgname' ).value.replace( /\"/g, "&quot;" );
+            if ( !oNode ) {
+                try {
+                    oNode = createElement( 'input', cupy );
+                    oNode.setAttribute( 'title', gTitle );
+                    oNode.setAttribute( 'value', gTitle );
+                    oNode.setAttribute( 'cid', pluidval );
+                    oNode.setAttribute( 'sonid', nextidval );
+                    oNode.setAttribute( 'nid', rootId );
+                    oNode.setAttribute( 'type', 'text' );
+                    oNode.setAttribute( 'classtype', classtype );
+                    oNode.setAttribute( 'leipiPlugins', thePlugins );
+                    editor.execCommand( 'insertHtml', oNode.outerHTML );
+
+                    var editNewData={"node_id": nodeId,"title":gTitle,"control_name": cupy}
+                      $.ajax({
+                        url: prevent_HOST + `pageDesignOperatorFacade/insertControl`,
+                        type: 'POST',
+                        dataType: 'json',
+                        contentType: 'application/json; charset=UTF-8',
+                        data: JSON.stringify(editNewData),
+                        async: false,
+                        success: function ( res ) {
+                        }
+                      })
+
+                } catch ( e ) {
+                    try {
+                        editor.execCommand( 'error' );
+                    } catch ( e ) {
+                        alert( '控件异常，请反馈或寻求帮助！' );
+                    }
+                    return false;
+                }
+            } else {
+                oNode.setAttribute( 'title', gTitle );
+                oNode.setAttribute( 'name', cupy );
+                oNode.setAttribute( 'cid', pluidval );
+                oNode.setAttribute( 'sonid', nextidval );
+                oNode.setAttribute( 'nid', rootId );
+                oNode.setAttribute( 'classtype', classtype );
+                delete UE.plugins[ thePlugins ].editdom;
+                var editNewData={"node_id": nodeId,"title":gTitle,"control_name": control_name,"new_control_name": cupy}
+                    $.ajax({
+                        url: prevent_HOST + `pageDesignOperatorFacade/updateControl`,
+                        type: 'POST',
+                        dataType: 'json',
+                        contentType: 'application/json; charset=UTF-8',
+                        data: JSON.stringify(editNewData),
+                        async: false,
+                        success: function ( res ) {
+                        }
+                    })
+                return true;
+            }
+        }
+
+    </script>
+</body>
+</html>

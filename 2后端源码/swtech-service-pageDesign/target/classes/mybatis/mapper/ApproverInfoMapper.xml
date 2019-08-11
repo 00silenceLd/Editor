@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+	namespace="swtech.service.pageDesign.dao.impl.ApproveInfoDaoImpl">
+	<resultMap id="approveInfoMap"
+		type="swtech.facade.pageDesign.entity.ApproveInfo">
+		<id column="id" property="id" />
+		<result column="node_id" property="nodeId" />
+		<result column="select_id" property="selectId" />
+		<result column="is_approve" property="isApprove" />
+	</resultMap>
+	
+	<!-- 查询数据 审核过的和未审核的 -->
+	<select id="queryApproveInfo" parameterType="Integer"
+		resultMap="approveInfoMap">
+		select node_id ,select_id from ht_approve_rel
+		where is_approve = #{isApprove}
+
+	</select>
+
+	<!-- 审核成功后将is_approve字段值改为1 -->
+	<update id="updataApproveInfo"
+		parameterType="swtech.facade.pageDesign.entity.ApproveInfo">
+		update ht_approve_rel set is_approve = 1
+		where node_id = #{nodeId} and select_id = #{selectId}
+	</update>
+
+
+	<!-- 向表中插入数据 -->
+	<insert id="insertApproveInfo"
+		parameterType="swtech.facade.pageDesign.entity.ApproveInfo">
+		INSERT INTO ht_approve_rel(
+		node_id,select_id,is_approve
+		)VALUES(
+		#{nodeId},#{selectId},#{isApprove}
+		)
+
+	</insert>
+
+
+</mapper>

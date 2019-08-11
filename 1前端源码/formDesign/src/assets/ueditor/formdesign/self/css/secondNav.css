@@ -1,0 +1,37 @@
+label {
+    display: inline-block;
+    margin-left: 4px;
+}
+.width90{
+    position: relative;
+    width:90px;
+    height:100%;
+}
+.display_none{
+    display: none;
+}
+input[type="file"]{
+    position: absolute;
+    left:0;
+    top:0;
+    width:100%;
+    height: 100%;
+    opacity: 0;
+    color:transparent;
+}
+.title-icon{
+    display: none;
+    margin-left:4px;
+    width:20px;
+    height:20px;
+}
+.first_title{
+    padding:4px 5px;
+
+}
+.table_area{
+    display: block;
+}
+.deletediv{
+    margin-top:50px;
+}

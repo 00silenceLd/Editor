@@ -1,0 +1,93 @@
+body {
+	font: 14px Helvetica Neue, Helvetica, PingFang SC, Tahoma, Arial, sans-serif;
+}
+
+
+
+
+#videoInfoAreaId {
+	display: none;
+	width: 100%;
+	text-align: center;
+}
+
+#videoInfoTitleDivId {
+	text-align: center;
+	width: 200px;
+	margin-top: 50px;
+}
+
+#videoInfoDateDivId {
+	text-align: center;
+	width: 300px;
+	margin-top: 50px;
+}
+
+#videoInfoContentDivId {
+	text-align: center;
+	width: 500px;
+	margin-top: 50px;
+}
+
+#videoInfoTitleId {
+	text-align: center;
+	margin-left: 250px;
+}
+
+#videoInfoDateId {
+	text-align: center;
+	margin-left: 200px;
+}
+
+#videoInfoContentId {
+	/* display: block; */
+	height: 300px;
+	display: none;
+	margin-left: 100px;
+}
+
+#uploadVideoBtnId {
+	margin-left: 170px;
+}
+
+#textInfoAreaId {
+	width: 100%;
+	text-align: center;
+	display: none;
+}
+
+#textInfoTitleDivId {
+	text-align: center;
+	width: 200px;
+	margin-top: 50px;
+}
+
+#textInfoDateDivId {
+	text-align: center;
+	width: 300px;
+	margin-top: 50px;
+}
+
+#textInfoContentDivId {
+	text-align: center;
+	width: 500px;
+	margin-top: 50px;
+}
+
+#textInfoTitleId {
+	text-align: center;
+	margin-left: 250px;
+}
+
+#textInfoDateId {
+	text-align: center;
+	margin-left: 200px;
+}
+
+#textInfoContentId {
+	margin-left: 100px;
+	height: 300px;
+}
+#textInfoImgDivId{
+	margin-top: 50px;
+}

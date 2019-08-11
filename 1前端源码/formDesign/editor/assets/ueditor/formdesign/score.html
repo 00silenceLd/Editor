@@ -1,0 +1,227 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+
+	<head>
+		<title>评分控件</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+		<link rel="stylesheet" href="bootstrap/css/bootstrap.css">
+		<link rel="stylesheet" href="bootstrap/css/bootstrap.same.css">
+		<!--[if lte IE 6]>
+    <link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap-ie6.css">
+    <![endif]-->
+		<!--[if lte IE 7]>
+    <link rel="stylesheet" type="text/css" href="bootstrap/css/ie.css">
+    <![endif]-->
+		<link rel="stylesheet" href="leipi.style.css">
+		<script type="text/javascript" src="../dialogs/internal.js"></script>
+		<script type="text/javascript" src="jquery-3.2.1.min.js"></script>
+		<script src="self/js/py.js"></script>
+		<script type="text/javascript" src="../httpData.config.js"></script>
+		<link rel="stylesheet" href="bootstrap/css/bootstrap.same.css">
+
+		<style>
+			label{
+            display: inline-block;
+            margin-left:10px;
+        }
+
+    </style>
+
+		<script type="text/javascript">
+			/* Thank you by
+                                    http://www.alt-tag.com/blog/2006/02/ie-dom-bugs/ */
+			function createElement(type, name) {
+				var element = null;
+				try {
+					element = document.createElement('<' + type + ' name="' + name + '">');
+				} catch (e) {}
+				if (element == null) {
+					element = document.createElement(type);
+					element.name = name;
+				}
+				return element;
+
+			}
+
+			function fnParseOptions(gChecked, gChecked1) {
+				//默认横向排列，星星图形
+				var html = "";
+				var score_length = 5;
+				//判断图案类型
+				if (gChecked1 == "1") {
+					for (var i = 0; i < score_length; i++) {
+						//图案是星型的时候
+						html += '&nbsp;<a title="' + (i + 1) +
+							'分" class="color_gray"><span class="glyphicon glyphicon-star"></span></a>&nbsp;';
+						if (gChecked == "0") {
+							//竖排的时候做点什么
+							html += '<br/>';
+						}
+
+						if (gChecked == 'orgchecked1') { //竖排
+							html += '<br/>';
+						}
+					}
+				} else {
+					for (var i = 0; i < score_length; i++) {
+						//图案是心型的时候
+						html += '&nbsp;<a title="' + (i + 1) +
+							'分" class="color_gray"><span class="glyphicon glyphicon-heart"></span></a>&nbsp;'
+					}
+					//默认为横向排列
+					if (gChecked == "0") {
+						//竖排的时候做点什么
+						html += '<br/>';
+					}
+
+					if (gChecked == 'orgchecked1') { //竖排
+						html += '<br/>';
+					}
+				}
+				//alert(html);
+				return html;
+				score_length = "";
+
+			}
+		</script>
+	</head>
+
+	<body>
+		<div class="content">
+			<table class="table table-bordered table-striped table-hover">
+				<tr>
+					<th>
+						<span>控件名称</span>
+						<span class="label label-important">*</span>
+						<span>字段拼音</span>
+					</th>
+					<!-- <th>
+						<span>排列方式</span>
+						<span class="label label-important">*</span>
+					</th> -->
+				</tr>
+				<tr>
+					<td>
+						<input type="text" id="orgname" onclick="javascript:this.select()" placeholder="必填项" value="评分控件" onblur="getPY(this.value)">
+						<input type="text" class="span2" id="pluName" placeholder="字段" value="">
+					</td>
+					<!-- <td>
+						<label><input id="orgwaychecked0" checked="checked" type="radio" name="orderby" value="1">横排</label>
+						<label><input id="orgwaychecked1" type="radio" name="orderby" value="0">竖排</label>
+					</td> -->
+				</tr>
+				<!-- <tr>
+					<th>
+						<span>宽</span>
+					</th>
+					<th>
+						<span>高</span>
+					</th>
+				</tr>
+				<tr>
+					<td>
+						<input id="orgwidth" type="text" class="input-small span1" placeholder="auto" value="" onclick="this.value=this.value.replace(/\D/g,'')"
+						 onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')" />
+						<select id="orgvarfontwidth" style="width:65px;">
+							<option>PX</option>
+							<option selected>%</option>
+						</select>
+					</td>
+					<td>
+						<input id="orgheight" type="text" class="input-small span1" placeholder="auto" value="" onclick="this.value=this.value.replace(/\D/g,'')"
+						 onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')" />
+						<select id="orgvarfontheight" style="width:65px;">
+							<option>PX</option>
+							<option>%</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<th>图案大小</th>
+					<th>图案形状</th>
+				</tr>
+				<tr>
+					<td>
+						<input id="orgfontsize" type="text" value="16" class="input-small span1" placeholder="auto" />
+						<select id="orgvarfontwidth" style="width:75px;">
+							<option>PX</option>
+						</select>
+					</td>
+					<td>
+						<label><input id="orgshapechecked0" checked="checked" type="radio" name="orderby1" value="1">星星图形</label>
+						<label><input id="orgshapechecked1" type="radio" name="orderby1" value="0">爱心图形</label>
+					</td>
+				</tr> -->
+			</table>
+		</div>
+
+		<script type="text/javascript">
+			var oNode = null;
+			var thePlugins = 'score';
+			window.onload = function() {
+				$G('orgname').select();
+				if (UE.plugins[thePlugins].editdom) {
+					oNode = UE.plugins[thePlugins].editdom; //
+				}
+
+
+
+
+
+
+
+			}
+
+
+			function createElement(type, name) {
+				var element = null;
+				try {
+					element = document.createElement('<' + type + ' name="' + name + '">');
+				} catch (e) {}
+				if (element == null) {
+					element = document.createElement(type);
+					element.name = name;
+				}
+				return element;
+			}
+
+			dialog.oncancel = function() {
+				if (UE.plugins[thePlugins].editdom) {
+					delete UE.plugins[thePlugins].editdom;
+				}
+			};
+			dialog.onok = function() {
+				if ($G('orgname').value == '') {
+					alert('控件名称不能为空');
+					return false;
+				}
+
+
+
+				var PN = $('#pluName');
+
+				cupy = PN.val();
+				if (cupy == '') {
+					getPY($G('orgname').value);
+				}
+				if (!oNode) {
+					oNode = createElement('input', cupy);
+					oNode.setAttribute('leipiPlugins', thePlugins);
+					oNode.setAttribute('placeholder', $G('orgname').value);
+					editor.execCommand('insertHtml', oNode.outerHTML);
+					return true;
+
+				} else {
+					oNode.setAttribute('name', cupy);
+					oNode.setAttribute('leipiPlugins', thePlugins);
+					oNode.setAttribute('placeholder', "评分控件");
+
+					delete UE.plugins[thePlugins].editdom;
+					return true;
+				}
+			};
+		</script>
+	</body>
+
+</html>

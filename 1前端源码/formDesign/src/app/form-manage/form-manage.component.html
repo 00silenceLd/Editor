@@ -1,0 +1,53 @@
+<div id="editUserAccount" *ngIf="isAccount">
+  <div id="editUserAccountMsg">只允许内部账号登录,新员工注册后找编辑器程序员开通</div>
+  <div id="editUserAccountAre">
+    <form>
+      <div class="form-group">
+        <label for="useraccount">User Account</label>
+        <input type="text" class="form-control" id="useraccount" name="useraccount" [(ngModel)]="useraccount"
+          placeholder="account">
+      </div>
+      <div class="form-group" *ngIf="isRegAccount">
+        <label for="ChineseName">Chinese Name</label>
+        <input type="text" class="form-control" id="ChineseName" name="chinesename" [(ngModel)]="chinesename"
+          placeholder="account">
+      </div>
+      <div class="form-group">
+        <label for="userpassword">Password</label>
+        <input type="password" class="form-control" id="userpassword" name="userpassword" [(ngModel)]="userpassword"
+          placeholder="Password">
+      </div>
+      <div class="form-group" *ngIf="isRegAccount">
+        <label for="userrepassword">Confirm Password</label>
+        <input type="password" class="form-control" id="userrepassword" name="userrepassword" [(ngModel)]="userrepassword"
+          placeholder="Confirm Password">
+      </div>
+      <span class="btn btn-default" (click)="doAccount()" *ngIf="!isRegAccount">登录系统</span><span class="btn btn-default"
+        (click)="regAccount()" *ngIf="isRegAccount">注册新账号</span>
+      <a href="javascript:void();" (click)="setRegAccount(true)" *ngIf="!isRegAccount">注册新账号</a>
+      <a href="javascript:void();" (click)="setRegAccount(false)" *ngIf="isRegAccount">去登录</a>
+      <div class="form-group">
+        <span class="useraccounterrmsg">{{userAccountErrMsg}}</span>
+      </div>
+    </form>
+  </div>
+</div>
+<div class="formManager" ng-if="!isAccount">
+
+
+  <div class="tree-container">
+    <div class="tree-content">
+      <div class="tree-top-title">胜网程序编辑</div>
+      <!-- <iframe src="https://www.layui.com" width="500" height="500"></iframe> -->
+      <tree #treePages [tree]="tree" (menuItemSelected)="onMenuItemSelected($event)" [settings]="settings" (nodeMoved)="handleMoved($event)"
+        (nodeRenamed)="handleRenamed($event)" (nodeRemoved)="handleRemoved($event)" (nodeSelected)="handleSelected($event)"
+        (nodeCreated)="handleCreated($event)">
+      </tree>
+    </div>
+  </div>
+  <div class="ueditor-container">
+    <app-page-editor [nodeType]="node_type" [node_id]="node_id" [nodeName]="node_name" [nodeParentId]="node_parentId"
+      [nodeParentId2x]="node_parentId2x" [isPublic]="is_public" [is_approve]="is_approve" [page_classify]="
+      page_classify" [module_classify]="module_classify"></app-page-editor>
+  </div>
+</div>

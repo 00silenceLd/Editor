@@ -1,0 +1,242 @@
+<!--<h5 *ngIf="nodeName == null" >您当前还没有选择表...</h5>
+<h5 *ngIf="nodeName != null" >当前所打开的表：{{nodeName}}</h5>
+<h5 *ngIf="nodeName != null" >当前所打开的表ID：{{nodeId}}</h5>-->
+<input type="hidden" id="nodeParentId" value="{{nodeParentId}}">
+<input type="hidden" id="nodeParentId2x" value="{{nodeParentId2x}}">
+<form method="post" id="saveform" name="saveform" action="">
+	<input type="hidden" name="fields" id="fields" value="0">
+	<input type="hidden" name="node_id" id="node_id" value="{{nodeId}}">
+	<input type="hidden" name="node_name" id="node_name" value="{{nodeName}}">
+
+	<input type="hidden" name="shareTo_name" id="shareTo_name" value="{{shareTo_name}}">
+	<input type="hidden" name="shareTo_nodeId" id="shareTo_nodeId" value="0">
+	<input type="hidden" name="is_public" id="is_public" value="{{is_public}}">
+	<input type="hidden" name="is_approve" id="is_approve" value="{{is_approve}}">
+	<div class="ue-top-tableid1">
+		<span *ngIf="nodeName == null">您当前还没有选择表...</span>
+		<span *ngIf="nodeName != null">当前所打开表名称：{{nodeName}}&nbsp;&nbsp;ID：{{nodeId}}</span>
+		<!--<span *ngIf="nodeName != null">当前所打开表名称：{{nodeName}}&nbsp;&nbsp;&nbsp;ID：{{nodeId}}</span>-->
+	</div>
+	<div class="ue-top-swtool">
+		<div class="ue-top-swmobile">
+			<span (click)="changeNEditor('PC')" class="swbtn-pc-mobile" [ngClass]="{'noAct':versionEditor == '手机'}">电脑版编辑</span>
+		</div>
+		<div class="ue-top-swmobile">
+			<span (click)="changeNEditor('PHONE')" class="swbtn-pc-mobile" [ngClass]="{'noAct':versionEditor =='电脑'}">手机版编辑</span>
+		</div>
+	</div>
+	<div class="ue-my-control" *ngIf="swPluginTool">
+		<!-- <div class="ue-top-sw">
+				<ul>
+					<li [ngClass]="{'act':swPluginTool}" (click)="setPluginTool(true)">控件</li>
+					<li [ngClass]="{'act':!swPluginTool}" (click)="setPluginTool(flase)">组合</li>
+				</ul>
+			</div> -->
+		<table>
+			<tr id="public1" class="" style="">
+				<td class="ue-my-ctlblock-title">编辑</td>
+				<td>
+					<div class="ue-my-ctlblock-btn">
+						<span (click)="exec('text');" class="mybtn">文本框</span>
+						<span (click)="exec('textarea');" class="mybtn">多行文本</span>
+						<!--<span (click)="exec('pinglun');" class="mybtn noBtn">评论</span>-->
+						<span (click)="exec('addimage');" class="mybtn">动态上传</span>
+						<!--<span (click)="exec('listctrl');" class="mybtn noBtn">列表编辑</span>-->
+						<span (click)="exec('select');" class="mybtn">下拉菜单</span>
+						<span (click)="exec('radios');" class="mybtn">单选框</span>
+
+						<span (click)="exec('checkboxs');" class="mybtn">复选框</span>
+						<span (click)="exec('macros');" class="mybtn noBtn">宏控件</span>
+						<span (click)="exec('searchcontrol');" class="mybtn noBtn">搜索</span>
+						<!--<span (click)="exec('rechtext_editing');" class="mybtn noBtn">富文本控件</span>-->
+						<span (click)="exec('secondnav');" class="mybtn noBtn">二级菜单</span>
+						<span (click)="exec('background');" class="mybtn">背景</span>
+						<span (click)="exec('login');" class="mybtn">登录</span>
+						<span (click)="exec('zzhhtest');" class="mybtn">绑定页面</span>
+						<span (click)="exec('multidatasourcepublic');" class="mybtn">多数源发布标识</span>
+
+					</div>
+				</td>
+			</tr>
+			<tr id="public2" class="" style="">
+				<td class="ue-my-ctlblock-title">表单</td>
+				<td>
+					<div class="ue-my-ctlblock-btn">
+						<span (click)="setMyPlugins('frmSubmit');" class="mybtn">提交</span>
+						<span (click)="setMyPlugins('frmReset');" class="mybtn">重置</span>
+						<span (click)="setMyPlugins('frmSearch');" class="mybtn">搜索</span>
+						<span (click)="exec('exchange');" class="mybtn">兑换</span>
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<td class="ue-my-ctlblock-title">展示</td>
+				<td>
+					<div class="ue-my-ctlblock-btn">
+						<!--<span (click)="exec('classification');" class="mybtn noBtn">分类控件</span>
+                        <span (click)="exec('progressbar');" class="mybtn noBtn">进度条</span>
+                        <span (click)="exec('qrcode');" class="mybtn noBtn">二维码</span>-->
+						<span (click)="exec('getuserid');" class="mybtn">用户Id</span>
+						<span (click)="setMyPlugins('username');" class="mybtn">用户名</span>
+						<span (click)="setMyPlugins('userface');" class="mybtn">用户头像</span>
+						<span (click)="exec('daydate');" class="mybtn">日期控件</span>
+						<span (click)="exec('timedate');" class="mybtn">时分控件</span>
+						<!-- <span (click)="exec('slidebox');" class="mybtn noBtn">轮播框</span> -->
+						<span (click)="exec('lunbo');" class="mybtn">轮播</span>
+						<span (click)="exec('internal');" class="mybtn">积分兑换记录</span>
+						<span (click)="setMyPlugins('integral');" class="mybtn">总积分</span>
+						<span (click)="exec('reportcontrol');" class="mybtn noBtn">报表控件</span>
+
+						<span (click)="exec('dangjiandetail');" class="mybtn noBtn">党建内容详情页</span>
+						<span (click)="exec('dangjiancourse');" class="mybtn noBtn">党建列表详情页</span>
+						<span (click)="exec('kepudetail');" class="mybtn noBtn">科普详情页</span>
+
+						<span (click)="exec('wxgrouptag');" class="mybtn noBtn">微信分组标签</span>
+						<span (click)="exec('score');" class="mybtn noBtn">评分控件</span>
+						<span (click)="exec('settimeout');" class="mybtn noBtn">倒计时控件</span>
+						<span (click)="exec('classify');" class="mybtn">分类/级联</span>
+						<span (click)="exec('classifytree3');" class="mybtn">树形分类控件1</span>
+						<!-- <span (click)="exec('classifytree4');" class="mybtn">树形分类控件2</span> -->
+						<span (click)="setMyPlugins('job');" class="mybtn">机构</span>
+						<span (click)="setMyPlugins('role');" class="mybtn">角色</span>
+						<span (click)="setMyPlugins('roleuser');" class="mybtn">角色用户</span>
+						<span (click)="setMyPlugins('jobview');" class="mybtn">组织架构图</span>
+						<span (click)="exec('officeEntrance');" class="mybtn noBtn">办公入口</span>
+						<span (click)="exec('rolelabel');" class="mybtn noBtn">角色标签</span>
+						<span (click)="exec('loginstate');" class="mybtn">登录状态</span>
+						<span (click)="exec('buylabel');" class="mybtn">购买标签</span>
+						<span (click)="exec('popup');" class="mybtn">弹窗控件</span>
+						<span (click)="exec('recordlabel')" class="mybtn">记录/统计控件</span>
+						<span (click)="setMyPlugins('recordinfo')" class="mybtn">记录报告标签</span>
+
+						<span (click)="exec('addnumber');" class="mybtn">报名</span>
+						<span (click)="exec('shenpi');" class="mybtn">审批列表</span>
+						<span (click)="exec('liannanzugong');" class="mybtn">连南组工</span>
+						<span (click)="exec('pagekeywords');" class="mybtn">页面关键字与描述</span>
+						<span (click)="exec('iconrouter');" class="mybtn">村集体资产明细表</span>
+						<span (click)="exec('job-progress');" class="mybtn">重要工作进度表</span>
+						<span (click)="exec('headerandfooter');" class="mybtn noBtn">头/底部模板控件</span>
+						<span (click)="exec('sidebarnav');" class="mybtn noBtn">侧栏导航控件</span>
+						<span (click)="exec('addcategory');" class="mybtn">添加类别</span>
+						<span (click)="exec('productsupload');" class="mybtn">餐品上传</span>
+						<span (click)="exec('previewproducts');" class="mybtn">预览餐品页面</span>
+						<span (click)="exec('orderscentre');" class="mybtn">订单中心</span>
+						<span (click)="exec('vemorderfood');" class="mybtn">自助机点餐</span>
+					</div>
+				</td>
+			</tr>
+			<tr id="noPublic1" class="" style="">
+				<td class="ue-my-ctlblock-title" valign="top">列表模板</td>
+				<td>
+					<div class="ue-my-ctlblock-btn">
+						<span (click)="exec('group');" class="mybtn noBtn">科普列表</span>
+						<span (click)="exec('dangjianlist');" class="mybtn noBtn">党建列表</span>
+						<span (click)="exec('wifiblock');" class="mybtn noBtn">列表热区</span>
+						<span (click)="exec('wxlist');" class="mybtn noBtn">微信通知列表</span>
+						<span (click)="setMyPlugins('jobrow');" class="mybtn noBtn">组织列表</span>
+						<span (click)="exec('formlist');" class="mybtn">列表</span>
+						<span (click)="exec('scheduling');" class="mybtn">排课</span>
+						<span (click)="exec('listone');" class="mybtn">列表模板1</span>
+						<span (click)="exec('meetinglist');" class="mybtn">会议列表</span>
+						<span (click)="setMyPlugins('meetinglist');" class="mybtn">会议记录</span>
+
+					</div>
+				</td>
+			</tr>
+			<tr id="noPublic2" class="" style="">
+				<td class="ue-my-ctlblock-title">路由</td>
+				<td>
+					<div class="ue-my-ctlblock-btn">
+						<!--<span (click)="exec('iconrouter');" class="mybtn noBtn">路由控件</span>
+                      <span (click)="exec('classification');" class="mybtn noBtn">动态分类控件</span>
+                      <span (click)="exec('iframerouter');" class="mybtn">内嵌路由控件</span>
+                      <span (click)="exec('sort');" class="mybtn">分类控件</span>-->
+						<span (click)="exec('button');" class="mybtn">路由按钮</span>
+						<span (click)="exec('tpl');" class="mybtn">首页母板</span>
+						<span (click)="exec('singlenav');" class="mybtn">单个导航</span>
+						<!--<span (click)="exec('mtpl');" class="mybtn">手机首页母板</span>
+                      <span (click)="exec('toolbar');" class="mybtn">入口条</span>-->
+
+					</div>
+				</td>
+			</tr>
+
+
+
+			<tr id="noPublic3" class="" style="">
+				<td class="ue-my-ctlblock-title">管理</td>
+				<td>
+					<div class="ue-my-ctlblock-btn">
+						<!--<span (click)="setGlc();" class="mybtn noBtn">管理工具</span>
+                        <span (click)="exec('');" class="mybtn noBtn">提交</span>
+                        <span (click)="exec('');" class="mybtn noBtn">列表</span>
+                        <span (click)="exec('');" class="mybtn noBtn">删除</span>
+                        <span (click)="exec('');" class="mybtn noBtn">修改</span>
+                        <span (click)="exec('');" class="mybtn noBtn">打印</span>
+                        <span (click)="exec('macros');" class="mybtn">宏控件</span>-->
+						<span (click)="exec('flowbtn');" class="mybtn noBtn">流程控件</span>
+						<span (click)="setMyPlugins('classifymg');" class="mybtn">分类/级联管理</span>
+						<span (click)="setMyPlugins('newclassifymg');" class="mybtn">新分类管理</span>
+						<span (click)="exec('export');" class="mybtn">导出Excel</span>
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<td class="ue-my-ctlblock-title">程序</td>
+				<td>
+					<div class="ue-my-ctlblock-btn">
+						<span (click)="exec('onlinehard');" class="mybtn noBtn">网络硬盘</span>
+						<span (click)="exec('workword');" class="mybtn noBtn">工作文档</span>
+						<span (click)="exec('workform');" class="mybtn noBtn">工作表单</span>
+						<span (click)="exec('workflow');" class="mybtn noBtn">工作流程</span>
+						<span (click)="exec('schedule');" class="mybtn noBtn">日程安排</span>
+						<span (click)="exec('task');" class="mybtn noBtn">任务安排</span>
+						<span (click)="exec('beike');" class="mybtn noBtn">备课</span>
+						<span (click)="exec('resource');" class="mybtn noBtn">资源库</span>
+						<span (click)="exec('teach');" class="mybtn noBtn">教学计划</span>
+						<span (click)="exec('class');" class="mybtn noBtn">班级</span>
+						<span (click)="exec('curriculum');" class="mybtn noBtn">课程表</span>
+						<span (click)="exec('jiangtang');" class="mybtn noBtn">讲堂</span>
+						<span (click)="exec('zujuan');" class="mybtn noBtn">智能组卷</span>
+						<span (click)="exec('yuejuan');" class="mybtn noBtn">智能阅卷</span>
+						<span (click)="exec('chaxun');" class="mybtn noBtn">数据查询</span>
+						<span (click)="exec('audit');" class="mybtn noBtn">数据审核</span>
+					</div>
+				</td>
+			</tr>
+			<!--  <tr>
+				<td class="ue-my-ctlblock-title">其它</td>
+				<td>
+					<div class="ue-my-ctlblock-btn">
+						 <span (click)="exec('asscontrol');" class="mybtn">关联控件</span>
+
+
+					   <span (click)="exec('routerClassify');" class="mybtn">路由分类控件</span>
+
+					</div>
+				</td>
+			</tr>			 -->
+		</table>
+	</div>
+	<div class="ue-my-control" *ngIf="!swPluginTool">
+		<table>
+			<tr>
+				<td class="ue-my-noctlblock-msg">组合控件更新中...</td>
+			</tr>
+		</table>
+	</div>
+	<div>
+		<!--<div *ngIf="!toggleVersion" class="phoneSelectContainer">
+        <p>选择不同的手机屏幕</p>
+        <select id="phoneSelect" (change)="phoneChange($event)">
+          <option value="iphone6p">iPhone 6 Plus</option>
+          <option value="iphone6">iPhone 6</option>
+          <option value="iphone5">iPhone 5</option>
+          <option value="iphone4">iPhone 4</option>
+          <option value="ipad">iPad</option>
+          <option value="s5">Galaxy S5</option>
+        </select>
+      </div>-->
+		<ueditor #full [config]="custom" (onPreReady)="onPreReady($event)"></ueditor>
+	</div>
+</form>

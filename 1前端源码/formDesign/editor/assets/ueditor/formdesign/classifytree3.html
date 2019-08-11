@@ -1,0 +1,259 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+	<head>
+		<title>树形分类</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+		<meta name="generator" content="www.leipi.org" />
+		<link rel="stylesheet" href="bootstrap/css/bootstrap.css">
+		<link rel="stylesheet" href="leipi.style.css">
+		<script type="text/javascript" src="../dialogs/internal.js"></script>
+		<script type="text/javascript" src="jquery-3.2.1.min.js"></script>
+		<script src="self/js/py.js"></script>
+		<script type="text/javascript" src="../httpData.config.js"></script>
+		<script type="text/javascript">
+			function createElement(type, name) {
+				var element = null;
+				try {
+					element = document.createElement('<' + type + ' name="' + name + '">');
+				} catch (e) {}
+				if (element == null) {
+					element = document.createElement(type);
+					element.name = name;
+				}
+				return element;
+			}
+		</script>
+
+	</head>
+	<body>
+		<div class="content" id="content">
+			<table class="table table-bordered table-striped">
+				<tr>
+					<th colspan="2">
+						<span>分类名称</span>
+						<span class='label label-important'>*</span>
+					</th>
+				</tr>
+				<tr>
+					<td>
+						<input id='treeName' name='treeName' onclick='javascript:this.select()' placeholder='必填项' type='text' value='新建树形分类' />
+					</td>
+				</tr>
+
+			</table>
+		</div>
+		<script>
+			/*
+			 * JS-Public-Method
+			 *
+			 */
+			// 时间戳转回字符串
+			function unxiEcDate(oUnix, Exchange) {
+				var dateStringArr = [],
+					Exchange = Exchange.toUpperCase();
+				if (typeof oUnix == "object" && oUnix instanceof Array) {
+					var unxi = oUnix;
+				} else {
+					var unxi = Object.keys(oUnix);
+				}
+				// 如果是 时间戳 转为 日期
+				if (Exchange == "UTD") {
+					for (var i = 0; i < unxi.length; i++) {
+						var d = new Date(unxi[i] * 1000),
+							date = d.getFullYear() + "-" +
+							(d.getMonth() + 1) + "-" +
+							d.getDate();
+						dateStringArr.push(date);
+					}
+				} else if (Exchange == "DTU") {
+					for (var i = 0; i < unxi.length; i++) {
+						var d = new Date(unxi[i]),
+							date = d.getTime() / 1000;
+						dateStringArr.push(date);
+					}
+				}
+				return dateStringArr;
+			}
+
+			function ajax(options) {
+
+				options = options || {};
+				options.type = (options.type || "GET").toUpperCase();
+				options.dataType = options.dataType || "json";
+				var params = formatParams(options.data);
+
+				if (window.XMLHttpRequest) {
+					var xml = new XMLHttpRequest();
+				} else {
+					var xml = new ActiveXObject("Microsoft.XMLHTTP")
+				}
+
+				xml.onreadystatechange = function() {
+					if (xml.readyState == 4) {
+						var status = xml.status;
+						if (status >= 200 && status < 300) {
+							options.success && options.success(xml.responseText, xml.responseXML)
+						} else {
+							options.fail && options.fail(status);
+						}
+					}
+				}
+
+				if (options.type == "GET") {
+					xml.open("GET", options.url, options.async);
+					xml.send(null);
+				} else if (options.type == "POST") {
+					xml.open("POST", options.url, options.async);
+					xml.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+					xml.send(params);
+				}
+			}
+
+			function formatParams(data) {
+				var arr = [];
+				for (var name in data) {
+					arr.push(encodeURIComponent(name) + "=" + encodeURIComponent(data[name]));
+				}
+				arr.push(("v=" + Math.random()).replace(".", ""));
+				return arr.join("&");
+			}
+			// 去重
+			Array.prototype.Toheavy = function() {
+				res = [this[0]];
+				for (var i = 1; i < this.length; i++) {
+					var repeat = false;
+					for (var j = 0; j < res.length; j++) {
+						if (this[i] == res[j]) {
+							repeat = true;
+							break;
+						}
+					}
+					if (!repeat) {
+						res.push(this[i]);
+					}
+				}
+				return res;
+			}
+
+			// 获取数据
+			// var nodeParentId = $('#nodeParentId', window.parent.document).val();
+			var nodeId = $("#node_id", window.parent.document).val();
+			// var userinfo = window.localStorage['user'] ? JSON.parse(window.localStorage['user']) : null;
+		</script>
+		<script type="text/javascript">
+			var oNode = null,
+				thePlugins = 'classifytree';
+
+			function changeProduct() {
+				if ($G("product")) {
+					$G("product").checked = true;
+				}
+			}
+
+			// 数据回填
+			window.onload = function() {
+				if (UE.plugins[thePlugins].editdom) {
+					oNode = UE.plugins[thePlugins].editdom;
+					var arr = [],
+						nodeId = oNode.getAttribute('node_id');
+
+
+
+
+
+				}
+			}
+
+			dialog.oncancel = function() {
+				if (UE.plugins[thePlugins].editdom) {
+					delete UE.plugins[thePlugins].editdom;
+				}
+			};
+			dialog.onok = function() { //statisticsTheme
+
+
+				var treeName = $("#treeName").val();
+				var nodeId = $("#node_id", window.parent.document).val();
+
+
+
+
+
+				if (!oNode) {
+					try {
+						// 判断选择的是哪种类型的报表
+						// 保存表单属性
+
+						oNode = createElement('input', 'classifytree03');
+						oNode.setAttribute('placeholder', '分类名：' + treeName);
+						oNode.setAttribute('leipiPlugins', 'classifytree03');
+						oNode.setAttribute('name', 'classifytree03');
+						oNode.setAttribute('node_id', nodeId);
+						editor.execCommand('insertHtml', oNode.outerHTML);
+
+						var param = {
+							"treeName": treeName,
+							"nodeId": nodeId,
+						}
+
+						createClassifyTable(param);
+
+
+						return true;
+					} catch (e) {
+						try {
+							editor.execCommand('error');
+						} catch (e) {
+							alert('控件异常，请到 与我们反馈或寻求帮助！');
+						}
+						return false;
+					}
+				} else {
+					oNode.setAttribute('placeholder', '分类名：' + treeName);
+					oNode.setAttribute('leipiPlugins', 'classifytree03');
+					oNode.setAttribute('name', 'classifytree03');
+					oNode.setAttribute('node_id', nodeId);
+
+
+
+
+
+					delete UE.plugins[thePlugins].editdom; //使用后清空这个对象，变回新增模式
+
+
+					var param = {
+						"treeName": treeName,
+						"nodeId": nodeId,
+					}
+
+
+					createClassifyTable(param);
+
+
+				}
+
+			};
+
+
+
+			function createClassifyTable(param) {
+				$.ajax({
+					url: prevent_HOST + 'classifyFacade/createClassifyTable',
+					type: 'POST',
+					dataType: 'json',
+					contentType: 'application/json; charset=UTF-8',
+					async: false,
+					data: JSON.stringify(param),
+					success: function(res) {}
+				})
+
+
+			}
+		</script>
+
+
+
+
+	</body>
+</html>

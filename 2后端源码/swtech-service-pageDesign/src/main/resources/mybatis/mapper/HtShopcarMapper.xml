@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="swtech.service.pageDesign.dao.impl.HtShopcarDaoImpl" >
+  <resultMap id="BaseResultMapProduct" type="swtech.facade.pageDesign.entity.HtProducts" >
+    <id column="products_id" property="productsId" jdbcType="INTEGER" />
+    <result column="products_name" property="productsName" jdbcType="VARCHAR" />
+    <result column="prodycts_price" property="prodyctsPrice" jdbcType="DOUBLE" />
+    <result column="products_info" property="productsInfo" jdbcType="VARCHAR" />
+    <result column="products_category" property="productsCategory" jdbcType="INTEGER" />
+    <result column="products_comment" property="productsComment" jdbcType="VARCHAR" />
+    <result column="products_status" property="productsStatus" jdbcType="INTEGER" />
+    <result column="products_shop" property="productsShop" jdbcType="INTEGER" />
+    <result column="products_picture" property="productsPicture" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <resultMap id="BaseResultMapbest" type="swtech.facade.pageDesign.entity.HtShopcar" >
+    <id column="shopcar_id" property="shopcarId" jdbcType="INTEGER" />
+    <result column="products_id" property="productsId" jdbcType="INTEGER" />
+    <result column="shopcar_status" property="shopcarStatus" jdbcType="INTEGER" />
+    <result column="shopcar_bei" property="shopcarBei" jdbcType="INTEGER" />
+    <collection property="shopProduct"  resultMap="BaseResultMapProduct"/>
+  </resultMap>
+  
+   <resultMap id="BaseResultMap" type="swtech.facade.pageDesign.entity.HtShopcar" >
+    <id column="shopcar_id" property="shopcarId" jdbcType="INTEGER" />
+    <result column="products_id" property="productsId" jdbcType="INTEGER" />
+    <result column="shopcar_status" property="shopcarStatus" jdbcType="INTEGER" />
+    <result column="shopcar_bei" property="shopcarBei" jdbcType="INTEGER" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    shopcar_id, products_id, shopcar_status, shopcar_bei </sql>
+    
+     <update id="paynow" parameterType="swtech.facade.pageDesign.entity.HtShopcar">
+  	UPDATE ht_shopcar SET shopcar_status =#{shopcarStatus,jdbcType=INTEGER} 
+	WHERE shopcar_id IN(
+	   SELECT t.shopcar_id FROM(
+		SELECT shopcar_id FROM ht_shopcar 
+			WHERE shopcar_bei=#{shopcarBei,jdbcType=INTEGER}  AND shopcar_status=1)t
+		)
+
+  </update>
+  
+  <update id="cancelorder" parameterType="java.lang.Integer">
+  	UPDATE ht_shopcar SET shopcar_status = 3
+	WHERE shopcar_id IN(
+	   SELECT t.shopcar_id FROM(
+		SELECT shopcar_id FROM ht_shopcar 
+			WHERE shopcar_bei=#{shopcarBei,jdbcType=INTEGER}  AND shopcar_status=1)t
+		)
+
+  </update>
+  
+  <select id="allorder" resultType="Map"  parameterType="java.lang.Integer">
+  	SELECT  COUNT(pro.products_id)AS number, shop.*,re.*,pro.products_name,pro.prodycts_price ,pro.products_picture 
+	   FROM ht_shopcar shop,ht_products pro ,ht_reservation re
+	   WHERE shop.products_id= pro.products_id AND re.rid = shop.shopcar_bei AND shopcar_bei= #{shopcarBei,jdbcType=INTEGER} 
+	   GROUP BY shop.products_id
+  </select>
+  
+  
+  <update id="updateStatus" parameterType="java.lang.Integer">
+  		UPDATE ht_shopcar SET shopcar_status = 1 , shopcar_bei= #{shopcarBei,jdbcType=INTEGER} 
+				WHERE shopcar_id IN(
+				   SELECT t.shopcar_id FROM(
+					SELECT shopcar_id FROM ht_shopcar 
+						WHERE shopcar_status = 0)t
+			)
+  </update>
+  
+  
+  
+   <select id="allHtShopcar" resultType="Map" >
+   SELECT  COUNT(pro.products_id)AS number, shop.*,pro.products_name,pro.prodycts_price ,pro.products_picture 
+   FROM ht_shopcar shop,ht_products pro 
+   WHERE shop.products_id= pro.products_id  and shop.shopcar_status= 0
+   GROUP BY shop.products_id
+  </select>
+  
+  <select id="selectByPrimaryKeyShopCar" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from ht_shopcar
+    where shopcar_id = #{shopcarId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKeyShopCar" parameterType="java.lang.Integer" >
+    DELETE FROM ht_shopcar
+    WHERE shopcar_id=(
+		SELECT shopcar_id FROM (
+			SELECT shopcar_id FROM ht_shopcar WHERE products_id=#{productsId,jdbcType=INTEGER} AND shopcar_status=0 LIMIT 0,1) t
+		) 
+  </delete>
+  <delete id="emptyCart" >
+  		DELETE FROM ht_shopcar WHERE shopcar_status=0
+  </delete>
+  
+  <insert id="insertHtShopCar" parameterType="swtech.facade.pageDesign.entity.HtShopcar" >
+    insert into ht_shopcar (shopcar_id, products_id, shopcar_status, 
+      shopcar_bei)
+    values (#{shopcarId,jdbcType=INTEGER}, #{productsId,jdbcType=INTEGER}, #{shopcarStatus,jdbcType=INTEGER}, 
+      #{shopcarBei,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelectiveShopCar" parameterType="swtech.facade.pageDesign.entity.HtShopcar" >
+    insert into ht_shopcar
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="shopcarId != null" >
+        shopcar_id,
+      </if>
+      <if test="productsId != null" >
+        products_id,
+      </if>
+      <if test="shopcarStatus != null" >
+        shopcar_status,
+      </if>
+      <if test="shopcarBei != null" >
+        shopcar_bei,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="shopcarId != null" >
+        #{shopcarId,jdbcType=INTEGER},
+      </if>
+      <if test="productsId != null" >
+        #{productsId,jdbcType=INTEGER},
+      </if>
+      <if test="shopcarStatus != null" >
+        #{shopcarStatus,jdbcType=INTEGER},
+      </if>
+      <if test="shopcarBei != null" >
+        #{shopcarBei,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelectiveShopCar" parameterType="swtech.facade.pageDesign.entity.HtShopcar" >
+    update ht_shopcar
+    <set >
+      <if test="productsId != null" >
+        products_id = #{productsId,jdbcType=INTEGER},
+      </if>
+      <if test="shopcarStatus != null" >
+        shopcar_status = #{shopcarStatus,jdbcType=INTEGER},
+      </if>
+      <if test="shopcarBei != null" >
+        shopcar_bei = #{shopcarBei,jdbcType=INTEGER},
+      </if>
+    </set>
+    where shopcar_id = #{shopcarId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyShopCar" parameterType="swtech.facade.pageDesign.entity.HtShopcar" >
+    update ht_shopcar
+    set products_id = #{productsId,jdbcType=INTEGER},
+      shopcar_status = #{shopcarStatus,jdbcType=INTEGER},
+      shopcar_bei = #{shopcarBei,jdbcType=INTEGER}
+    where shopcar_id = #{shopcarId,jdbcType=INTEGER}
+  </update>
+</mapper>

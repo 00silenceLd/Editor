@@ -1,0 +1,107 @@
+package {className};
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
+import java.util.Map;
+
+import {className}.{className};
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.ibatis.io.Resources;
+import org.apache.ibatis.session.SqlSession;
+import org.apache.ibatis.session.SqlSessionFactory;
+import org.apache.ibatis.session.SqlSessionFactoryBuilder;
+import org.mybatis.spring.SqlSessionTemplate;
+import org.springframework.stereotype.Repository;
+
+import swtech.common.core.dao.BaseDaoImpl;
+import swtech.common.page.PageBean;
+import swtech.common.page.PageParam;
+import swtech.facade.pageDesign.entity.PageEditor;
+import swtech.facade.pageDesign.service.impl.PageDesignOperatorFacadeImpl;
+import swtech.service.pageDesign.dao.PageDesignDao;
+
+@Repository
+public class {className}MapperImpl extends BaseDaoImpl<{className}> implements {className}Mapper { 
+	private static final Log log = LogFactory
+			.getLog(PageDesignOperatorFacadeImpl.class);
+ 
+ 	/**
+ 	*  插入方法
+ 	*  @param entity
+ 	*  @return long
+ 	*/
+	public long insert({className} entity) {
+		try {
+			log.info(entity.toString());
+			String resource ="{className}/{className}-mybatis-config.xml";		    
+			InputStream inputStream = null;
+			try {
+				inputStream = Resources.getResourceAsStream(resource);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			SqlSessionFactory sqlSessFac = new SqlSessionFactoryBuilder().build(inputStream);
+			{className}Mapper mpr = sqlSessFac.openSession(true).getMapper(
+					{className}Mapper.class); 
+			mpr.insert(entity);
+		} catch (Exception e) {
+			log.info("出错" + e.toString());
+		}
+		return 0;
+	}
+
+	/**
+ 	*  更新方法
+ 	*  @param id
+ 	*  @return long
+ 	*/
+	public long update({className} entity) {
+		try {
+			log.info(entity.toString());
+			String resource ="{className}/{className}-mybatis-config.xml";		    
+			InputStream inputStream = null;
+			try {
+				inputStream = Resources.getResourceAsStream(resource);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			SqlSessionFactory sqlSessFac = new SqlSessionFactoryBuilder().build(inputStream);
+			{className}Mapper mpr = sqlSessFac.openSession(true).getMapper(
+					{className}Mapper.class); 
+			mpr.updateByPrimaryKey(entity);
+		} catch (Exception e) {
+			log.info("出错" + e.toString());
+		}
+		return 0;
+	}
+	
+	/**
+ 	*  查询方法
+ 	*  @param id
+ 	*  @return {className}
+ 	*/
+	public {className} getById(long id) {
+		{className} entity = null;
+		try {
+			log.info("ID:"+id);
+			String resource ="{className}/{className}-mybatis-config.xml";		    
+			InputStream inputStream = null;
+			try {
+				inputStream = Resources.getResourceAsStream(resource);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			SqlSessionFactory sqlSessFac = new SqlSessionFactoryBuilder().build(inputStream);
+			{className}Mapper mpr = sqlSessFac.openSession(true).getMapper(
+					{className}Mapper.class); 
+			entity = mpr.selectByPrimaryKey(id);
+		} catch (Exception e) {
+			log.info("出错" + e.toString());
+		}
+		return entity;
+	}
+	
+}

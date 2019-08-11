@@ -1,0 +1,189 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+	<head>
+		<title>重要工作进度表</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+		<link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
+		<link rel="stylesheet" href="leipi.style.css">
+		<link rel="stylesheet" href="self/listone/css/css.css">
+		<script type="text/javascript" src="../dialogs/internal.js"></script>
+		<script type="text/javascript" src="./jquery-3.2.1.min.js"></script>
+		<script type="text/javascript" src="../httpData.config.js"></script>
+		<script src="self/js/py.js"></script>
+	</head>
+	<body>
+		<script type="text/javascript">
+			function createElement(type, name) {
+				var element = null;
+				try {
+					element = document.createElement('<' + type + ' name="' + name + '">');
+				} catch (e) {}
+				if (element == null) {
+					element = document.createElement(type);
+					element.name = name;
+				}
+				return element;
+			}
+		</script>
+
+		<div class="content">
+			<table class="table table-bordered table-striped table-hover">
+					<tr>
+							<th>
+								<span>村庄名</span>
+							</th>
+							<th>
+								<span>重要工作进度表记录时间</span>
+							</th>
+						</tr>
+					<tr>
+							<td>
+								<select id="village" onchange="record(this.value)">
+									<option value="">请选择村庄</option>
+								</select>
+							</td>
+							<td>
+								<select id="record">
+									<option value="">请选择记录时间</option>
+								</select>
+							</td>
+					</tr>
+			</table>
+		</div>
+		<script type="text/javascript">
+			var oNode = null,
+				gdataSource = null,
+				control_name = null,
+				nodeId = null,
+				thePlugins = 'iconrouter';
+			// var host = 'http://' + localHost + ':8081/Asset/progress/';
+			var host = 'http://asset.1388w.cn/Asset/progress/';
+			window.onload = function(){
+				//弹出窗口初始化函数
+				var con = '';
+				var url = host + 'villages';
+				if (UE.plugins[thePlugins].editdom) {
+						oNode = UE.plugins[thePlugins].editdom;		
+						var villageId = oNode.getAttribute('villageid');
+						var recordId = oNode.getAttribute('recordId');
+						$.ajax({
+							url: url,
+							success: function(res) {
+								con += '<option value="">请选择村庄</option>';
+								$.each(res, function(index, value) {
+									if (villageId == value.id) {
+										con += '<option value="' + value.id + '" selected>' + value.name + '</option>';
+									} else {
+										con += '<option value="' + value.id + '">' + value.name + '</option>';
+									}
+
+								})
+								$("#village").html(con);
+							}
+						})
+						record(villageId,recordId);
+				}else{
+					$.ajax({
+							url: url,
+							success: function(res) {
+								con += '<option value="">请选择村庄</option>';
+								$.each(res, function(index, value) {
+									con += '<option value=' + value.id + '>' + value.name + '</option>';
+								})
+								$("#village").html(con);
+							}
+						})
+				}
+			}
+			
+			function record(id,recordId){
+				var con = '';
+				var url = host + 'record?villageId='+id;
+				$.ajax({
+						url: url,
+						success: function(res) {
+							$.each(res, function(index, value) {
+								if(recordId && recordId == value.id){
+									con += '<option value=' + value.id + ' selected>' + value.createtime + '</option>';
+								}else{
+									con += '<option value=' + value.id + '>' + value.createtime + '</option>';
+								}
+
+								
+							})
+							$("#record").html(con);
+						}
+					})
+			}
+			// 取消
+			dialog.oncancel = function() {
+						if (UE.plugins[thePlugins].editdom) {
+							delete UE.plugins[thePlugins].editdom;
+						}
+					}
+			
+			
+			dialog.onok = function(){
+
+				var gTitle = '';
+				var cupy = 'jobprogress';
+				var myname = 'jobprogress';	// ww 自定义名字，仅用于该重要工作进度表
+				var villageId = $('#village option:selected').val();
+				var recordId = $('#record option:selected').val();
+				var orgUrl = host + 'UEform';
+				var gName = null;
+				if (!villageId) {
+					alert('请选择村庄');
+					return false;
+				}
+				if (!recordId) {
+					alert('请选择记录时间');
+					return false;
+				}
+				if (!oNode) {
+					try {
+						oNode = createElement( 'input', cupy );
+						oNode.setAttribute( 'leipiplugins', myname );
+						oNode.setAttribute( 'title', "重要工作进度表" );
+						oNode.setAttribute( 'orgname', '重要工作进度表记录按钮' );
+						oNode.setAttribute( 'orgwidth', '25%' );
+						oNode.setAttribute( 'villageid', villageId );
+						oNode.setAttribute( 'recordid', recordId );
+						oNode.setAttribute( 'orgfontcolor', '#000' );
+						oNode.setAttribute( 'orgurl', orgUrl );
+						oNode.setAttribute( 'fontsize', 'larger' );
+						oNode.setAttribute( 'placeholder','重要工作进度表记录按钮');
+						editor.execCommand('insertHtml', oNode.outerHTML);
+						return true;
+
+					}catch (e){
+						try {
+							editor.execCommand('error');
+						} catch (e) {
+							alert('控件异常，请反馈或寻求帮助！');
+						}
+							return false;
+					}
+					//try end
+				}else{
+					//修改
+					oNode.setAttribute( 'leipiPlugins', myname );
+					oNode.setAttribute( 'title', "重要工作进度表" );
+					oNode.setAttribute( 'orgname', '重要工作进度表记录按钮' );
+					oNode.setAttribute( 'orgwidth', '25%' );
+					oNode.setAttribute( 'villageid', villageId );
+					oNode.setAttribute( 'recordId', recordId );
+					oNode.setAttribute( 'orgfontcolor', '#000' );
+					oNode.setAttribute( 'orgurl', orgUrl );
+					oNode.setAttribute( 'fontsize', 'larger' );
+					oNode.setAttribute( 'placeholder','重要工作进度表记录按钮');
+					oNode.setAttribute('data-id',villageId);
+					delete UE.plugins[thePlugins].editdom; //使用后清空这个对象，变回新增模式
+					return true;
+				}
+				}		
+		</script>
+	</body>
+
+</html>

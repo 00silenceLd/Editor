@@ -1,0 +1,149 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+
+<head>
+    <title>微信分组标签</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+     <link rel="stylesheet" href="bootstrap/css/bootstrap.css">
+    <!--[if lte IE 6]>
+    <link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap-ie6.css">
+    <![endif]-->
+    <!--[if lte IE 7]>
+    <link rel="stylesheet" type="text/css" href="bootstrap/css/ie.css">
+    <![endif]-->
+    <link rel="stylesheet" href="leipi.style.css">
+    <script type="text/javascript" src="../dialogs/internal.js"></script>
+    <script type="text/javascript" src="jquery-3.2.1.min.js" ></script>
+    <script type="text/javascript" src="../httpData.config.js"></script>
+
+    <script type="text/javascript">
+        /* Thank you by
+                                    http://www.alt-tag.com/blog/2006/02/ie-dom-bugs/ */
+        function createElement( type, name ) {
+            var element = null;
+            try {
+                element = document.createElement( '<' + type + ' name="' + name + '">' );
+            } catch ( e ) {}
+            if ( element == null ) {
+                element = document.createElement( type );
+                element.name = name;
+            }
+            return element;
+        }
+
+    </script>
+</head>
+
+<body>
+    <div class="content">
+        <table class="table table-bordered table-striped table-hover">
+            <tr>
+                <th>
+                    <span>控件名称</span>
+                    <span class="label label-important">*</span>
+                    <span>字段拼音</span>
+                </th>
+                <th>
+                    <span>通知模板</span>
+                    <span class="label label-important">*</span>
+                </th>
+            </tr>
+            <tr>
+                <td>
+                    <input type="text" id="orgname" onclick="javascript:this.select()" placeholder="必填项" value="微信通知标签" disabled="disabled" onblur="getPY(this.value)">
+                    <input type="text" class="span2" id="pluName" placeholder="字段" value="" >
+                </td>
+                <td>
+                   <input type="radio" name="wxtag" value="1" checked> 学校通知
+                    <input type="radio" name="wxtag" value="4"> 年级通知
+                    <input type="radio" name="wxtag" value="5"> 班级通知
+                   <input type="radio" name="wxtag" value="2"> 请假通知
+                   <input type="radio" name="wxtag" value="3"> 家庭作业
+                </td>
+            </tr>
+            <tr>
+              <th>
+                <span>接收人</span>
+                <span class="label label-important">*</span>
+              </th>
+              <th>
+                <span></span>
+              </th>
+            </tr>
+            <tr>
+              <td>
+                <input type="radio" name="wxtagtype" value="wxGroup"> 微信分组
+                <input type="radio" name="wxtagtype" value="swJoborRoleUser" checked> 组织、角色、用户
+              </td>
+              <td>
+              </td>
+            </tr>
+
+        </table>
+    </div>
+        <script type="text/javascript">
+            var oNode = null,
+                gdataSource=null,
+                thePlugins = 'wxgrouptag';
+            window.onload = function () {
+                if ( UE.plugins[ thePlugins ].editdom ) {
+                    oNode = UE.plugins[ thePlugins ].editdom;   //
+
+                    var  gTitle = oNode.getAttribute( 'title' ).replace( /&quot;/g, "\"" );
+                        $G( 'orgname' ).value = gTitle;
+                  try{
+                    var  msgflag = oNode.getAttribute( 'msgflag' ).replace( /&quot;/g, "\"" );
+                    var  wxtagtype = oNode.getAttribute( 'wxtagtype' ).replace( /&quot;/g, "\"" );
+                    $('input[value='+msgflag+']').attr("checked",true);
+                    $('input[value='+wxtagtype+']').attr("checked",true);
+                  }catch (e) {}
+                }
+                var nodeParentId = $( '#nodeParentId', window.parent.document ).val();
+                var nodeId = $('#node_id',window.parent.document).val();
+            }
+
+            dialog.oncancel = function () {
+                if ( UE.plugins[ thePlugins ].editdom ) {
+                    delete UE.plugins[ thePlugins ].editdom;
+                }
+            };
+            dialog.onok = function () {
+                if ( $G( 'orgname' ).value == '' ) {
+                    alert( '请输入控件名称' );
+                    return false;
+                }
+                var gTitle = $G( 'orgname' ).value.replace( /\"/g, "&quot;" );
+                var wxtag=$("input[name=wxtag]:checked").val();
+                var wxtagtype=$("input[name=wxtagtype]:checked").val();
+                if ( !oNode ) {
+                    try {
+                        oNode = createElement( 'input', 'leipiNewField' );
+                        oNode.setAttribute( 'type', 'text' );
+                        oNode.setAttribute( 'title', gTitle );
+                        oNode.setAttribute( 'value', gTitle );
+                        oNode.setAttribute( 'name', 'leipiNewField' );
+                        oNode.setAttribute( 'leipiPlugins', thePlugins );
+                        oNode.setAttribute( 'style',"width: 90px;height: 30px;" );
+                        oNode.setAttribute( 'msgflag',wxtag);
+                        oNode.setAttribute( 'wxtagtype',wxtagtype);
+                        editor.execCommand( 'insertHtml', oNode.outerHTML );
+                    } catch ( e ) {
+                        try {
+                            editor.execCommand( 'error' );
+                        } catch ( e ) {
+                            alert( '控件异常，请反馈或寻求帮助！' );
+                        }
+                        return false;
+                    }
+                } else {
+                    oNode.setAttribute( 'title', gTitle );
+                    oNode.setAttribute( 'msgflag',wxtag);
+                    oNode.setAttribute( 'wxtagtype',wxtagtype);
+                    delete UE.plugins[ thePlugins ].editdom;
+                }
+            };
+        </script>
+</body>
+
+</html>

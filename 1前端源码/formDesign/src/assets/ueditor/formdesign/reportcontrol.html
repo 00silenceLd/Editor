@@ -1,0 +1,1205 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+
+	<head>
+		<title>报表控件</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+
+		<link rel="stylesheet" href="bootstrap/css/bootstrap.css">
+		<link rel="stylesheet" href="leipi.style.css">
+		<script type="text/javascript" src="../dialogs/internal.js"></script>
+		<script src="./self/js/jquery-3.2.1.min.js"></script>
+		<script src="../httpData.config.js"></script>
+		<script src="bootstrap/js/bootstrap.min.js"></script>
+		<script src="self/echarts/echarts.min.js"></script>
+		<link rel="stylesheet" href="./self/css/style.css">
+		<script type="text/javascript" src="../httpData.config.js"></script>
+		<script type="text/javascript">
+			/*
+			 * reportcontrol 报表控件
+			 *
+			 *
+			 * */
+
+			function createElement(type, name) {
+				var element = null;
+				try {
+					element = document.createElement('<' + type + ' name="' + name + '">');
+				} catch (e) {}
+				if (element == null) {
+					element = document.createElement(type);
+					element.name = name;
+				}
+				return element;
+			}
+		</script>
+		<style type="text/css">
+			#con {
+				overflow: auto;
+			}
+
+			.addSourceArea {
+				display: inline-block;
+
+			}
+
+			.addSource {
+				margin-left: 10px;
+				margin-top: 5px;
+				text-decoration: none;
+				padding: 0 5px 0 5px;
+				border-radius: 8px;
+				height: auto;
+				background: #29e6a7;
+				display: inline-block;
+			}
+		</style>
+	</head>
+
+	<body id="con">
+		<div class="content" id="content">
+			<table class="table table-bordered table-striped">
+				<tr>
+					<th>
+						<span>报表名称</span>
+						<span class='label label-important'>*</span>
+					</th>
+					<!-- <th>
+                    <span>选择报表</span>
+                    <span class='label label-important'>*</span>
+                </th> -->
+					<th>
+						<span>选择图表类型</span>
+						<span class='label label-important'>*</span>
+					</th>
+				</tr>
+				<tr>
+					<td>
+						<input id='reportname' name='reportname' onclick='javascript:this.select()' placeholder='必填项' type='text' value='报表控件' />
+					</td>
+					<!-- <td>
+                    <select id='selectreport' name='selectreport'>
+                        <option value=''>请选择...</option>
+                    </select>
+                </td> -->
+					<td>
+						<select id='visualReport' class="commonPart">
+							<!-- <option value='tableCommones'>请选择可视化类型</option> -->
+							<!-- <option value='tableCommon'>普通表格</option> -->
+							<option value='line' selected="">折线图</option>
+							<option value='bar'>柱状图</option>
+							<option value='pie'>饼状图</option>
+						</select>
+						<!-- <label class='radio' title='静态报表'>
+                        <input id='static' name='orderby' value='0' type='radio' checked> 静态报表 </label>
+                    <label class='radio' title='动态报表'>
+                        <input id='dynamic' value='1' name='orderby' type='radio'> 动态报表 </label> -->
+					</td>
+				</tr>
+				<tr>
+					<th>
+						<span>统计功能</span>
+						<input type="radio" name="census" value="common" checked>普通统计
+						<input type="radio" name="census" value="score">评分统计
+						<input type="radio" name="census" value="sourceResult">源记录统计
+						<span style='margin-left: 100px;'></span>
+						<input id='statisticsTheme' class="" name='statisticsTheme' onclick='' placeholder='必填项' type='text' value='统计主题' />
+					</th>
+					<th>
+						<a class="commonPart" title='增加统计素材' class='btn btn-info' onclick='fnAdd()'>增加统计素材</a>
+						<a class="sourceResultPart" title='增加统计素材' class='btn btn-info' onclick='fnAdd2()'>增加统计素材</a>
+					</th>
+					<th>
+
+					</th>
+				</tr>
+				<tr>
+
+
+					<td colspan="2" class="commonPart">
+						<select id='selectField'>
+							<!-- <option value=''>请选择条件...</option> -->
+						</select>
+						<span style='margin-left: 20px;'></span>
+						<select id='selectreport' name='selectreport'>
+							<option value=''>请选择...</option>
+						</select>
+					</td>
+					<td colspan="2" class="scorePart">
+						数据源：<select id="datasource">
+							<option value="0">请选择</option>
+						</select>
+
+						<input id='lvname' class="scorePart" name='lvname' onclick='' placeholder='必填项' type='text' value='星' />
+						<input id='scorewho' class="scorePart" name='scorewho' onclick='' placeholder='必填项' type='text' value='党员' />
+						<!-- <input id='jonodeId'  class="scorePart" name='scorewho' onclick='' placeholder='跳转页面nodeId' type='text' value='' />
+ -->
+					</td>
+
+					<td colspan="2" class="sourceResultPart">
+						<input id='statisticsTitle_1' class="sourceResultPart" name='statisticsTitle' placeholder='必填项' type='text' value='标题1' />
+						<span style='margin-left: 20px;'></span>
+						<select id='selectDataSource_1' class="sourceResultPart" name='selectDataSource'>
+							<option value=''>请选择...</option>
+						</select>
+						<span style='margin-left: 20px;'></span>
+						<select id='titlefield_1' name='titlefield'>
+							<option value=''>请选择标题字段...</option>
+						</select>
+						<select id='contextfield_1' name='contextfield'>
+							<option value=''>请选择内容字段...</option>
+						</select><br>
+						<a href="#" onclick="addSourceToStat(this)" thisnum="1" class="sourceResultPart">添加数据源</a>
+
+						<span style='margin-left: 20px;'></span>
+						<div id="addSourceArea_1" class="sourceResultPart addSourceArea">
+
+
+						</div>
+					</td>
+
+				</tr>
+			</table>
+			<div class='alert alert-danger'>提示：报表控件表单请务必保存，方可预览内容</div>
+		</div>
+		<script>
+			$('body').on('click', 'input[name=census]', function() {
+				var censusType = $(this).val();
+				switch (censusType) {
+					case 'common':
+						$(".commonPart").show();
+						$(".scorePart").hide();
+						$(".sourceResultPart").hide();
+						break;
+					case 'score':
+						$(".scorePart").show();
+						$(".commonPart").hide();
+						$(".sourceResultPart").hide();
+						break;
+					case 'sourceResult':
+						$(".sourceResultPart").show();
+						$(".commonPart").hide();
+						$(".scorePart").hide();
+						break;
+				}
+			})
+
+
+
+
+
+			/*
+			 * 绑定数据源
+			 * 链接后台获取 数据链接
+			 */
+			var nodeParentId = $('#nodeParentId', window.parent.document).val();
+			nodeId = $('#node_id', window.parent.document).val();
+			var userinfo = window.localStorage['user'] ? JSON.parse(window.localStorage['user']) : null;
+
+			var datasource = window.localStorage['datasource_' + userinfo.id] ? window.localStorage['datasource_' + userinfo.id] :
+				null;
+			if (datasource == null) {
+				setDataSource(userinfo.id);
+			} else {
+				$("#selectreport").append(datasource);
+				$("#datasource").append(datasource);
+				$("#selectDataSource_1").append(datasource);
+			}
+
+
+
+
+
+
+			/*
+			 * JS-Public-Method
+			 */
+			// 时间戳转回字符串
+			function unxiEcDate(oUnix, Exchange) {
+				var dateStringArr = [],
+					Exchange = Exchange.toUpperCase();
+				if (typeof oUnix == "object" && oUnix instanceof Array) {
+					var unxi = oUnix;
+				} else {
+					var unxi = Object.keys(oUnix);
+				}
+				// 如果是 时间戳 转为 日期
+				if (Exchange == "UTD") {
+					for (var i = 0; i < unxi.length; i++) {
+						var d = new Date(unxi[i] * 1000),
+							date = d.getFullYear() + "-" +
+							(d.getMonth() + 1) + "-" +
+							d.getDate();
+						dateStringArr.push(date);
+					}
+				} else if (Exchange == "DTU") {
+					for (var i = 0; i < unxi.length; i++) {
+						var d = new Date(unxi[i]),
+							date = d.getTime() / 1000;
+						dateStringArr.push(date);
+					}
+				}
+				return dateStringArr;
+			}
+
+			function ajax(options) {
+
+				options = options || {};
+				options.type = (options.type || "GET").toUpperCase();
+				options.dataType = options.dataType || "json";
+				var params = formatParams(options.data);
+
+				if (window.XMLHttpRequest) {
+					var xml = new XMLHttpRequest();
+				} else {
+					var xml = new ActiveXObject("Microsoft.XMLHTTP")
+				}
+
+				xml.onreadystatechange = function() {
+					if (xml.readyState == 4) {
+						var status = xml.status;
+						if (status >= 200 && status < 300) {
+							options.success && options.success(xml.responseText, xml.responseXML)
+						} else {
+							options.fail && options.fail(status);
+						}
+					}
+				}
+
+				if (options.type == "GET") {
+					xml.open("GET", options.url, options.async);
+					xml.send(null);
+				} else if (options.type == "POST") {
+					xml.open("POST", options.url, options.async);
+					xml.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+					xml.send(params);
+				}
+			}
+
+			function formatParams(data) {
+				var arr = [];
+				for (var name in data) {
+					arr.push(encodeURIComponent(name) + "=" + encodeURIComponent(data[name]));
+				}
+				arr.push(("v=" + Math.random()).replace(".", ""));
+				return arr.join("&");
+			}
+			// 去重
+			Array.prototype.Toheavy = function() {
+				res = [this[0]];
+				for (var i = 1; i < this.length; i++) {
+					var repeat = false;
+					for (var j = 0; j < res.length; j++) {
+						if (this[i] == res[j]) {
+							repeat = true;
+							break;
+						}
+					}
+					if (!repeat) {
+						res.push(this[i]);
+					}
+				}
+				return res;
+			}
+
+			// 获取报表数据
+			var nodeParentId = $('#nodeParentId', window.parent.document).val();
+			var nodeId = $("#node_id", window.parent.document).val();
+			var userinfo = window.localStorage['user'] ? JSON.parse(window.localStorage['user']) : null;
+			ajax({
+				url: prevent_HOST + 'nodeQueryFacade/getDataSourcePage?nodeId=' + nodeId + "&uid=" + userinfo.id,
+				// url: prevent_HOST + 'pageDesignQueryFacade/getPageEditorData?id=' + nodeParentId,
+				type: "GET",
+				dataType: "json",
+				async: false,
+				success: function(response, xml) {
+					result = JSON.parse(response).msg;
+				},
+				error: function(status) {
+					console.log(status)
+					alert('抱歉！获取 数据链接 失败！因为您好像还没有选择表哦！');
+				}
+			})
+			for (var i = 0; i < result.length; i++) {
+				$("#selectreport").append("<option id=" + result[i].id + " value=" + result[i].value + ">" + result[i].value +
+					"</option>");
+			}
+			// for (var i = 0; i < result.length; i++) {
+			// 	$("#selectDataSource_1").append('<option id="' + result[i].id + '" value="' + result[i].id + ':' + result[i].value +
+			// 		'">' + result[i].value + '</option>');
+			// }
+
+			// 获取报表中的字段数据
+			var dataStatusMsg, data;
+			$("#selectreport").change(function() {
+				var selectReport = $("#selectreport").val(),
+					selectReortId = $('#selectreport option:selected').attr('id');
+
+
+				for (var i = 0; i < result.length; i++) {
+					if (result[i].value === selectReport) {
+						$("#selectField").empty();
+						// $(".addSelect").empty();
+						for (var j = 0; j < result[i].children.length; j++) {
+							$("#selectField").append("<option value=" + result[i].children[j].value + ">" + result[i].children[j].value +
+								"</option>");
+						}
+					}
+				}
+				$("#selectField").empty();
+				$.ajax({
+					type: "get",
+					url: prevent_HOST + 'pageDesignQueryFacade/getPageEditorData?id=' + selectReortId,
+					contentType: "application/json",
+					async: false,
+					success: function(dataResult) {
+						dataStatusMsg = dataResult.statusMsg;
+						if (dataStatusMsg === '查询失败') return false;
+						data = dataResult.msg;
+						// $( "#selectField" ).empty();
+						// $( ".addSelect" ).empty();
+						for (var i = 0; i < Object.keys(data).length; i++) {
+							$("#selectField").append("<option id=" + data[Object.keys(data)[i]].value + " value=" + data[Object.keys(
+									data)[i]].text + ">" + data[Object.keys(data)[i]].text +
+								"</option>");
+						}
+					}
+				})
+			})
+
+
+
+
+			// 获取报表中的字段数据(记录统计)
+			var dataStatusMsg2, data2;
+			$("#selectDataSource_1").change(function() {
+			/* 	var selectReport = $("#selectDataSource_1").val(),
+					selectReortId = $('#selectDataSource_1 option:selected').attr('id'); */
+
+					var selectReport = $("#selectDataSource_1").val().split(":")[1],
+						selectReortId =$("#selectDataSource_1").val().split(":")[0];
+
+				for (var i = 0; i < result.length; i++) {
+					if (result[i].value === selectReport) {
+						$("#titlefield_1").empty();
+						$("#contextfield_1").empty();
+						// $(".addSelect").empty();
+						for (var j = 0; j < result[i].children.length; j++) {
+							$("#titlefield_1").append("<option value=" + result[i].children[j].value + ">" + result[i].children[j].value +
+								"</option>");
+							$("#contextfield_1").append("<option value=" + result[i].children[j].value + ">" + result[i].children[j].value +
+								"</option>");
+						}
+					}
+				}
+				$("#titlefield_1").empty();
+				$("#contextfield_1").empty();
+				$.ajax({
+					type: "get",
+					url: prevent_HOST + 'pageDesignQueryFacade/getPageEditorData?id=' + selectReortId,
+					contentType: "application/json",
+					async: false,
+					success: function(dataResult) {
+						dataStatusMsg2 = dataResult.statusMsg;
+						if (dataStatusMsg2 === '查询失败') return false;
+						data2 = dataResult.msg;
+						for (var i = 0; i < Object.keys(data2).length; i++) {
+							$("#titlefield_1").append("<option id=" + data2[Object.keys(data2)[i]].value + " value=" + data2[Object.keys(
+									data2)[i]].value + ">" + data2[Object.keys(data2)[i]].text +
+								"</option>");
+							$("#contextfield_1").append("<option id=" + data2[Object.keys(data2)[i]].value + " value=" + data2[Object.keys(
+									data2)[i]].value + ">" + data2[Object.keys(data2)[i]].text +
+								"</option>");
+						}
+					}
+				})
+			})
+
+
+
+
+
+
+			//添加多个素材
+			var count = 0;
+
+			function fnAdd() {
+				if (data === undefined) return false;
+				count++;
+				var html = "<tr><th colspan='2' class='commonPart'><select id='select_" + count +
+					"' class='addSelect'><option value=''>请选择素材</option>";
+				html +=
+					"</select><span style='margin-left: 20px;'></span><select id='selectreport_" + count +
+					"' name='' class='addSelectReport'>" +
+					"<option value=''>请选择...</option>";
+
+
+				for (var i = 0; i < result.length; i++) {
+					html += "<option id=" + result[i].id + " value=" + result[i].value + ">" + result[i].value + "</option>";
+
+				}
+				html +=
+					'</select>' +
+					' <a title="删除" class="btn btn-small btn-default" href="javascript:void(0);" onclick="fnDeleteRow(this)"><i class="icon-ban-circle"></i></a>' +
+					'</th>' +
+					'</tr>';
+				$('table.table').append(html);
+
+			};
+
+			//添加多个素材(用于源记录统计)
+			var count2 = 1;
+
+			function fnAdd2() {
+				// if (data === undefined) return false;
+				count2++;
+				var html = '<tr><td colspan="2" class="sourceResultPart">' +
+					' <a title="删除" class="btn btn-small btn-default" href="javascript:void(0);" onclick="fnDeleteRow(this)"><i class="icon-ban-circle"></i></a>' +
+					'<input id="statisticsTitle_' + count2 +
+					'" class="sourceResultPart statisticsTitleCla" name="statisticsTitle" placeholder="必填项" type="text" value="标题' +
+					count2 +
+					'" />' +
+					'<span style="margin-left: 20px;"></span>' +
+					'<select id="selectDataSource_' + count2 +
+					'" class="sourceResultPart selectDataSourceCla" name="selectDataSource">' +
+					'<option value="">请选择...</option>';
+
+				/* for (var i = 0; i < result.length; i++) {
+					html += '<option id="' + result[i].id + '" value="' + result[i].id + ':' + result[i].value + '">' + result[i].value +
+						'</option>';
+
+				} */
+				html += '</select>' +
+					'<span style="margin-left: 20px;"></span>' +
+					'<select id="titlefield_' + count2 + '" name="titlefield">' +
+					'<option value="">请选择标题字段...</option>' +
+					'</select>' +
+					'<select id="contextfield_' + count2 + '" name="contextfield">' +
+					'<option value="">请选择内容字段...</option>' +
+					'</select><br>' +
+					'<a href="#" onclick="addSourceToStat(this)" thisnum="' + count2 +
+					'" class="sourceResultPart addSourceToStatCla">添加数据源</a>' +
+					'<span style="margin-left: 20px;"></span>' +
+					'<div id="addSourceArea_' + count2 + '" class="sourceResultPart addSourceAreaCla addSourceArea"></div>' +
+					'</td></tr>';
+
+				$('table.table').append(html);
+
+				$("#selectDataSource_"+count2).append(datasource);
+
+			};
+
+
+			//将当前数据源添加进统计素材中
+			function addSourceToStat(e) {
+				var oa = $(e);
+				var thisnum = oa.attr('thisnum');
+
+				// var title = $('#statisticsTitle_' + thisnum).val();
+				var sourceNodeId = $('#selectDataSource_' + thisnum).val().split(":")[0];
+				var sourceName = $('#selectDataSource_' + thisnum).val().split(":")[1];
+				var oarea = $('#addSourceArea_' + thisnum);
+
+				if ($('#selectDataSource_' + thisnum).val() == '') {
+					alert("请选择数据源");
+					return false;
+				}
+
+				var titlefield = $('#titlefield_' + thisnum).val();
+				var contextfield = $('#contextfield_' + thisnum).val();
+
+
+
+				var areahtml = '<a class="addSource" href="#" titlefield="' + titlefield + '" contextfield="' + contextfield +
+					'" sourcenodeid="' + sourceNodeId + '">' + sourceName +
+					'</a><span onclick="delAddSource(this)">x</span>';
+				oarea.append(areahtml);
+
+
+
+
+			}
+
+
+
+			function delAddSource(e) {
+				$(e).prev().remove();
+				$(e).remove();
+			}
+
+
+
+
+
+
+
+			/*删除tr*/
+			function fnDeleteRow(obj) {
+
+				var census = $('input[name=census]:checked').val();
+				switch (census) {
+					case 'common':
+
+						$(obj).parent('th').parent('tr').remove();
+						count--;
+						for (var i = 0; i < count; i++) {
+							var j = i + 1;
+							$('.addSelect').eq(i).attr('id', 'select_' + j);
+							$('.compareSelect').eq(i).attr('id', 'comparison_' + j);
+							$('.fillInput').eq(i).attr('id', 'fill_' + j);
+						}
+
+						break;
+					case 'sourceResult':
+						$(obj).parent('td').parent('tr').remove();
+						count2--;
+						for (var i = 0; i < count2; i++) {
+							var j = i + 2;
+							$('.statisticsTitleCla').eq(i).attr('id', 'statisticsTitle_' + j);
+							$('.statisticsTitleCla').eq(i).attr('value', '标题' + j);
+							$('.selectDataSourceCla').eq(i).attr('id', 'selectDataSource_' + j);
+							$('.addSourceToStatCla').eq(i).attr('thisnum', j);
+							$('.addSourceAreaCla').eq(i).attr('id', 'addSourceArea_' + j);
+						}
+
+						break;
+				}
+
+			}
+
+
+
+
+
+			//增加的素材的字段渲染(普通统计)
+			$("body").delegate(".addSelectReport", "change", function() {
+				// alert($(this).attr('id'))//selectreport_1
+
+
+				var Id = $(this).attr('id'); //当前素材的属性Id
+
+				var thisCount = Id.split("_")[1]; //除主素材以外的素材序号,如select_1、selectreport_1后面的数字
+
+				// alert(thisCount);
+
+				var selectReport = $("#selectreport_" + thisCount).val(),
+					selectReortId = $('#selectreport_' + thisCount + ' option:selected').attr('id');
+				// alert(selectReortId);
+				//console.log($( "#selectreport" ).val() )
+				// 					for (var i = 0; i < result.length; i++) {
+				// 						if (result[i].value === selectReport) {
+				// 							//console.log(result[i].children.length)
+				// 							$("#selectField").empty();
+				// 							// $(".addSelect").empty();
+				// 							for (var j = 0; j < result[i].children.length; j++) {
+				// 								$("#selectField").append("<option value=" + result[i].children[j].value + ">" + result[i].children[j].value +
+				// 									"</option>");
+				// 								/* $( ".addSelect" ).append("<option value=" + result[ i ].children[ j ].value + ">" + result[ i ].children[ j ].value +
+				// 								"</option>"); */
+				// 							}
+				// 						}
+				// 					}
+				// $("#selectField").empty();
+				// $( ".addSelect" ).empty();
+				$("#select_" + thisCount).empty();
+				$.ajax({
+					type: "get",
+					url: prevent_HOST + 'pageDesignQueryFacade/getPageEditorData?id=' + selectReortId,
+					contentType: "application/json",
+					async: false,
+					success: function(dataResult) {
+						dataStatusMsg = dataResult.statusMsg;
+						if (dataStatusMsg === '查询失败') return false;
+
+						var data2 = dataResult.msg;
+						// $( "#selectField" ).empty();
+						$("#select_" + thisCount).empty();
+						for (var i = 0; i < Object.keys(data2).length; i++) {
+							// 								$("#selectField").append("<option id=" + data[Object.keys(data)[i]].value + " value=" + data[Object.keys(
+							// 										data)[i]].text + ">" + data[Object.keys(data)[i]].text +
+							// 									"</option>");
+							$("#select_" + thisCount).append("<option id=" + data2[Object.keys(data2)[i]].value + " value=" + data2[
+									Object
+									.keys(data2)[
+										i]].text + ">" + data2[Object.keys(data2)[i]].text +
+								"</option>");
+							console.log(data2[Object.keys(data2)[i]].text)
+						}
+					}
+				})
+
+
+			})
+
+
+			//增加的素材的字段渲染(源记录统计)
+			$("body").delegate(".selectDataSourceCla", "change", function() {
+				// alert($(this).attr('id'))//selectreport_1
+
+
+				var Id = $(this).attr('id'); //当前素材的属性Id
+
+				var thisCount = Id.split("_")[1]; //除主素材以外的素材序号,如select_1、selectreport_1后面的数字
+
+
+				/* var selectReport = $("#selectDataSource_" + thisCount).val(),
+					selectReortId = $('#selectDataSource_' + thisCount + ' option:selected').attr('id'); */
+					var selectReport = $("#selectDataSource_" + thisCount).val().split(":")[1],
+						selectReortId = $("#selectDataSource_" + thisCount).val().split(":")[0];
+				$("#titlefield_" + thisCount).empty();
+				$("#contextfield_" + thisCount).empty();
+				$.ajax({
+					type: "get",
+					url: prevent_HOST + 'pageDesignQueryFacade/getPageEditorData?id=' + selectReortId,
+					contentType: "application/json",
+					async: false,
+					success: function(dataResult) {
+						dataStatusMsg2 = dataResult.statusMsg;
+						if (dataStatusMsg === '查询失败') return false;
+
+						var data2 = dataResult.msg;
+						// $( "#selectField" ).empty();
+						$("#titlefield_" + thisCount).empty();
+						$("#contextfield_" + thisCount).empty();
+						for (var i = 0; i < Object.keys(data2).length; i++) {
+							$("#titlefield_" + thisCount).append("<option id=" + data2[Object.keys(data2)[i]].value + " value=" + data2[
+									Object
+									.keys(data2)[
+										i]].value + ">" + data2[Object.keys(data2)[i]].text +
+								"</option>");
+
+
+							$("#contextfield_" + thisCount).append("<option id=" + data2[Object.keys(data2)[i]].value + " value=" +
+								data2[
+									Object
+									.keys(data2)[
+										i]].value + ">" + data2[Object.keys(data2)[i]].text +
+								"</option>");
+							console.log(data2[Object.keys(data2)[i]].text)
+						}
+					}
+				})
+
+
+			})
+
+
+
+
+
+
+
+
+			//回填素材
+			function backSucai(nodeId, thisCount) {
+				$.ajax({
+					type: "get",
+					url: prevent_HOST + 'pageDesignQueryFacade/getPageEditorData?id=' + nodeId,
+					contentType: "application/json",
+					async: false,
+					success: function(dataResult) {
+						dataStatusMsg = dataResult.statusMsg;
+						if (dataStatusMsg === '查询失败') return false;
+
+						var data2 = dataResult.msg;
+						// $( "#selectField" ).empty();
+						// $("#select_" + thisCount).empty();
+						for (var i = 0; i < Object.keys(data2).length; i++) {
+							// 								$("#selectField").append("<option id=" + data[Object.keys(data)[i]].value + " value=" + data[Object.keys(
+							// 										data)[i]].text + ">" + data[Object.keys(data)[i]].text +
+							// 									"</option>");
+							$("#select_" + thisCount).append("<option id=" + data2[Object.keys(data2)[i]].value + " value=" + data2[
+									Object
+									.keys(data2)[
+										i]].text + ">" + data2[Object.keys(data2)[i]].text +
+								"</option>");
+							console.log(data2[Object.keys(data2)[i]].text)
+						}
+					}
+				})
+			}
+		</script>
+
+
+
+
+
+		<script type="text/javascript">
+			var oNode = null,
+				thePlugins = 'reportcontrol';
+
+			function changeProduct() {
+				if ($G("product")) {
+					$G("product").checked = true;
+				}
+			}
+
+
+			// 数据回填
+			window.onload = function() {
+				$('.commonPart').show();
+				$('.scorePart').hide();
+				$(".sourceResultPart").hide();
+				if (UE.plugins[thePlugins].editdom) {
+					oNode = UE.plugins[thePlugins].editdom;
+					var arr = [],
+						gTitle = oNode.getAttribute('title'),
+						gOrderby = oNode.getAttribute('orderby'),
+						gField = oNode.getAttribute('field').split(';'),
+						gNode_name = oNode.getAttribute('node_name'),
+						statisticsTheme = oNode.getAttribute('statisticsTheme'),
+						selectReortId = oNode.getAttribute('pid'),
+						gVisualReport = oNode.getAttribute('visualreport'),
+						statisticalMaterials = oNode.getAttribute('statisticalmaterials');
+					console.log(statisticalMaterials);
+					statisticalMaterials = JSON.parse(statisticalMaterials);
+					console.log(statisticalMaterials);
+
+
+					switch (gVisualReport) {
+						case 'common':
+							$('.commonPart').show();
+							$('.scorePart').hide();
+							$('.sourceResultPart').hide();
+							$('input[value=' + gVisualReport + ']').attr('checked', 'true');
+							break;
+						case 'score':
+							$('.scorePart').show();
+							$('.commonPart').hide();
+							$('.sourceResultPart').hide();
+							$('input[value=' + gVisualReport + ']').attr('checked', 'true');
+							break;
+						case 'sourceResult':
+							$('.sourceResultPart').show();
+							$('.scorePart').hide();
+							$('.commonPart').hide();
+							$('input[value=' + gVisualReport + ']').attr('checked', 'true');
+							break;
+					}
+
+
+
+
+
+
+
+
+					$G('reportname').value = gTitle;
+					$G('selectreport').value = gNode_name;
+					// gOrderby == '0' ? $G('static').checked = true : $G('dynamic').checked = true;
+					$G('visualReport').value = gVisualReport;
+					if ($G('selectreport').value != '') {
+						$("#selectreport").change()
+					}
+					$G('selectField').value = gField[1].split(',')[3];
+					$G('statisticsTheme').value = statisticsTheme;
+					for (var i = 0; i < gField.length - 2; i++) {
+
+						fnAdd();
+						var x = i + 2;
+						var len = gField[i].split(',').length;
+						backSucai(gField[x].split(',')[0], x - 1); //将字段回显
+
+						s = x - 1;
+						$G('selectreport_' + s).value = gField[x].split(',')[1];
+						$G('select_' + s).value = gField[x].split(',')[3];
+					}
+
+					if (statisticalMaterials) {
+						for (var i = 0; i < statisticalMaterials.length; i++) {
+							var j = i + 1;
+							var statisticalMaterial = statisticalMaterials[i];
+							var statisticsTitle = statisticalMaterial.statisticsTitle;
+							var sourceNodeIds = statisticalMaterial.sourceNodeIds;
+							var sourceNames = statisticalMaterial.sourceNames;
+							var titlefields = statisticalMaterial.titlefields;
+							var contextfields = statisticalMaterial.contextfields;
+
+
+
+
+							if (i != 0) fnAdd2();
+
+							$('#statisticsTitle_' + j).attr('value', statisticsTitle);
+
+							for (var l = 0; l < sourceNodeIds.length; l++) {
+								var html = '<a class="addSource" href="#" titlefield="' + titlefields[l] + '" contextfield="' + contextfields[
+										l] +
+									'" sourcenodeid="' + sourceNodeIds[l] + '">' + sourceNames[l] +
+									'</a><span onclick="delAddSource(this)">x</span>';
+
+
+								$('#addSourceArea_' + j).append(html);
+							}
+						}
+
+					}
+
+
+
+
+
+
+
+
+
+
+
+
+				}
+			}
+
+
+
+
+			dialog.oncancel = function() {
+				if (UE.plugins[thePlugins].editdom) {
+					delete UE.plugins[thePlugins].editdom;
+				}
+			};
+			dialog.onok = function() { //statisticsTheme
+
+				var census = $('input[name=census]:checked').val();
+				switch (census) {
+					case 'common':
+						if ($G('reportname').value == '') {
+							alert('报表名称不能为空');
+							$G('reportname').focus();
+							return false;
+						} else if ($G('selectreport').value == '') {
+							alert('请选择一个报表');
+							$G('selectreport').focus();
+							return false;
+						} else if ($G('statisticsTheme').value == '') {
+							alert('请选择一个报表');
+							$G('statisticsTheme').focus();
+							return false;
+						}
+						break;
+					case 'score':
+						if ($G('lvname').value == '') {
+							alert('级别名不能为空');
+							$G('reportname').focus();
+							return false;
+						} else if ($G('scorewho').value == '') {
+							alert('评分对象不能为空');
+							$G('selectreport').focus();
+							return false;
+						} /* else if ($G('jonodeId').value == '') {
+							alert('跳转页面nodeId不能为空');
+							$G('jonodeId').focus();
+							return false;
+						} */
+						break;
+
+					case 'sourceResult':
+						for (var i = 0; i < count2; i++) {
+							var j = i + 1;
+							var co = $('#addSourceArea_' + j).find('a').length;
+							if (co == 0) {
+								alert('请在素材中添加数据源');
+								return false;
+							}
+						}
+						break;
+				}
+
+
+
+
+
+
+
+				// console.log( $G( 'visualReport' ).value )
+				// 传入后台条件数据
+				var reportname = $G('reportname').value,
+					selectReort = $G('selectreport').value,
+					statisticsTheme = $G('statisticsTheme').value,
+					selectReortId = $('#selectreport option:selected').attr('id'),
+					selectFieldId = $('#selectField option:selected').attr('id'),
+					field,
+					// checked = $('input[name="orderby"]:checked').val(),
+					checked = 1,
+					visualReport = $G('visualReport').value;
+				/* var tps = $('#lvname').val() + ';' + $('#scorewho').val() + ';' + $('#jonodeId').val(); */
+
+				scoreSourceId = $('#datasource option:selected').val();
+				scoreSourceId = scoreSourceId.split(':')[0];
+        scoreSourceName = scoreSourceId.split(':')[1];
+				field = statisticsTheme;
+				field += ';' + selectReortId + ',' + selectReort + ',' + selectFieldId + ',' + $G('selectField').value;
+				for (var i = 0; i < count; i++) {
+					var j = i + 1;
+					var newSelectReportId = $('#selectreport_' + j + ' option:selected').attr('id');
+					var newSelectReport = $("#selectreport_" + j).val();
+					field += ";";
+					field += newSelectReportId + "," + newSelectReport + "," + $('#select_' + j + ' option:selected').attr('id') +
+						',' + $G('select_' + j).value;
+				}
+
+
+				var statisticalMaterials = []
+				for (var i = 0; i < count2; i++) {
+					var j = i + 1;
+					var statisticsTitle = $('#statisticsTitle_' + j).val();
+					var sourceNodeIds = [];
+					var sourceNames = [];
+					var titlefields = [];
+					var contextfields = [];
+
+
+					for (var l = 0; l < $('#addSourceArea_' + j).find('a').length; l++) {
+						var oa = $('#addSourceArea_' + j).find('a').eq(l); //获取第l个 a标签
+						var sourceNodeId = oa.attr('sourcenodeid');
+						var sourceName = oa.html();
+						var titlefield = oa.attr('titlefield');
+						var contextfield = oa.attr('contextfield');
+
+						sourceNodeIds.push(sourceNodeId);
+						sourceNames.push(sourceName);
+						titlefields.push(titlefield);
+						contextfields.push(contextfield);
+
+
+					}
+					var statisticalMaterial = {
+						'statisticsTitle': statisticsTitle,
+						'sourceNodeIds': sourceNodeIds,
+						'sourceNames': sourceNames,
+						'titlefields': titlefields,
+						'contextfields': contextfields
+					}
+					// console.log(statisticalMaterial);
+					statisticalMaterials.push(statisticalMaterial);
+
+
+				}
+				console.log(statisticalMaterials);
+				statisticalMaterials = JSON.stringify(statisticalMaterials);
+				console.log(statisticalMaterials);
+
+				console.log(field);
+				var condition = JSON.stringify({
+					"node_name": selectReort,
+					"node_id": selectReortId,
+					"field": field
+				});
+
+				if (!oNode) {
+					try {
+						// 判断选择的是哪种类型的报表
+						if (checked == 0) {
+							var html, parseData, dataBody, fieldsHead, columnsLength;
+							$.ajax({
+								type: "POST",
+								url: prevent_HOST + "pageDesignOperatorFacade/getDataSource",
+								data: condition,
+								contentType: 'application/json;chartset=UTF-8',
+								async: false,
+								success: function(res) {
+									parseData = res['msg'],
+										dataBody = parseData.data,
+										fieldsHead = parseData.fields,
+										columnsLength = Object.keys(fieldsHead).length;
+									// console.log( fieldsHead[ Object.keys( fieldsHead )[ 0 ] ].text )
+									// console.log( Object.keys( fieldsHead )[ 0 ] )
+								},
+								error: function(status) {
+									console.log(status)
+								}
+							})
+							// console.log(dataBody)
+
+							// 判断选择可视化报表类型
+							html =
+								"<table class='tableT' style='text-align:center;'>" +
+								// 表头
+								"<td class='titleT' style='font-weight:bold' colspan=" + columnsLength + ">" + reportname + "</td>" +
+								// 标题
+								"<tr class='menuT'>";
+							for (var j = 0; j < columnsLength; j++) {
+								html += "<th>" + fieldsHead[Object.keys(fieldsHead)[j]].text + "</th>";
+							}
+							html += "</tr>";
+							for (var j = 0; j < dataBody.length; j++) {
+								var columns = Object.keys(dataBody[j]).filter(function(e) {
+									return e.indexOf("data") === 0;
+								})
+								html += "<tr>"
+								for (var x = 0; x < columns.length; x++) {
+									var y = columns[x]
+									html += "<td>" + dataBody[j][y] + "</td>"
+								}
+								html += "</tr>"
+							}
+							html += "</table>";
+
+							if (visualReport === 'tableCommon') { // 普通表格
+							} else if (visualReport === 'line') { //折线图
+								html =
+									"<div src='./assets/ueditor/formdesign/self/echarts/echarts.min.js' cdata_tag='script' _ue_custom_node_='true'></div>" +
+									"<div style='width: 100%;height: 250px;' id='lineChart'></div>";
+								elemId = 'lineChart'
+								showCharts = function(elem) {
+									console.log(window.editor.document.getElementById(elemId))
+									var myChart = echarts.init(window.editor.document.getElementById(elemId));
+									var lineOption = {
+										title: {
+											text: reportname
+										},
+										tooltip: {
+											trigger: 'axis'
+										},
+										legend: {
+											// data: [ '1', '2' ]
+										},
+										grid: {
+											left: '3%',
+											right: '4%',
+											bottom: '3%',
+											containLabel: true
+										},
+										toolbox: {
+											feature: {
+												saveAsImage: {}
+											}
+										},
+										xAxis: {
+											type: 'category',
+											// boundaryGap: false,
+											data: []
+										},
+										yAxis: {
+											type: 'value'
+										},
+										series: [{
+												name: '1',
+												type: 'bar',
+												barWidth: '30%',
+												label: {
+													normal: {
+														show: true,
+													}
+												},
+												data: [120, 132, 101, 134, 90, 230, 210]
+											},
+											{
+												name: '2',
+												type: 'bar',
+												barWidth: '30%',
+												label: {
+													normal: {
+														show: true,
+													}
+												},
+												data: [220, 182, 191, 234, 290, 330, 310]
+											}
+										]
+									};
+									myChart.setOption(lineOption);
+								}
+
+							} else if (visualReport === 'bar') { //柱状图
+								html = "<div style='width: 100%;height: 250px;background-color: red;' id='barChart'></div>";
+								console.log(html)
+							} else if (visualReport === 'pie') { //饼状图
+								html = "<div style='width: 100%;height: 250px;' id='pieChart'></div>";
+							}
+
+							editor.execCommand('insertHtml', html);
+							// if ( typeof showCharts !== 'undefined' ) showCharts( elemId );
+							return true;
+						} else if (checked == 1) {
+							// 保存表单属性
+							oNode = createElement('input', 'reportcontrol');
+							oNode.setAttribute('placeholder', '报表控件');
+							oNode.setAttribute('readonly', 'readonly');
+							oNode.setAttribute('leipiPlugins', 'reportcontrol');
+							oNode.setAttribute('name', 'leipiNewField');
+							oNode.setAttribute('title', reportname);
+							oNode.setAttribute('node_name', '基础数据表4');
+							// oNode.setAttribute( 'page_id', selectReortId );scoreSourceId
+
+							if (selectReortId == undefined) {
+								oNode.setAttribute('pid', 0);
+							} else {
+								oNode.setAttribute('pid', selectReortId);
+							}
+
+							oNode.setAttribute('orderby', checked);
+							oNode.setAttribute('statisticstheme', statisticsTheme);
+
+							switch (census) {
+								case 'common':
+									oNode.setAttribute('field', field);
+									oNode.setAttribute('visualreport', visualReport);
+									break;
+								case 'score':
+									oNode.setAttribute('visualreport', census);
+									//oNode.setAttribute('tps', tps);
+									oNode.setAttribute('field', statisticsTheme + ';20140,基础数据表4,wenbenkuang,文本框');
+									oNode.setAttribute('scoreSourceId', scoreSourceId);
+                  oNode.setAttribute('scoreSourceName', scoreSourceName);
+									break;
+								case 'sourceResult':
+									oNode.setAttribute('visualreport', census);
+									oNode.setAttribute('field', statisticsTheme + ';20140,基础数据表4,wenbenkuang,文本框');
+									oNode.setAttribute('statisticalMaterials', statisticalMaterials);
+									break;
+							}
+
+							oNode.setAttribute('style', 'width: 150px;height: 30px;border: 1px solid #ccc;');
+
+							editor.execCommand('insertHtml', oNode.outerHTML);
+							return true;
+						}
+					} catch (e) {
+						try {
+							editor.execCommand('error');
+						} catch (e) {
+							alert('控件异常，请到 与我们反馈或寻求帮助！');
+						}
+						return false;
+					}
+				} else {
+					oNode.setAttribute('title', reportname);
+					oNode.setAttribute('node_name', '基础数据表4');
+
+					if (selectReortId == undefined) {
+						oNode.setAttribute('pid', 0);
+					} else {
+						oNode.setAttribute('pid', selectReortId);
+					}
+					oNode.setAttribute('orderby', checked);
+					oNode.setAttribute('statisticstheme', statisticsTheme);
+
+					switch (census) {
+						case 'common':
+							oNode.setAttribute('field', field);
+							oNode.setAttribute('visualreport', visualReport);
+							break;
+						case 'score':
+							oNode.setAttribute('visualreport', census);
+							//oNode.setAttribute('tps', tps);
+							oNode.setAttribute('field', statisticsTheme + ';20140,基础数据表4,wenbenkuang,文本框');
+							oNode.setAttribute('scoreSourceId', scoreSourceId);
+              oNode.setAttribute('scoreSourceName', scoreSourceName);
+							break;
+						case 'sourceResult':
+							oNode.setAttribute('visualreport', census);
+							oNode.setAttribute('field', statisticsTheme + ';20140,基础数据表4,wenbenkuang,文本框');
+							oNode.setAttribute('statisticalMaterials', statisticalMaterials);
+							break;
+					}
+
+
+					// oNode.setAttribute('census', census);
+					delete UE.plugins[thePlugins].editdom; //使用后清空这个对象，变回新增模式
+				}
+
+			};
+		</script>
+	</body>
+
+</html>

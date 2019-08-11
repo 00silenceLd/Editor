@@ -1,0 +1,190 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title>背景控件</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="leipi.style.css">
+    <script type="text/javascript" src="../dialogs/internal.js"></script>
+    <script type="text/javascript" src="./jquery-3.2.1.min.js"></script>
+    <script type="text/javascript" src="../httpData.config.js"></script>
+    <script src="self/js/py.js"></script>
+    <script type="text/javascript">
+        function createElement( type, name ) {
+            var element = null;
+            try {
+                element = document.createElement( '<' + type + ' name="' + name + '">' );
+            } catch ( e ) {}
+            if ( element == null ) {
+                element = document.createElement( type );
+                element.name = name;
+            }
+            return element;
+        }
+    </script>
+  <link rel="stylesheet" href="self/listone/css/css.css">
+</head>
+<body>
+    <div class="content">
+      <table class="table table-bordered table-striped table-hover">
+        <tr>
+          <th>控件名称<span class="label label-important">*</span>字段</th>          
+        </tr>
+        <tr>
+          <td>
+              <input id="orgname" onclick="javascript:this.select()" placeholder="必填项" type="text" class="input-medium" value="背景" onblur="getPY(this.value)" />
+              <input type="text" class="span2" id="pluName" placeholder="字段" value="" >
+          </td>         
+        </tr>
+        <tr>
+          <th>背景</th>
+        </tr>
+        <tr>
+          <td>           
+            <br/>
+            背景色： <input id="bagcolor" name="bagcolor" type="color" style="width:100px; height:30px;" class="input-samll span1">
+            <br>
+            背景图片：<input type="file" name="bagpic" id="bagpic" accept="image/png, image/jpeg, image/gif, image/jpg" onchange="doLoadImg()">
+            <input type="hidden" id="hidebagpic" value="">
+            <img src="" id="showBgPic">
+          </td>
+        </tr>
+      </table>
+    </div>
+    <script type="text/javascript">
+        var oNode = null,
+            gdataSource=null,
+            control_name=null,
+            nodeId=null,
+            showpic=false,
+            thePlugins = 'background';        
+            window.onload = function () {
+                $G('orgname').select();
+                var nodeParentId = $( '#nodeParentId', window.parent.document ).val();
+                nodeId = $('#node_id',window.parent.document).val();
+                var userinfo=window.localStorage['user']?JSON.parse(window.localStorage['user']):null; 
+                if ( UE.plugins[ thePlugins ].editdom ) {
+                    oNode = UE.plugins[ thePlugins ].editdom;
+                    $G( 'orgname' ).value = oNode.getAttribute( 'title' );                    
+                    var name = oNode.getAttribute( 'name' );
+                    var bagcolor = oNode.getAttribute( 'bagcolor' );
+                    var bagpic = oNode.getAttribute( 'bagpic' );
+                    control_name=name;   
+                    $G( 'pluName' ).value = name;
+                    $G( 'bagcolor' ).value = bagcolor;
+                    $G( 'hidebagpic' ).value = bagpic;
+                    document.getElementById('showBgPic').src=bagpic;
+                } 
+            }
+
+        dialog.oncancel = function () {          
+          if ( UE.plugins[ thePlugins ].editdom ) {
+              delete UE.plugins[ thePlugins ].editdom;
+          }
+        };
+        
+        function doLoadImg(){
+            var reads= new FileReader();
+            var f=document.getElementById('bagpic').files[0];
+            reads.readAsDataURL(f);
+            reads.onload=function (e) {
+                document.getElementById('showBgPic').src=this.result;
+                showpic=true;
+            };
+        }
+        dialog.onok = function () {
+           // console.log();
+            //http://192.168.0.213:20890/ueditor/uoloadFile
+            //name="fileVideo"; filename="right_focus.jpg"
+           // return false;
+          var gName = $G( 'orgname' ).value.replace( /\"/g, "&quot;" );  
+          var bagcolor = $("#bagcolor").val();
+          var hidebagpic = $("#hidebagpic").val();   
+          var bagpic='';           
+
+          if ( gName == '' ) {
+                alert( '控件名称不能为空' );
+                $G( 'orgname' ).focus();
+                return false;
+            }
+          var PN=$('#pluName');
+              cupy=PN.val();
+              if(cupy==''){
+                getPY($G( 'orgname' ).value);
+              }
+            if(showpic){
+                var item = document.getElementById( 'bagpic' ).files[ 0 ],
+                formData = new FormData(),
+                data;
+                formData.append( 'fileVideo', item );
+                $.ajax( {
+                    url: prevent_HOST + 'ueditor/uoloadFile',
+                    type: 'POST',
+                    data: formData,
+                    cache: false,
+                    processData: false, // 不处理发送的数据，因为data值是FormData对象，不需要对数据做处理
+                    contentType: false, // 不设置Content-type请求头
+                    async:false,
+                    success: function ( res ) {
+                        bagpic = res.msg;                        
+                    }
+                });
+            }
+
+          if ( !oNode ) {
+                try {
+                    oNode = createElement( 'input', cupy );
+                    oNode.setAttribute( 'leipiPlugins', thePlugins );
+                    oNode.setAttribute( 'type', 'text' );
+                    oNode.setAttribute( 'value', gName );
+                    oNode.setAttribute( 'title', gName );  
+                    oNode.setAttribute( 'bagcolor', bagcolor );  
+                    oNode.setAttribute( 'bagpic', bagpic );                   
+                    editor.execCommand( 'insertHtml', oNode.outerHTML );
+                    var editNewData={"node_id": nodeId,"title":gName,"control_name": cupy}
+                      $.ajax({
+                        url: prevent_HOST + `pageDesignOperatorFacade/insertControl`,
+                        type: 'POST',
+                        dataType: 'json',
+                        contentType: 'application/json; charset=UTF-8',
+                        data: JSON.stringify(editNewData),
+                        async: false,
+                        success: function ( res ) {
+                        }
+                      })
+                    return true;
+                } catch ( e ) {
+                    try {
+                        editor.execCommand( 'error' );
+                    } catch ( e ) {
+                        alert( '控件异常，请反馈或寻求帮助！' );
+                    }
+                    return false;
+                }
+            } else {
+                //修改
+                if(bagpic !='')hidebagpic=bagpic;
+                oNode.setAttribute( 'leipiPlugins', thePlugins );
+                oNode.setAttribute( 'name', cupy );
+                oNode.setAttribute( 'value', gName );
+                oNode.setAttribute( 'title', gName ); 
+                oNode.setAttribute( 'bagcolor', bagcolor );  
+                oNode.setAttribute( 'bagpic', hidebagpic );                         
+                delete UE.plugins[ thePlugins ].editdom; //使用后清空这个对象，变回新增模式
+                var editNewData={"node_id": nodeId,"title":gName,"control_name": control_name,"new_control_name": cupy}
+                    $.ajax({
+                        url: prevent_HOST + `pageDesignOperatorFacade/updateControl`,
+                        type: 'POST',
+                        dataType: 'json',
+                        contentType: 'application/json; charset=UTF-8',
+                        data: JSON.stringify(editNewData),
+                        async: false,
+                        success: function ( res ) {
+                        }
+                    })
+            }
+        }
+    </script>
+</body>
+</html>

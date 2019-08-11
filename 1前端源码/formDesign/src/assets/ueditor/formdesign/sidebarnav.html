@@ -1,0 +1,430 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+
+  <head>
+    <title>报表控件</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.css">
+    <link rel="stylesheet" href="leipi.style.css">
+    <script type="text/javascript" src="../dialogs/internal.js"></script>
+    <script src="./self/js/jquery-3.2.1.min.js"></script>
+    <script src="../httpData.config.js"></script>
+    <script src="bootstrap/js/bootstrap.min.js"></script>
+    <script src="self/echarts/echarts.min.js"></script>
+    <link rel="stylesheet" href="./self/css/style.css">
+    <script type="text/javascript" src="../httpData.config.js"></script>
+    <script type="text/javascript">
+      /*
+       * reportcontrol 报表控件
+       *
+       *
+       * */
+
+      function createElement(type, name) {
+        var element = null;
+        try {
+          element = document.createElement('<' + type + ' name="' + name + '">');
+        } catch (e) {}
+        if (element == null) {
+          element = document.createElement(type);
+          element.name = name;
+        }
+        return element;
+      }
+    </script>
+    <style type="text/css">
+      #con {
+        overflow: auto;
+      }
+
+      .addSourceArea {
+        display: inline-block;
+
+      }
+
+      .addSource {
+        margin-left: 10px;
+        margin-top: 5px;
+        text-decoration: none;
+        padding: 0 5px 0 5px;
+        border-radius: 8px;
+        height: auto;
+        background: #29e6a7;
+        display: inline-block;
+      }
+    </style>
+  </head>
+
+  <body id="con">
+    <div class="content" id="content">
+      <table class="table table-bordered table-striped">
+        <tr>
+          <th>
+            <span>导航定义</span>
+            <label style="display: inline-block;"><input type="radio" name="navType" value="leftNav" checked="">左侧导航</label>
+            <label style="display: inline-block;"><input type="checkbox" value="1" name="bluestyle">蓝色导航样式</label>
+
+            <span style='margin-left: 100px;'></span>
+            <a class="" title='增加导航' class='btn btn-info' onclick='fnAdd()'>增加导航</a>
+          </th>
+        </tr>
+        <tr>
+
+          <td colspan="2" class="leftNavPart">
+            <input id="leftNavName_1" class="" name="leftNavName" placeholder="必填项" type="text" value="导航1" />
+            <span style="margin-left: 20px;"></span>
+            <select id="leftNavToPage_1" class="" name="leftNavToPage">
+              <option value="">请选择...</option>
+            </select>
+            <span id="">(导航显示的页面)</span>
+            <span style="margin-left: 20px;"></span>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <script>
+      /* 		$('body').on('click', 'input[name=part]', function() {
+				var part = $(this).val();
+				switch (part) {
+					case 'headerDefinition':
+						$(".headerPart").show();
+						$(".footerPart").hide();
+						break;
+					case 'footerDefinition':
+						$(".footerPart").show();
+						$(".headerPart").hide();
+						break;
+				}
+			})
+
+ */
+
+
+
+      /*
+       * 绑定数据源
+       * 链接后台获取 数据链接
+       */
+      var nodeParentId = $('#nodeParentId', window.parent.document).val();
+      nodeId = $('#node_id', window.parent.document).val();
+      var userinfo = window.localStorage['user'] ? JSON.parse(window.localStorage['user']) : null;
+
+      var datasource = window.localStorage['datasource_' + userinfo.id] ? window.localStorage['datasource_' + userinfo.id] :
+        null;
+      if (datasource == null) {
+        setDataSource(userinfo.id);
+      } else {
+        $("#leftNavToPage_1").append(datasource);
+      }
+
+      /*
+       * JS-Public-Method
+       */
+      // 时间戳转回字符串
+      function unxiEcDate(oUnix, Exchange) {
+        var dateStringArr = [],
+          Exchange = Exchange.toUpperCase();
+        if (typeof oUnix == "object" && oUnix instanceof Array) {
+          var unxi = oUnix;
+        } else {
+          var unxi = Object.keys(oUnix);
+        }
+        // 如果是 时间戳 转为 日期
+        if (Exchange == "UTD") {
+          for (var i = 0; i < unxi.length; i++) {
+            var d = new Date(unxi[i] * 1000),
+              date = d.getFullYear() + "-" +
+              (d.getMonth() + 1) + "-" +
+              d.getDate();
+            dateStringArr.push(date);
+          }
+        } else if (Exchange == "DTU") {
+          for (var i = 0; i < unxi.length; i++) {
+            var d = new Date(unxi[i]),
+              date = d.getTime() / 1000;
+            dateStringArr.push(date);
+          }
+        }
+        return dateStringArr;
+      }
+
+      function ajax(options) {
+
+        options = options || {};
+        options.type = (options.type || "GET").toUpperCase();
+        options.dataType = options.dataType || "json";
+        var params = formatParams(options.data);
+
+        if (window.XMLHttpRequest) {
+          var xml = new XMLHttpRequest();
+        } else {
+          var xml = new ActiveXObject("Microsoft.XMLHTTP")
+        }
+
+        xml.onreadystatechange = function() {
+          if (xml.readyState == 4) {
+            var status = xml.status;
+            if (status >= 200 && status < 300) {
+              options.success && options.success(xml.responseText, xml.responseXML)
+            } else {
+              options.fail && options.fail(status);
+            }
+          }
+        }
+
+        if (options.type == "GET") {
+          xml.open("GET", options.url, options.async);
+          xml.send(null);
+        } else if (options.type == "POST") {
+          xml.open("POST", options.url, options.async);
+          xml.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+          xml.send(params);
+        }
+      }
+
+      function formatParams(data) {
+        var arr = [];
+        for (var name in data) {
+          arr.push(encodeURIComponent(name) + "=" + encodeURIComponent(data[name]));
+        }
+        arr.push(("v=" + Math.random()).replace(".", ""));
+        return arr.join("&");
+      }
+      // 去重
+      Array.prototype.Toheavy = function() {
+        res = [this[0]];
+        for (var i = 1; i < this.length; i++) {
+          var repeat = false;
+          for (var j = 0; j < res.length; j++) {
+            if (this[i] == res[j]) {
+              repeat = true;
+              break;
+            }
+          }
+          if (!repeat) {
+            res.push(this[i]);
+          }
+        }
+        return res;
+      }
+
+      // 获取报表数据
+      var result;
+      var nodeParentId = $('#nodeParentId', window.parent.document).val();
+      var nodeId = $("#node_id", window.parent.document).val();
+      var userinfo = window.localStorage['user'] ? JSON.parse(window.localStorage['user']) : null;
+      ajax({
+        url: prevent_HOST + 'nodeQueryFacade/getDataSourcePage?nodeId=' + nodeId + "&uid=" + userinfo.id,
+        type: "GET",
+        dataType: "json",
+        async: false,
+        success: function(response, xml) {
+          result = JSON.parse(response).msg;
+        },
+        error: function(status) {
+          console.log(status)
+          alert('抱歉！获取 数据链接 失败！因为您好像还没有选择表哦！');
+        }
+      })
+
+
+
+
+
+
+
+
+
+
+
+      //添加多个头部导航
+      var count = 1;
+
+      function fnAdd() {
+        count++;
+        var html = '<tr><td colspan="2" class="leftNavPart">' +
+          '<input id="leftNavName_' + count +
+          '" class="addLeftNavNameCla" name="leftNavName" placeholder="必填项" type="text" value="导航' +
+          count + '" />' +
+          '<span style="margin-left: 20px;"></span>' +
+          '<select id="leftNavToPage_' + count + '" class="addLeftNavToPageCla" name="leftNavToPage">' +
+          '<option value="">请选择...</option>' +
+          '</select>' +
+          '<span id="">(导航显示的页面)</span>' +
+          '<a title="删除" class="btn btn-small btn-default" href="javascript:void(0);" onclick="fnDeleteRow(this)"><i class="icon-ban-circle"></i></a>' +
+          '<span style="margin-left: 20px;"></span>' +
+          '</td>' +
+          '</tr>';
+        $('table.table').append(html);
+
+        $("#leftNavToPage_" + count).append(datasource);
+
+
+      };
+
+
+
+      /*删除tr*/
+      function fnDeleteRow(obj) {
+
+        $(obj).parent('td').parent('tr').remove();
+        count--;
+        for (var i = 0; i < count; i++) {
+          var j = i + 2;
+          $('.addHeaderNavNameCla').eq(i).attr('id', 'leftNavName_' + j);
+          $('.addHeaderNavNameCla').eq(i).attr('value', '导航' + j);
+          $('.addHeaderNavToPageCla').eq(i).attr('id', 'leftNavToPage_' + j);
+        }
+
+
+      }
+
+
+
+
+      //回填素材
+      function backSucai(nodeId, thisCount) {
+        $.ajax({
+          type: "get",
+          url: prevent_HOST + 'pageDesignQueryFacade/getPageEditorData?id=' + nodeId,
+          contentType: "application/json",
+          async: false,
+          success: function(dataResult) {
+            dataStatusMsg = dataResult.statusMsg;
+            if (dataStatusMsg === '查询失败') return false;
+
+            var data2 = dataResult.msg;
+            for (var i = 0; i < Object.keys(data2).length; i++) {
+              $("#select_" + thisCount).append("<option id=" + data2[Object.keys(data2)[i]].value + " value=" +
+                data2[
+                  Object
+                  .keys(data2)[
+                    i]].text + ">" + data2[Object.keys(data2)[i]].text +
+                "</option>");
+              console.log(data2[Object.keys(data2)[i]].text)
+            }
+          }
+        })
+      }
+    </script>
+
+
+
+
+
+    <script type="text/javascript">
+      var oNode = null,
+        thePlugins = 'sidebarnav';
+
+
+
+      // 数据回填
+      window.onload = function() {
+        if (UE.plugins[thePlugins].editdom) {
+          oNode = UE.plugins[thePlugins].editdom;
+          var leftNavDefinitions = oNode.getAttribute('leftnavdefinitions');
+          var bluestyle = oNode.getAttribute('bluestyle');
+
+          leftNavDefinitions = JSON.parse(leftNavDefinitions);
+
+          console.log(leftNavDefinitions)
+
+          for (var i = 0; i < leftNavDefinitions.length; i++) {
+            var leftNavDefinition = leftNavDefinitions[i];
+            var leftNavName = leftNavDefinition.leftNavName;
+            var leftNavToPage = leftNavDefinition.leftNavToPage;
+            if (i != 0) fnAdd();
+
+            var j = i + 1;
+            $('#leftNavName_' + j).val(leftNavName);
+            $('#leftNavToPage_' + j).val(leftNavToPage);
+          }
+
+
+
+
+        }
+        if (bluestyle == "1") $("[name='bluestyle']").attr("checked", 'true');
+
+      }
+
+
+
+
+      dialog.oncancel = function() {
+        if (UE.plugins[thePlugins].editdom) {
+          delete UE.plugins[thePlugins].editdom;
+        }
+      };
+
+
+
+
+      dialog.onok = function() {
+
+        // 传入后台条件数据
+        // var templateName = $G('templateName').value;
+        var leftNavDefinitions = [];
+        var bluestyle = $("input[name=bluestyle]").is(':checked') ? 1 : 0;
+
+
+
+        //遍历获取头部的导航定义
+        for (var i = 1; i <= count; i++) {
+          if (!$('#leftNavName_' + i).val()) {
+            alert("请输入导航名");
+            return false;
+          }
+          if (!$('#leftNavToPage_' + i).val()) {
+            alert("请选择导航的页面");
+            return false;
+          }
+
+
+
+          var leftNavDefinition = {
+            "leftNavName": $('#leftNavName_' + i).val(),
+            "leftNavToPage": $('#leftNavToPage_' + i).val()
+          }
+          leftNavDefinitions.push(leftNavDefinition);
+        }
+        leftNavDefinitions = JSON.stringify(leftNavDefinitions);
+
+
+
+        if (!oNode) {
+          try {
+            oNode = createElement('input', 'sidebarnav');
+            oNode.setAttribute('placeholder', '侧栏导航控件');
+            oNode.setAttribute('leipiPlugins', 'sidebarnav');
+            oNode.setAttribute('bluestyle', bluestyle);
+            oNode.setAttribute('name', 'sidebarnav');
+            oNode.setAttribute('leftnavdefinitions', leftNavDefinitions);
+            editor.execCommand('insertHtml', oNode.outerHTML);
+            return true;
+          } catch (e) {
+            try {
+              editor.execCommand('error');
+            } catch (e) {
+              alert('控件异常，请到 与我们反馈或寻求帮助！');
+            }
+            return false;
+          }
+        } else {
+          oNode.setAttribute('placeholder', '侧栏导航控件');
+          oNode.setAttribute('leipiPlugins', 'sidebarnav');
+          oNode.setAttribute('name', 'sidebarnav');
+          oNode.setAttribute('bluestyle', bluestyle);
+          oNode.setAttribute('leftnavdefinitions', leftNavDefinitions);
+
+
+          delete UE.plugins[thePlugins].editdom; //使用后清空这个对象，变回新增模式
+        }
+
+      };
+    </script>
+  </body>
+
+</html>

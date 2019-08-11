@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+	namespace="swtech.service.pageDesign.dao.impl.ClassifyTreeInfoDaoImpl">
+	
+	
+	<resultMap id="classifyTreeInfoMap"
+		type="swtech.facade.pageDesign.entity.ClassifyTreeInfo">
+		<id column="id" property="id" />
+		<result column="tree_name" property="treeName" />
+		<result column="node_id" property="nodeId" />
+		<result column="classify_table_name"
+			property="classifyTableName" />
+	</resultMap>
+
+
+	<resultMap id="classifyNodeMap"
+		type="swtech.facade.pageDesign.entity.ClassifyNode">
+		<id column="id" property="id" />
+		<result column="p_id" property="pId" />
+		<result column="node_name" property="nodeName" />
+	</resultMap>
+
+	<select id="getClassifyTreeInfoByNodeId" parameterType="Integer"
+		resultMap="classifyTreeInfoMap">
+		select id,tree_name,node_id,classify_table_name
+		from
+		ht_classify_tree_info where node_id = #{nodeId}
+	</select>
+
+
+	<update id="createRelTable" parameterType="java.util.Map">
+		drop table IF
+		EXISTS
+		${relationshipTableName};
+		CREATE TABLE ${relationshipTableName}
+		(
+		id int(8)
+		PRIMARY KEY
+		AUTO_INCREMENT,
+		p_id int(11) DEFAULT 0 COMMENT '父id',
+		data_id int(11) COMMENT '数据id',
+		data_uu_id varchar(255) COMMENT '数据记录主键使用UUID的id',
+		user_id int(11) COMMENT '该数据所属的用户id',
+		role_id int(11) COMMENT '该数据所属的组织id'
+		)ENGINE=InnoDB DEFAULT
+		CHARSET=utf8;
+	</update>
+
+
+<update id="createClassifyTable" parameterType="java.util.Map">
+		drop table IF
+		EXISTS
+		${classifyTableName};
+		CREATE TABLE ${classifyTableName}
+		(
+		id int(8)
+		PRIMARY KEY
+		AUTO_INCREMENT,
+		p_id int(8) DEFAULT 0 COMMENT '父id',
+		node_name varchar(100) COMMENT '分类节点名称'
+		)ENGINE=InnoDB DEFAULT
+		CHARSET=utf8;
+	</update>
+
+
+
+
+	<insert id="saveClassifyTreeInfo"
+		parameterType="swtech.facade.pageDesign.entity.ClassifyTreeInfo">
+
+		insert into ht_classify_tree_info
+		(tree_name,node_id,classify_table_name,relationship_table_name)
+		values
+		(#{treeName},#{nodeId},#{classifyTableName},#{relationshipTableName})
+
+	</insert>
+
+	<update id="updateClassifyTreeInfo"
+		parameterType="swtech.facade.pageDesign.entity.ClassifyTreeInfo">
+
+		update ht_classify_tree_info set tree_name = #{treeName}
+		where node_id =
+		#{nodeId}
+
+	</update>
+
+
+	<select id="getClassifyTableNameByNodeId"
+		parameterType="Integer" resultType="map">
+
+		select classify_table_name from
+		ht_classify_tree_info where node_id =
+		#{nodeId}
+
+	</select>
+
+	<select id="getClassifyNodeByTableName"
+		parameterType="map" resultMap="classifyNodeMap">
+
+		select id,p_id,node_name
+		from ${classifyTableName}
+
+	</select>
+	<insert id="createClassifyNodeByTable"
+		parameterType="java.util.Map" keyProperty="id" useGeneratedKeys="true">
+
+		insert into ${classifyTableName}
+		(p_id,node_name)
+		values(#{pId},#{nodeName})
+		
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+
+	</insert>
+
+	<update id="updateNodeNameByTable" parameterType="java.util.Map">
+
+		update
+		${classifyTableName} set node_name = #{nodeName} where id = #{id}
+
+	</update>
+
+	<update id="updateNodePIdByTable" parameterType="java.util.Map">
+
+		update
+		${classifyTableName} set p_id = #{pId} where id = #{id}
+	</update>
+
+	<delete id="deleteClassifyNodeByTable" parameterType="Integer">
+		delete from
+		${classifyTableName} where id = #{id}
+	</delete>
+
+	<select id="getAllClassify" resultMap="classifyTreeInfoMap">
+
+		select
+		id,tree_name,node_id,classify_table_name
+		from ht_classify_tree_info
+
+	</select>
+
+	<insert id="insertShowRelation" parameterType="java.util.Map">
+
+		insert into
+		ht_classify_show_relation
+		(node_id,classify_tree_id)
+		values
+		(#{nodeId},#{classifyTreeId})
+
+	</insert>
+
+
+	<select id="getClassifyByNodeId" parameterType="Integer" resultMap="classifyTreeInfoMap">
+
+		select m.id,m.tree_name,m.node_id,m.classify_table_name from
+		ht_classify_tree_info m where id in (
+		select n.classify_tree_id from ht_classify_show_relation n where node_id = #{nodeId}
+		)
+
+	</select>
+	
+	<select id="getRelationCountByNodeId" parameterType="Integer" resultType="Integer">
+	
+	select count(id) from ht_classify_show_relation where node_id = #{nodeId}
+	
+	</select>
+	<delete id="deleteRelationByNodeId">
+	
+	delete from ht_classify_show_relation where node_id = #{nodeId}
+	</delete>
+
+
+</mapper>

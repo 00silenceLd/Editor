@@ -1,0 +1,484 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title>分类/级联控件</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <script src="self/ligerlib/jquery/jquery-1.11.1.min.js"></script>
+    <script src="self/js/py.js"></script>
+    <script src="self/ligerlib/ligerUI/js/ligerui.min.js"></script>
+    <script src="self/ligerlib/ligerUI/js/plugins/ligerTree.js"></script>
+    <link rel="stylesheet" href="self/ligerlib/ligerUI/skins/Aqua/css/ligerui-all.css">
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.css">
+    <!--[if lte IE 6]>
+    <link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap-ie6.css">
+    <![endif]-->
+    <!--[if lte IE 7]>
+    <link rel="stylesheet" type="text/css" href="bootstrap/css/ie.css">
+    <![endif]-->
+    <link rel="stylesheet" href="leipi.style.css">
+    <script src="../httpData.config.js"></script>
+    <script type="text/javascript" src="../dialogs/internal.js"></script>
+    <style type="text/css">
+      #nodeinfo{
+        width: 380px;
+        height: 60px;
+        margin-bottom: 3px;
+      }
+      #orgname,#pluid,#nextid{
+        margin-bottom: 3px;
+      }
+      .plu_option span{
+        display: inline-block;
+        width: 65px;
+      }
+    </style>
+    <script type="text/javascript">
+        function createElement( type, name ) {
+            var element = null;
+            try {
+                element = document.createElement( '<' + type + ' name="' + name + '">' );
+            } catch ( e ) {}
+            if ( element == null ) {
+                element = document.createElement( type );
+                element.name = name;
+            }
+            return element;
+        }
+    </script>
+</head>
+<body>
+    <div class="content">
+        <table class="table table-bordered table-striped table-hover">
+            <tr>
+              <td>
+                来源：
+                <select name="old_class" id="old_class" onchange="classChang(this.value);">
+                  <option value="0">--分类--</option>
+                  <option value="1">分类名</option>
+                </select>
+              </td>
+              <td>
+                <input type="radio" name="classtype" value="class"> 分类
+                <input type="radio" name="classtype" value="relation" checked> 级联I
+                <input type="radio" name="classtype" value="relation2"> 级联II
+              </td>
+            </tr>
+          <tr>
+            <td>
+              <!-- <div>
+                <textarea name="nodeinfo" id="nodeinfo"></textarea>
+              </div>
+              <div>
+                <button onclick="addNewItem()">创建根节点</button> <button onclick="addItem()">新增</button> <button onclick="updateItem()">修改</button> <button onclick="delNode()">删除</button>
+              </div> -->
+              <ul id="classtree"></ul>
+            </td>
+            <td>
+              <div class="plu_option">
+                <span>控件名称*</span>
+                <input id="orgname" placeholder="必填项" onclick="javascript:this.select()" type="text" value="分类" onblur="getPY(this.value)">
+              </div>
+              <div class="plu_option">
+                <span>字段拼音*</span>
+                <input type="text" id="pluName" placeholder="字段" value="" >
+              </div>
+              <div class="plu_option">
+                <span>控件ID*</span>
+                <input id="pluid" placeholder="必填项" type="text" />
+              </div>
+              <div class="plu_option">
+                <span>下级关联ID</span>
+                <input id="nextid" placeholder="填写关联id" type="text" />
+              </div>
+            </td>
+          </tr>
+            <tr>
+                <td>
+                    数据源
+                </td>
+                <td>
+                    关联字段
+                </td>
+            </tr>
+            <tr>
+              <td>
+                <select name="datasource" id="datasource">
+                  <option value="0">请选择</option>
+                </select>
+              </td>
+              <td>
+                <select name="datafiled" id="datafiled">
+                  <option value="0">请选择</option>
+                </select>
+              </td>
+          </tr>
+        </table>
+    </div>
+
+    <script type="text/javascript">
+        var oNode = null;
+        var control_name=null;
+        var nodeId=null;
+        var manager=null;
+        var thePlugins = 'classify';
+        var treedata = [];
+        var rootId=0;
+        var nodeinfo=$("#nodeinfo"),
+            pluid=$("#pluid"),
+            nextid=$("#nextid"),
+            ocs=$("#old_class");
+        /* var menu = $.ligerMenu({
+          top: 100, left: 100, width: 120, items: [
+            {text: '增加', click: addItem, icon: 'add'},
+            {text: '修改',click:updateItem},
+            {line: true},
+            {text: '删除', click: delNode, icon: 'del'}
+          ]
+        }); */
+        manager = $("#classtree").ligerTree({
+          data:treedata,
+          idFieldName :'id',
+          textFieldName: 'name',
+          slide : false,
+          parentIDFieldName :'parentId',
+          checkbox:false,
+          parentIcon: null,
+          childIcon: null,
+          nodeWidth:312,
+          onclick:function(node){            
+            nodeinfo.val(node.data.name);
+          },
+          /* onContextmenu: function (node, e) {
+            menu.show({top: e.pageY, left: e.pageX});
+            return false;
+          } */
+        });
+
+        function getClass() {
+          $.ajax({
+            url: prevent_HOST + 'pageDesignQueryFacade/getclassifyByParentId?pid=0',
+            method: "GET",
+            success: function ( res ) {
+              if(res.status=='200'){
+                var html='<option value="0">--分类--</option>';
+                var list=res.msg;
+                if(list.length>0){
+                  for(var i=0;i<list.length;i++){
+                    html+='<option value="'+list[i].id+'">'+list[i].name+'</option>';
+                  }
+                  $("#old_class").html(html);
+                }
+              }
+            }
+          });
+        }
+        getClass();
+
+        function classChang(val) {
+          if(val==0){
+            rootId=0;
+            treedata=[];
+            manager.setData(treedata);
+          }else{
+            //rootId=val;
+            $.ajax({
+              url: prevent_HOST + 'pageDesignQueryFacade/getCascadeClassifyRecord?rootId='+val,
+              method: "GET",
+              success: function ( res ) {
+                if(res.status=="200") {
+                  treedata=[res.msg];
+                  rootId=val;
+                  manager.setData(treedata);
+                }else{
+                  alert(res.statusMsg);
+                }
+              }
+            });
+          }
+        }
+
+        function addNewItem() {
+          if(rootId!=null){
+            alert("根节点已经存在");
+            return;
+          }
+          if(nodeinfo.val()!=''){
+            var formData={"parentId":0,"name":nodeinfo.val()};
+            $.ajax({
+              url: prevent_HOST + 'pageDesignOperatorFacade/addCascadeClassifyRecord',
+              method: "POST",
+              contentType: 'application/json;charset=UTF-8',
+              data: JSON.stringify(formData),
+              success: function ( res ) {
+                console.log(res);
+                if(res.status=="200") {
+                  rootId=res.msg;
+                  treedata=[{"id":res.msg,"parentId":0,"name":nodeinfo.val()}];
+                  nodeinfo.val('');
+                  manager.setData(treedata);
+                }else{
+                  alert(res.statusMsg);
+                }
+              }
+            });
+          }else{
+            nodeinfo.focus();
+          }
+        }
+        function addItem()
+        {
+          var node = manager.getSelected();
+          if(node){
+            var nodes = [],newItem=nodeinfo.val();
+            if(newItem==''){
+              alert("填写新增节点名");
+              nodeinfo.focus();
+              return false;
+            }
+            var formData={ parentId:node.data.id,name: newItem };
+            $.ajax({
+              url: prevent_HOST + 'pageDesignOperatorFacade/addCascadeClassifyRecord',
+              method: "POST",
+              contentType: 'application/json;charset=UTF-8',
+              data: JSON.stringify(formData),
+              success: function ( res ) {
+                if(res.status=="200") {
+                  nodes.push({id:res.msg, parentId:node.data.id,name: newItem });
+                  manager.append(node.target, nodes);
+                  nodeinfo.val('');
+                }else{
+                  alert(res.statusMsg);
+                }
+              }
+            });
+          }else{
+            alert("没有选择节点");
+            return false;
+          }
+        }
+
+        function delNode()
+        {
+          var node = manager.getSelected();
+          if (node){
+            $.ajax({
+              url: prevent_HOST + 'pageDesignOperatorFacade/delCascadeClassifyRecord?id='+node.data.id,
+              method: "GET",
+              success: function ( res ) {
+                if(res.status=="200") {
+                  manager.remove(node.target);
+                  nodeinfo.val('');
+                }else{
+                  alert(res.statusMsg);
+                }
+              }
+            });
+          }else
+            alert('请先选择节点');
+
+        }
+
+        function updateItem()
+        {
+          var node = manager.getSelected();
+          if (node){
+            var formData={id:node.data.id,name: nodeinfo.val()};
+            $.ajax({
+              url: prevent_HOST + 'pageDesignOperatorFacade/updateCascadeClassifyRecord',
+              method: "POST",
+              contentType: 'application/json;charset=UTF-8',
+              data: JSON.stringify(formData),
+              success: function ( res ) {
+                if(res.status=="200") {
+                  manager.update(node.target, { name: nodeinfo.val() });
+                  nodeinfo.val('');
+                }else{
+                  alert(res.statusMsg);
+                }
+              }
+            });
+          }
+        }
+
+        window.onload = function () {
+            //$G('orgname').select();
+            nodeId = $("#node_id",window.parent.document).val();
+            var userinfo=window.localStorage['user']?JSON.parse(window.localStorage['user']):null;
+            var ldatasource=window.localStorage['datasource_'+userinfo.id]?window.localStorage['datasource_'+userinfo.id]:null;
+            if(ldatasource==null){                
+                setDataSource(userinfo.id);
+            }else{
+                $( "#datasource" ).append(ldatasource);
+            }
+            $(document).on("change","#datasource",function(e){
+              var nodeParentId = $(this).val().split(":");
+                $("#datafiled").empty();
+                $( "#datafiled").append( '<option value="0">请选择</option>' );
+                $.ajax({
+                  url: prevent_HOST + 'pageDesignQueryFacade/getPageEditorData?id=' + nodeParentId[0],
+                  method:"GET",
+                  success:function(res){
+                     $.each( res.msg, function ( index, value ) {
+                              $( "#datafiled").append( '<option value="' + value.value+'">' + value.text + '</option>' );
+                        })
+                  }
+                })
+            });
+            if ( UE.plugins[ thePlugins ].editdom ) {
+                oNode = UE.plugins[ thePlugins ].editdom;
+                var gTitle = oNode.getAttribute( 'title' ).replace( /&quot;/g, "\"" );
+                $G( 'orgname' ).value = gTitle;
+                name = oNode.getAttribute( 'name' );
+                control_name=name;
+                $G('pluName').value = name;
+                var datasource = oNode.getAttribute( 'datasource' ),
+                    datafiled = oNode.getAttribute( 'datafiled' );
+                var pluidval = oNode.getAttribute( 'cid' ).replace( /&quot;/g, "\"" );
+                pluid.val(pluidval);
+                var sonid = oNode.getAttribute( 'sonid' ).replace( /&quot;/g, "\"" );
+                nextid.val(sonid);
+                var nid = oNode.getAttribute( 'nid' ).replace( /&quot;/g, "\"" );
+                rootId=nid;
+                var classtype = oNode.getAttribute( 'classtype' );
+                $('[value="'+classtype+'"]').attr("checked",true);
+                $.ajax({
+                  url: prevent_HOST + 'pageDesignQueryFacade/getCascadeClassifyRecord?rootId='+rootId,
+                  method: "GET",
+                  success: function ( res ) {
+                    if(res.status=="200") {
+                      treedata=[res.msg];
+                      manager.setData(treedata);
+                    }else{
+                      alert(res.statusMsg);
+                    }
+                  }
+                });
+                if(datasource !='0' && datasource!='null' && datasource !=''){
+                  var datasources=datasource.split(":");                
+                  $( "#datasource" ).prepend( '<option value="' + datasource +'" selected>' + datasources[1] + '</option>');
+                  
+                  if(datasources.length>1){
+                      $.ajax({
+                          url: prevent_HOST + 'pageDesignQueryFacade/getPageEditorData?id=' + datasources[0],
+                          method:"GET",
+                          success:function(res){
+                              var datafiledhtml='';                            
+                              $( "#datafiled").html('');
+                              $( "#datafiled").append( '<option value="0">请选择</option>' );
+                              $.each( res.msg, function ( index, value ) {
+                                  if(datafiled==value.value){
+                                      datafiledhtml+='<option value="' + value.value+'" selected>' + value.text + '</option>';
+                                  }else{
+                                      datafiledhtml+='<option value="' + value.value+'">' + value.text + '</option>';
+                                  }                                
+                              });
+                              $("#datafiled").append(datafiledhtml);
+                          }                        
+                      })
+                  }
+                }                
+            }else{
+              var timestamp = Date.parse(new Date());
+                  timestamp = 'plu' + timestamp / 1000;
+              pluid.val(timestamp);
+            }
+
+            
+        }
+
+        dialog.oncancel = function () {
+            if ( UE.plugins[ thePlugins ].editdom ) {
+                delete UE.plugins[ thePlugins ].editdom;
+            }
+        }
+        dialog.onok = function () {
+            /*if (rootId == null ) {
+              alert( '控件没有关联任何分类' );
+              return false;
+            }*/
+            if ( $G( 'orgname' ).value == '' ) {
+                alert( '控件名称不能为空' );
+                return false;
+            }
+            var PN=$('#pluName');
+            cupy=PN.val();
+            if(cupy==''){
+              getPY(gTitle);
+            }
+            var pluidval=pluid.val();
+            if(pluidval==''){
+              alert("控件ID没有填写");
+              pluid.focus();
+              return false;
+            }
+            var nextidval=nextid.val();
+            var classtype=$('[name="classtype"]:checked').val();
+            var datasource = $( '#datasource' ).val(),
+                datafiled=$("#datafiled").val();
+
+            var gTitle = $G( 'orgname' ).value.replace( /\"/g, "&quot;" );
+            if ( !oNode ) {
+                try {
+                    oNode = createElement( 'input', cupy );
+                    oNode.setAttribute( 'title', gTitle );
+                    oNode.setAttribute( 'value', gTitle );
+                    oNode.setAttribute( 'cid', pluidval );
+                    oNode.setAttribute( 'sonid', nextidval );
+                    oNode.setAttribute( 'nid', rootId );
+                    oNode.setAttribute( 'type', 'text' );
+                    oNode.setAttribute( 'classtype', classtype );
+                    oNode.setAttribute( 'leipiPlugins', thePlugins );
+                    oNode.setAttribute( 'datasource',datasource);
+                    oNode.setAttribute( 'datafiled',datafiled); 
+                    editor.execCommand( 'insertHtml', oNode.outerHTML );                    
+
+                    var editNewData={"node_id": nodeId,"title":gTitle,"control_name": cupy}
+                      $.ajax({
+                        url: prevent_HOST + `pageDesignOperatorFacade/insertControl`,
+                        type: 'POST',
+                        dataType: 'json',
+                        contentType: 'application/json; charset=UTF-8',
+                        data: JSON.stringify(editNewData),
+                        async: false,
+                        success: function ( res ) {
+                        }
+                      })
+
+                } catch ( e ) {
+                    try {
+                        editor.execCommand( 'error' );
+                    } catch ( e ) {
+                        alert( '控件异常，请反馈或寻求帮助！' );
+                    }
+                    return false;
+                }
+            } else {
+                oNode.setAttribute( 'title', gTitle );
+                oNode.setAttribute( 'name', cupy );
+                oNode.setAttribute( 'cid', pluidval );
+                oNode.setAttribute( 'sonid', nextidval );
+                oNode.setAttribute( 'nid', rootId );
+                oNode.setAttribute( 'classtype', classtype );
+                oNode.setAttribute( 'datasource',datasource);
+                oNode.setAttribute( 'datafiled',datafiled);
+                delete UE.plugins[ thePlugins ].editdom;
+                var editNewData={"node_id": nodeId,"title":gTitle,"control_name": control_name,"new_control_name": cupy}
+                    $.ajax({
+                        url: prevent_HOST + `pageDesignOperatorFacade/updateControl`,
+                        type: 'POST',
+                        dataType: 'json',
+                        contentType: 'application/json; charset=UTF-8',
+                        data: JSON.stringify(editNewData),
+                        async: false,
+                        success: function ( res ) {
+                        }
+                    })
+                return true;
+            }
+        }
+
+    </script>
+</body>
+
+</html>

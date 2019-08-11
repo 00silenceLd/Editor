@@ -1,0 +1,31 @@
+server:
+    port: 20891
+spring:
+    datasource:
+        type: com.alibaba.druid.pool.DruidDataSource
+        driver-class-name: com.mysql.jdbc.Driver
+        #url: jdbc:mysql://192.168.0.223:3306/hbsxt?useUnicode=true&characterEncoding=utf-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
+        #url: jdbc:mysql://192.168.0.213:3306/hbsxt?useUnicode=true&characterEncoding=utf-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
+        url: jdbc:mysql://127.0.0.1:3306/hbsxt?useUnicode=true&characterEncoding=utf-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
+        #url: jdbc:mysql://127.0.0.1:3306/test_db?useUnicode=true&characterEncoding=utf-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
+        #url: jdbc:mysql://47.112.25.185:3306/hbsxt?useUnicode=true&characterEncoding=utf-8
+        username: root
+        password: admin123!@#QWE
+
+#mybatis:
+  #map-underscore-to-camel-case: true
+  #typeAliasesPackage: swtech.pageDesignControl.entity
+  #mapperLocations: classpath:mappers/*.xml
+
+mybatis-plus:
+  mapper-locations: classpath:mappers/*.xml
+  typeAliasesPackage: swtech.pageDesignControl.entity
+  global-config:
+    db-config:
+      db-type: mysql
+      id-type: auto
+      #table-prefix: hotel_
+  
+logging:
+  level: 
+    swtech.pageDesignControl.mapper: debug

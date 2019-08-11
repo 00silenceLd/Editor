@@ -1,0 +1,2 @@
+urlFilter=swtech.facade.pageDesign.service.filter.UrlFilter
+jwtUrlFilter=swtech.facade.pageDesign.service.filter.JwtUrlFilter

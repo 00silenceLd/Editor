@@ -1,0 +1,45 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script type="text/javascript" src="jquery-3.2.1.min.js"></script>
+    <script src="../httpData.config.js"></script>
+    <title></title>
+    <style>
+        html,
+        body {
+            width: 99%;
+            height: 100%;
+        }
+    </style>
+    <script>
+        $(function () {
+            var tokenValue = null;
+            try { tokenValue = JSON.parse(localStorage.getItem("user")).token } catch(e){ }
+            $.ajax({
+                type: "get",
+                headers: { "token": "" + tokenValue },
+                url: DEFAULT_JOBURL + "htRoleService/getUserJoinRole?uId=" + JSON.parse(localStorage.getItem("user")).id,
+                success: function (res) {
+                    $.each(res.msg.htRoleList, function (i, obj) {
+                        $("#select_role").append("<option value='" + obj.role_id + "'>" + obj.rolename + "</option>");
+                    });
+                }
+            });
+
+        });
+    </script>
+</head>
+
+<body>
+    <div style="position: relative;left: 25%; top: 50%;height: 30px;width: 75%;margin-top: -30px;">
+        <span>请选择组织：</span>
+        <select name="" id="select_role">
+            <option value="0">--- 请选择 ---</option>
+        </select>
+    </div>
+</body>
+
+</html>

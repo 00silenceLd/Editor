@@ -1,0 +1,242 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+
+	<head>
+		<title>文本框</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+		<link rel="stylesheet" href="bootstrap/css/bootstrap.css">
+		<!--[if lte IE 6]>
+    <link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap-ie6.css">
+    <![endif]-->
+		<!--[if lte IE 7]>
+    <link rel="stylesheet" type="text/css" href="bootstrap/css/ie.css">
+    <![endif]-->
+		<link rel="stylesheet" href="leipi.style.css">
+		<script type="text/javascript" src="../dialogs/internal.js"></script>
+		<script type="text/javascript" src="jquery-3.2.1.min.js"></script>
+		<script src="self/js/py.js"></script>
+		<script type="text/javascript" src="../httpData.config.js"></script>
+
+		<script type="text/javascript">
+			/* Thank you by
+                                    http://www.alt-tag.com/blog/2006/02/ie-dom-bugs/ */
+
+			function createElement(type, name) {
+				var element = null;
+				try {
+					element = document.createElement('<' + type + ' name="' + name + '">');
+				} catch (e) {}
+				if (element == null) {
+					element = document.createElement(type);
+					element.name = name;
+				}
+				return element;
+			}
+		</script>
+
+	</head>
+
+	<body>
+
+		<div class="content" style="margin-top: 65px;">
+			<table class="table table-bordered table-striped table-hover">
+				<tr id="bindStatus">
+					<!-- <span>当前绑定:xxx</span> -->
+				</tr>
+				<tr>
+					<td style="width: 90px;">
+						<span style="font-size: 18px; margin-left: 15px; line-height: 20px;display: inline-block;margin-top: 4px;">绑定到</span>
+					</td>
+					<td>
+						<select id="datasource">
+							<option value="0">请选择</option>
+							<option value="-1">取消绑定</option>
+						</select>
+					</td>
+				</tr>
+			</table>
+		</div>
+
+
+		<script>
+			//读取cookie
+			var cookieStr = unescape(document.cookie);
+			var arr = cookieStr.split("|");
+			var cookieWidth = "";
+			var cookieHeight = "";
+			if (cookieStr != "") {
+				for (var i = 0; i < arr.length; i++) {
+					var temp = arr[i].split("=");
+					if (temp[0] == "width") {
+						// debugger;
+						cookieWidth = temp[1];
+						$("#orgvarfontwidth").val(cookieWidth);
+					} else if (temp[0] == "height") {
+						cookieHeight = temp[1];
+						$("#orgvarfontheight").val(cookieHeight);
+					}
+				}
+			}
+			var gVarfontwidth = $("#orgvarfontwidth").val();
+			$("#orgvarfontwidth").change(function() {
+				gVarfontwidth = $("#orgvarfontwidth").val();
+				var height = "";
+				var str = unescape(document.cookie);
+				//存在height
+				if (str.indexOf("height") != -1) {
+					var arr = str.split("|");
+					for (var i = 0; i < arr.length; i++) {
+						var temp = arr[i].split("=");
+						if (temp[0] == "height") {
+							height = temp[1];
+						}
+					}
+				} else { //不存在就清空
+					document.cookie = "";
+				}
+				//保存cookie
+				if (height != "") {
+					document.cookie = "width=" + gVarfontwidth + "|" + "height=" + height + "|";
+				} else {
+					document.cookie = "width=" + gVarfontwidth + "|";
+				}
+			});
+			var gVarfontheight = $("#orgvarfontheight").val();
+			$("#orgvarfontheight").change(function() {
+				gVarfontheight = $("#orgvarfontheight").val();
+				var width = "";
+				var str = unescape(document.cookie);
+				//存在height
+				if (str.indexOf("width") != -1) {
+					var arr = str.split("|");
+					for (var i = 0; i < arr.length; i++) {
+						var temp = arr[i].split("=");
+						if (temp[0] == "width") {
+							width = temp[1];
+						}
+					}
+				} else { //不存在就清空
+					document.cookie = "";
+					width = $("#orgvarfontwidth").val();
+				}
+				document.cookie = "width=" + width + "|" + "height=" + gVarfontheight + "|";
+			});
+		</script>
+
+		<script type="text/javascript">
+			var oNode = null,
+				gdataSource = null,
+				control_name = null,
+				nodeId = null;
+			thePlugins = 'zzhhtest';
+			window.onload = function() {
+
+				/*
+				 * 链接后台获取 数据链接
+				 *
+				 */
+
+				var nodeParentId = $('#nodeParentId', window.parent.document).val();
+				nodeId = $('#node_id', window.parent.document).val();
+				var nodeName = $('#node_name', window.parent.document).val();
+				var userinfo = window.localStorage['user'] ? JSON.parse(window.localStorage['user']) : null;
+				// alert("node_name="+nodeName);
+				// alert("node_id="+nodeId);
+				var datasource = window.localStorage['datasource_' + userinfo.id] ? window.localStorage['datasource_' + userinfo.id] :
+					null;
+				if (datasource == null) {
+					$.ajax({
+						url: prevent_HOST + 'nodeQueryFacade/getDataSourcePage?nodeId=' + nodeId + "&uid=" + userinfo.id,
+						method: 'GET',
+						success: function(res) {
+							$.each(res.msg, function(index, value) {
+								$("#datasource").append('<option value=' + value.id + '>' + value.value + '</option>');
+							})
+
+							//$('#datasource').find('option[value='+gdataid+']').attr('selected','true');
+
+						},
+						error: function(res) {
+							alert('抱歉！获取 数据链接 失败！因为您好像还没有选择表哦！')
+						}
+					});
+				} else {
+					$("#datasource").append(datasource);
+				}
+
+
+
+				if (nodeId != null && nodeId != "") {
+					// alert("dsa")
+					$.ajax({ // 这是获取模板。
+						url: prevent_HOST + 'pageDesignQueryFacade/getPageContent?id=' + nodeId,
+						type: 'GET',
+						async: false,
+						success: function(res) {
+							msg = res.msg;
+							// alert(msg.shareTo_name);
+							if(msg.shareTo_name!=null){
+								$("#bindStatus").append('<span>当前绑定:'+msg.shareTo_name+'</span>')
+							}else{
+								$("#bindStatus").append('<span>当前绑定:未绑定</span>')
+							}
+						}
+					})
+				}
+
+
+
+
+
+			}
+
+			dialog.oncancel = function() {
+				if (UE.plugins[thePlugins].editdom) {
+					delete UE.plugins[thePlugins].editdom;
+				}
+			};
+			var shareTo_name;
+			var shareTo_nodeId;
+			dialog.onok = function() {
+				// 				var shareTo_name;
+				// 				var shareTo_nodeId;
+				if ($("#datasource option:selected").val() != 0 && $("#datasource option:selected").val() != -1) {
+					shareTo_name = $("#datasource option:selected").text();
+					shareTo_nodeId = $("#datasource option:selected").val();
+					shareTo_nodeId = parseInt(shareTo_nodeId);
+
+					$('#shareTo_name', window.parent.document).val(shareTo_name);
+					$('#shareTo_nodeId', window.parent.document).val(shareTo_nodeId);
+					// alert("shareTo_nodeId="+shareTo_nodeId);
+
+				} else if ($("#datasource option:selected").val() == 0) {
+					shareTo_nodeId = $("#datasource option:selected").val(); //0
+					$('#shareTo_nodeId', window.parent.document).val(shareTo_nodeId);
+					// alert("shareTo_nodeId="+shareTo_nodeId);
+				} else {
+					shareTo_nodeId = $("#datasource option:selected").val(); //-1
+					$('#shareTo_nodeId', window.parent.document).val(shareTo_nodeId);
+					// alert("shareTo_nodeId="+shareTo_nodeId);
+				}
+
+				// 				if(nodeId!=null&&nodeId!=""){
+				// 					alert("dsa")
+				// 					 $.ajax({ // 这是获取模板。
+				// 				    url: prevent_HOST + 'pageDesignQueryFacade/getPageContent?id=' + nodeId,
+				// 				    type: 'GET',
+				// 				    async: false,
+				// 				    success: function (res) {
+				// 				        msg = res.msg;
+				// 						alert(msg.shareTo_name);
+				// 				    }
+				// 				})
+				// 				}
+
+
+
+			};
+		</script>
+	</body>
+
+</html>

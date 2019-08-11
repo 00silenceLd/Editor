@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace命名空间，唯一特性 -->
+<mapper namespace="swtech.pageDesignControl.mapper.ClassifyTreeMapper">
+
+	<resultMap id="classifyTreeInfoMap"
+		type="swtech.pageDesignControl.entity.ClassifyTreeInfo">
+		<id column="id" property="id" />
+		<result column="tree_name" property="treeName" />
+		<result column="node_id" property="nodeId" />
+		<result column="classify_table_name"
+			property="classifyTableName" />
+		<result column="relationship_table_name"
+			property="relationshipTableName" />
+	</resultMap>
+
+
+	<resultMap id="classifyNodeMap"
+		type="swtech.pageDesignControl.entity.ClassifyNode">
+		<id column="id" property="id" />
+		<result column="p_id" property="pId" />
+		<result column="node_name" property="nodeName" />
+	</resultMap>
+
+	<resultMap id="classifyNodeAndDataRelMap"
+		type="swtech.pageDesignControl.entity.ClassifyNodeAndDataRel">
+		<id column="id" property="id" />
+		<result column="p_id" property="pId" />
+		<result column="data_id" property="dataId" />
+		<result column="data_uu_id" property="dataUuid" />
+		<result column="user_id" property="userId" />
+		<result column="role_id" property="roleId" />
+		<result column="common_data" property="commonData" />
+	</resultMap>
+
+
+	<select id="getClassifyInfoByNodeId" parameterType="int"
+		resultMap="classifyTreeInfoMap">
+		select
+		id,tree_name,node_id,classify_table_name,relationship_table_name from
+		ht_classify_tree_info
+		where
+		node_id = #{nodeId}
+	</select>
+
+	<select id="getNextLvClassifyNodeById" parameterType="map"
+		resultMap="classifyNodeMap">
+		select id,p_id,node_name
+		from ${tableName}
+		where p_id = #{id}
+	</select>
+
+
+	<select id="getDataIdByClassifyNodeAndDataRel" parameterType="swtech.pageDesignControl.entity.ClassifyNodeAndDataRel"
+		resultType="Integer">
+		select data_id from ${relationshipTableName}
+		<where>
+			<if test="pId!=null">
+				and p_id=#{pId}
+			</if>
+			<if test="userId!=null">
+				and user_id=#{userId}
+			</if>
+			<if test="roleId!=null">
+				and role_id=#{roleId}
+			</if>
+		</where>
+	</select>
+	
+	<select id="getDataUuidByClassifyNodeAndDataRel" parameterType="swtech.pageDesignControl.entity.ClassifyNodeAndDataRel"
+		resultType="String">
+		select data_uu_id from ${relationshipTableName}
+		<where>
+			<if test="pId!=null">
+				and p_id=#{pId}
+			</if>
+			<if test="userId!=null">
+				and user_id=#{userId}
+			</if>
+			<if test="roleId!=null">
+				and role_id=#{roleId}
+			</if>
+		</where>
+	</select>
+	
+	
+	
+	
+	<select id="getRelCountByClassifyNodeAndDataRel" parameterType="swtech.pageDesignControl.entity.ClassifyNodeAndDataRel"
+		resultType="Integer">
+		select count(id) from ${relationshipTableName}
+		<where>
+			<if test="pId!=null">
+				and p_id=#{pId}
+			</if>
+			<if test="userId!=null">
+				and user_id=#{userId}
+			</if>
+			<if test="dataId!=null">
+				and data_id=#{dataId}
+			</if>
+			<if test="dataUuid!=null">
+				and data_uu_id=#{dataUuid}
+			</if>
+			<if test="roleId!=null">
+				and role_id=#{roleId}
+			</if>
+			
+		</where>
+	</select>
+
+
+
+
+
+
+	<insert id="saveRelForNodeAndDataId" parameterType="swtech.pageDesignControl.entity.ClassifyNodeAndDataRel">
+		insert into
+		${relationshipTableName}(p_id,data_id,data_uu_id,user_id,role_id)
+		values(#{pId},#{dataId},#{dataUuid},#{userId},#{roleId})
+	</insert>
+
+	<delete id="deleteRelForNodeAndDataId" parameterType="swtech.pageDesignControl.entity.ClassifyNodeAndDataRel">
+		delete from ${relationshipTableName}
+		<where>
+			<if test="pId!=null">
+				and p_id=#{pId}
+			</if>
+			<if test="userId!=null">
+				and user_id=#{userId}
+			</if>
+			<if test="dataId!=null">
+				and data_id=#{dataId}
+			</if>
+			<if test="dataUuid!=null">
+				and data_uu_id=#{dataUuid}
+			</if>
+			<if test="roleId!=null">
+				and role_id=#{roleId}
+			</if>
+		</where>
+	</delete>
+
+	<update id="updatePIdByClassifyNodeAndDataRel" parameterType="swtech.pageDesignControl.entity.ClassifyNodeAndDataRel">
+		update ${relationshipTableName}
+		set p_id=#{newPId}
+		<where>
+			<if test="pId!=null">
+				and p_id=#{pId}
+			</if>
+			<if test="userId!=null">
+				and user_id=#{userId}
+			</if>
+			<if test="dataId!=null">
+				and data_id=#{dataId}
+			</if>
+			<if test="dataUuid!=null">
+				and data_uu_id=#{dataUuid}
+			</if>
+			<if test="roleId!=null">
+				and role_id=#{roleId}
+			</if>
+		</where>
+	</update>
+
+
+
+
+
+</mapper>

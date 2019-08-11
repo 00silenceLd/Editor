@@ -1,0 +1,666 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+
+	<head>
+		<title>报表控件</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+
+		<link rel="stylesheet" href="bootstrap/css/bootstrap.css">
+		<link rel="stylesheet" href="leipi.style.css">
+		<script type="text/javascript" src="../dialogs/internal.js"></script>
+		<script src="./self/js/jquery-3.2.1.min.js"></script>
+		<script src="../httpData.config.js"></script>
+		<script src="bootstrap/js/bootstrap.min.js"></script>
+		<script src="self/echarts/echarts.min.js"></script>
+		<link rel="stylesheet" href="./self/css/style.css">
+		<script type="text/javascript" src="../httpData.config.js"></script>
+		<script type="text/javascript">
+			/*
+			 * reportcontrol 报表控件
+			 *
+			 *
+			 * */
+
+			function createElement(type, name) {
+				var element = null;
+				try {
+					element = document.createElement('<' + type + ' name="' + name + '">');
+				} catch (e) {}
+				if (element == null) {
+					element = document.createElement(type);
+					element.name = name;
+				}
+				return element;
+			}
+		</script>
+		<style type="text/css">
+			#con {
+				overflow: auto;
+			}
+
+			.addSourceArea {
+				display: inline-block;
+
+			}
+
+			.addSource {
+				margin-left: 10px;
+				margin-top: 5px;
+				text-decoration: none;
+				padding: 0 5px 0 5px;
+				border-radius: 8px;
+				height: auto;
+				background: #29e6a7;
+				display: inline-block;
+			}
+		</style>
+	</head>
+
+	<body id="con">
+		<div class="content" id="content">
+			<table class="table table-bordered table-striped">
+				<tr>
+					<th>
+						<span>模板名称</span>
+						<span class='label label-important'>*</span>
+					</th>
+				</tr>
+				<tr>
+					<td>
+						<input id='templateName' name='templateName' onclick='javascript:this.select()' placeholder='必填项' type='text'
+						 value='曹江智慧党建' />
+					</td>
+				</tr>
+				<tr>
+					<th>
+						<span>模板定义</span>
+						<label style="display: inline-block;"><input type="radio" name="part" value="headerDefinition" checked="">头部</label>
+						<label style="display: inline-block;"><input type="radio" name="part" value="footerDefinition">底部</label>
+						<span style='margin-left: 100px;'></span>
+						<a class="headerPart" title='增加导航' class='btn btn-info' onclick='fnAdd()'>增加导航</a>
+						<a class="footerPart" title='增加导航' class='btn btn-info' onclick='fnAdd2()'>增加导航</a>
+					</th>
+				</tr>
+				<tr>
+
+					<td colspan="2" class="headerPart">
+						<input id="headerNavName_1" class="" name="headerNavName" placeholder="必填项" type="text" value="头部导航1" />
+						<span style="margin-left: 20px;"></span>
+						<select id="headerNavToPage_1" class="" name="headerNavToPage">
+							<option value="">请选择...</option>
+						</select>
+						<span id="">(导航显示的页面)</span>
+						<input style="display: none;" type="checkbox" name="hJumpToUrl_1" id="hJumpToUrl_1" value="off" />
+						<span style="margin-left: 20px;"></span>
+					</td>
+
+
+					<td colspan="2" class="footerPart">
+						<input id="footerNavName_1" class="" name="footerNavName" placeholder="必填项" type="text" value="底部导航1" />
+						<span style="margin-left: 20px;"></span>
+						<select id="footerNavToPage_1" class="" name="footerNavToPage">
+							<option value="">请选择...</option>
+						</select>
+						<span id="">(导航显示的页面)</span>
+						<input style="" type="checkbox" name="fJumpToUrl_1" id="fJumpToUrl_1" value="on" />是否原页面跳转
+						<span style="margin-left: 20px;"></span>
+					</td>
+				</tr>
+			</table>
+		</div>
+		<script>
+			$('body').on('click', 'input[name=part]', function() {
+				var part = $(this).val();
+				switch (part) {
+					case 'headerDefinition':
+						$(".headerPart").show();
+						$(".footerPart").hide();
+						break;
+					case 'footerDefinition':
+						$(".footerPart").show();
+						$(".headerPart").hide();
+						break;
+				}
+			})
+
+
+
+
+
+			/*
+			 * 绑定数据源
+			 * 链接后台获取 数据链接
+			 */
+			var nodeParentId = $('#nodeParentId', window.parent.document).val();
+			nodeId = $('#node_id', window.parent.document).val();
+			var userinfo = window.localStorage['user'] ? JSON.parse(window.localStorage['user']) : null;
+
+			var datasource = window.localStorage['datasource_' + userinfo.id] ? window.localStorage['datasource_' + userinfo.id] :
+				null;
+			if (datasource == null) {
+				setDataSource(userinfo.id);
+			} else {
+				$("#headerNavToPage_1").append(datasource);
+				$("#footerNavToPage_1").append(datasource);
+			}
+
+			/*
+			 * JS-Public-Method
+			 */
+			// 时间戳转回字符串
+			function unxiEcDate(oUnix, Exchange) {
+				var dateStringArr = [],
+					Exchange = Exchange.toUpperCase();
+				if (typeof oUnix == "object" && oUnix instanceof Array) {
+					var unxi = oUnix;
+				} else {
+					var unxi = Object.keys(oUnix);
+				}
+				// 如果是 时间戳 转为 日期
+				if (Exchange == "UTD") {
+					for (var i = 0; i < unxi.length; i++) {
+						var d = new Date(unxi[i] * 1000),
+							date = d.getFullYear() + "-" +
+							(d.getMonth() + 1) + "-" +
+							d.getDate();
+						dateStringArr.push(date);
+					}
+				} else if (Exchange == "DTU") {
+					for (var i = 0; i < unxi.length; i++) {
+						var d = new Date(unxi[i]),
+							date = d.getTime() / 1000;
+						dateStringArr.push(date);
+					}
+				}
+				return dateStringArr;
+			}
+
+			function ajax(options) {
+
+				options = options || {};
+				options.type = (options.type || "GET").toUpperCase();
+				options.dataType = options.dataType || "json";
+				var params = formatParams(options.data);
+
+				if (window.XMLHttpRequest) {
+					var xml = new XMLHttpRequest();
+				} else {
+					var xml = new ActiveXObject("Microsoft.XMLHTTP")
+				}
+
+				xml.onreadystatechange = function() {
+					if (xml.readyState == 4) {
+						var status = xml.status;
+						if (status >= 200 && status < 300) {
+							options.success && options.success(xml.responseText, xml.responseXML)
+						} else {
+							options.fail && options.fail(status);
+						}
+					}
+				}
+
+				if (options.type == "GET") {
+					xml.open("GET", options.url, options.async);
+					xml.send(null);
+				} else if (options.type == "POST") {
+					xml.open("POST", options.url, options.async);
+					xml.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+					xml.send(params);
+				}
+			}
+
+			function formatParams(data) {
+				var arr = [];
+				for (var name in data) {
+					arr.push(encodeURIComponent(name) + "=" + encodeURIComponent(data[name]));
+				}
+				arr.push(("v=" + Math.random()).replace(".", ""));
+				return arr.join("&");
+			}
+			// 去重
+			Array.prototype.Toheavy = function() {
+				res = [this[0]];
+				for (var i = 1; i < this.length; i++) {
+					var repeat = false;
+					for (var j = 0; j < res.length; j++) {
+						if (this[i] == res[j]) {
+							repeat = true;
+							break;
+						}
+					}
+					if (!repeat) {
+						res.push(this[i]);
+					}
+				}
+				return res;
+			}
+
+			// 获取报表数据
+			var result;
+			var nodeParentId = $('#nodeParentId', window.parent.document).val();
+			var nodeId = $("#node_id", window.parent.document).val();
+			var userinfo = window.localStorage['user'] ? JSON.parse(window.localStorage['user']) : null;
+			ajax({
+				url: prevent_HOST + 'nodeQueryFacade/getDataSourcePage?nodeId=' + nodeId + "&uid=" + userinfo.id,
+				type: "GET",
+				dataType: "json",
+				async: false,
+				success: function(response, xml) {
+					result = JSON.parse(response).msg;
+				},
+				error: function(status) {
+					console.log(status)
+					alert('抱歉！获取 数据链接 失败！因为您好像还没有选择表哦！');
+				}
+			})
+			/* 	for (var i = 0; i < result.length; i++) {
+					$("#headerNavToPage_1").append("<option id=" + result[i].id + " value=" + result[i].value + ">" + result[i].value +
+						"</option>");
+				}
+				for (var i = 0; i < result.length; i++) {
+					$("#footerNavToPage_1").append('<option id="' + result[i].id + '" value="' + result[i].id + ':' + result[i].value +
+						'">' + result[i].value + '</option>');
+				} */
+
+
+
+
+
+
+
+
+
+
+
+			//添加多个头部导航
+			var count = 1;
+
+			function fnAdd() {
+				count++;
+				var html = '<tr><td colspan="2" class="headerPart">' +
+					'<input id="headerNavName_' + count +
+					'" class="addHeaderNavNameCla" name="headerNavName" placeholder="必填项" type="text" value="头部导航' + count + '" />' +
+					'<span style="margin-left: 20px;"></span>' +
+					'<select id="headerNavToPage_' + count + '" class="addHeaderNavToPageCla" name="headerNavToPage">' +
+					'<option value="">请选择...</option>';
+
+
+				/* 	for (var i = 0; i < result.length; i++) {
+						html += '<option id="' + result[i].id + '" value="' + result[i].value + '">' + result[i].value + '</option>';
+					} */
+				html +=
+					'</select>' +
+					'<span id="">(导航显示的页面)</span>' +
+					'<input type="checkbox" name="hJumpToUrl_' + count + '" id="hJumpToUrl_' + count + '" value="on" /> 是否原页面跳转' +
+					' <a title="删除" class="btn btn-small btn-default" href="javascript:void(0);" onclick="fnDeleteRow(this)"><i class="icon-ban-circle"></i></a>' +
+					'<span style="margin-left: 20px;"></span>' +
+					'</td>' +
+					'</tr>';
+				$('table.table').append(html);
+
+				$("#headerNavToPage_" + count).append(datasource);
+
+
+			};
+
+			//添加多个底部导航
+			var count2 = 1;
+
+			function fnAdd2() {
+				count2++;
+				var html = '<tr><td colspan="2" class="footerPart">' +
+					'<input id="footerNavName_' + count2 +
+					'" class="addFooterNavNameCla" name="footerNavName" placeholder="必填项" type="text" value="底部导航' + count2 + '" />' +
+					'<span style="margin-left: 20px;"></span>' +
+					'<select id="footerNavToPage_' + count2 + '" class="addFooterNavToPageCla" name="footerNavToPage">' +
+					'<option value="">请选择...</option>';
+
+
+				/* 	for (var i = 0; i < result.length; i++) {
+						html += '<option id="' + result[i].id + '" value="' + result[i].value + '">' + result[i].value + '</option>';
+					} */
+				html +=
+					'</select>' +
+					'<span id="">(导航跳转的页面)</span>' +
+					'<input type="checkbox" name="fJumpToUrl_' + count2 + '" id="fJumpToUrl_' + count2 + '" value="on" /> 是否原页面跳转' +
+					' <a title="删除" class="btn btn-small btn-default" href="javascript:void(0);" onclick="fnDeleteRow(this)"><i class="icon-ban-circle"></i></a>' +
+					'<span style="margin-left: 20px;"></span>' +
+					'</td>' +
+					'</tr>';
+
+				$('table.table').append(html);
+				$("#footerNavToPage_" + count2).append(datasource);
+			};
+
+
+			/*删除tr*/
+			function fnDeleteRow(obj) {
+
+				var part = $('input[name=part]:checked').val();
+				switch (part) {
+					case 'headerDefinition':
+
+						$(obj).parent('td').parent('tr').remove();
+						count--;
+						for (var i = 0; i < count; i++) {
+							var j = i + 2;
+							$('.addHeaderNavNameCla').eq(i).attr('id', 'headerNavName_' + j);
+							$('.addHeaderNavNameCla').eq(i).attr('value', '头部导航' + j);
+							$('.addHeaderNavToPageCla').eq(i).attr('id', 'headerNavToPage_' + j);
+						}
+
+						break;
+					case 'footerDefinition':
+						$(obj).parent('td').parent('tr').remove();
+						count2--;
+						for (var i = 0; i < count2; i++) {
+							var j = i + 2;
+							$('.addFooterNavNameCla').eq(i).attr('id', 'footerNavName_' + j);
+							$('.addFooterNavNameCla').eq(i).attr('value', '底部导航' + j);
+							$('.addFooterNavToPageCla').eq(i).attr('id', 'footerNavToPage_' + j);
+						}
+						break;
+				}
+
+			}
+
+
+
+
+
+			//增加的素材的字段渲染(普通统计)
+			$("body").delegate(".addSelectReport", "change", function() {
+				// alert($(this).attr('id'))//selectreport_1
+				var Id = $(this).attr('id'); //当前素材的属性Id
+				var thisCount = Id.split("_")[1]; //除主素材以外的素材序号,如select_1、selectreport_1后面的数字
+
+				var selectReport = $("#selectreport_" + thisCount).val(),
+					selectReortId = $('#selectreport_' + thisCount + ' option:selected').attr('id');
+				$("#select_" + thisCount).empty();
+				$.ajax({
+					type: "get",
+					url: prevent_HOST + 'pageDesignQueryFacade/getPageEditorData?id=' + selectReortId,
+					contentType: "application/json",
+					async: false,
+					success: function(dataResult) {
+						dataStatusMsg = dataResult.statusMsg;
+						if (dataStatusMsg === '查询失败') return false;
+
+						var data2 = dataResult.msg;
+						// $( "#selectField" ).empty();
+						$("#select_" + thisCount).empty();
+						for (var i = 0; i < Object.keys(data2).length; i++) {
+							$("#select_" + thisCount).append("<option id=" + data2[Object.keys(data2)[i]].value + " value=" + data2[
+									Object
+									.keys(data2)[
+										i]].text + ">" + data2[Object.keys(data2)[i]].text +
+								"</option>");
+							console.log(data2[Object.keys(data2)[i]].text)
+						}
+					}
+				})
+
+
+			})
+
+
+			//增加的素材的字段渲染(源记录统计)
+			$("body").delegate(".selectDataSourceCla", "change", function() {
+				var Id = $(this).attr('id'); //当前素材的属性Id
+				var thisCount = Id.split("_")[1]; //除主素材以外的素材序号,如select_1、selectreport_1后面的数字
+				var selectReport = $("#selectDataSource_" + thisCount).val(),
+					selectReortId = $('#selectDataSource_' + thisCount + ' option:selected').attr('id');
+				$("#titlefield_" + thisCount).empty();
+				$("#contextfield_" + thisCount).empty();
+				$.ajax({
+					type: "get",
+					url: prevent_HOST + 'pageDesignQueryFacade/getPageEditorData?id=' + selectReortId,
+					contentType: "application/json",
+					async: false,
+					success: function(dataResult) {
+						dataStatusMsg2 = dataResult.statusMsg;
+						if (dataStatusMsg === '查询失败') return false;
+
+						var data2 = dataResult.msg;
+						// $( "#selectField" ).empty();
+						$("#titlefield_" + thisCount).empty();
+						$("#contextfield_" + thisCount).empty();
+						for (var i = 0; i < Object.keys(data2).length; i++) {
+							$("#titlefield_" + thisCount).append("<option id=" + data2[Object.keys(data2)[i]].value + " value=" + data2[
+									Object
+									.keys(data2)[
+										i]].value + ">" + data2[Object.keys(data2)[i]].text +
+								"</option>");
+
+
+							$("#contextfield_" + thisCount).append("<option id=" + data2[Object.keys(data2)[i]].value + " value=" +
+								data2[
+									Object
+									.keys(data2)[
+										i]].value + ">" + data2[Object.keys(data2)[i]].text +
+								"</option>");
+							console.log(data2[Object.keys(data2)[i]].text)
+						}
+					}
+				})
+
+
+			})
+
+
+
+
+
+
+
+
+			//回填素材
+			function backSucai(nodeId, thisCount) {
+				$.ajax({
+					type: "get",
+					url: prevent_HOST + 'pageDesignQueryFacade/getPageEditorData?id=' + nodeId,
+					contentType: "application/json",
+					async: false,
+					success: function(dataResult) {
+						dataStatusMsg = dataResult.statusMsg;
+						if (dataStatusMsg === '查询失败') return false;
+
+						var data2 = dataResult.msg;
+						for (var i = 0; i < Object.keys(data2).length; i++) {
+							$("#select_" + thisCount).append("<option id=" + data2[Object.keys(data2)[i]].value + " value=" + data2[
+									Object
+									.keys(data2)[
+										i]].text + ">" + data2[Object.keys(data2)[i]].text +
+								"</option>");
+							console.log(data2[Object.keys(data2)[i]].text)
+						}
+					}
+				})
+			}
+		</script>
+
+
+
+
+
+		<script type="text/javascript">
+			var oNode = null,
+				thePlugins = 'headerandfooter';
+
+
+
+			// 数据回填
+			window.onload = function() {
+
+				$('.headerPart').show();
+				$('.footerPart').hide();
+
+				if (UE.plugins[thePlugins].editdom) {
+					oNode = UE.plugins[thePlugins].editdom;
+					var headerDefinitions = oNode.getAttribute('headerdefinitions'),
+						footerDefinitions = oNode.getAttribute('footerdefinitions'),
+						templateName = oNode.getAttribute('templatename');
+
+					headerDefinitions = JSON.parse(headerDefinitions);
+					footerDefinitions = JSON.parse(footerDefinitions);
+
+					console.log(headerDefinitions)
+					console.log(footerDefinitions)
+					$("#templateName").val(templateName);
+
+					for (var i = 0; i < headerDefinitions.length; i++) {
+						var headerDefinition = headerDefinitions[i];
+						var headerNavName = headerDefinition.headerNavName;
+						var headerNavToPage = headerDefinition.headerNavToPage;
+						var isJumpToUrl = headerDefinition.isJumpToUrl;
+						if (i != 0) fnAdd();
+
+						var j = i + 1;
+						$('#headerNavName_' + j).val(headerNavName);
+						$('#headerNavToPage_' + j).val(headerNavToPage);
+						if (isJumpToUrl == "on") {
+							$('input[name=hJumpToUrl_' + j + ']').attr('checked', 'true')
+						}
+
+
+					}
+					for (var i = 0; i < footerDefinitions.length; i++) {
+						var footerDefinition = footerDefinitions[i];
+						var footerNavName = footerDefinition.footerNavName;
+						var footerNavToPage = footerDefinition.footerNavToPage;
+						var isJumpToUrl = footerDefinition.isJumpToUrl;
+						if (i != 0) fnAdd2();
+
+						var j = i + 1;
+						$('#footerNavName_' + j).val(footerNavName);
+						$('#footerNavToPage_' + j).val(footerNavToPage);
+						if (isJumpToUrl == "on") {
+							$('input[name=fJumpToUrl_' + j + ']').attr('checked', 'true')
+						}
+					}
+
+
+					$('.headerPart').show();
+					$('.footerPart').hide();
+
+
+				}
+
+			}
+
+
+
+
+			dialog.oncancel = function() {
+				if (UE.plugins[thePlugins].editdom) {
+					delete UE.plugins[thePlugins].editdom;
+				}
+			};
+
+
+
+
+			dialog.onok = function() {
+
+				// 传入后台条件数据
+				var templateName = $G('templateName').value;
+				var headerDefinitions = [];
+				var footerDefinitions = [];
+
+
+
+				//遍历获取头部的导航定义
+				for (var i = 1; i <= count; i++) {
+					if (!$('#headerNavName_' + i).val()) {
+						alert("请输入导航名");
+						return false;
+					}
+					if (!$('#headerNavToPage_' + i).val()) {
+						alert("请选择导航的页面");
+						return false;
+					}
+
+					var isJumpToUrl = $('input[name=hJumpToUrl_' + i + ']:checked').val();
+					console.log(isJumpToUrl);
+					if (!isJumpToUrl) {
+						isJumpToUrl = 'off';
+					}
+
+
+					var headerDefinition = {
+						"headerNavName": $('#headerNavName_' + i).val(),
+						"headerNavToPage": $('#headerNavToPage_' + i).val(),
+						"isJumpToUrl": isJumpToUrl
+					}
+					headerDefinitions.push(headerDefinition);
+				}
+				//遍历获取底部的导航定义
+				for (var i = 1; i <= count2; i++) {
+					if (!$('#footerNavName_' + i).val()) {
+						alert("请输入导航名");
+						return false;
+					}
+					if (!$('#footerNavToPage_' + i).val()) {
+						alert("请选择跳转的页面");
+						return false;
+					}
+
+					var isJumpToUrl = $('input[name=fJumpToUrl_' + i + ']:checked').val();
+					console.log(isJumpToUrl);
+					if (!isJumpToUrl) {
+						isJumpToUrl = 'off';
+					}
+
+					var footerDefinition = {
+						"footerNavName": $('#footerNavName_' + i).val(),
+						"footerNavToPage": $('#footerNavToPage_' + i).val(),
+						"isJumpToUrl": isJumpToUrl
+					}
+					footerDefinitions.push(footerDefinition);
+				}
+
+
+				console.log(headerDefinitions)
+				console.log(footerDefinitions)
+				headerDefinitions = JSON.stringify(headerDefinitions);
+				footerDefinitions = JSON.stringify(footerDefinitions);
+
+
+				if (!oNode) {
+					try {
+						oNode = createElement('input', 'headerandfooter');
+						oNode.setAttribute('placeholder', '头/底部模板控件');
+						oNode.setAttribute('leipiPlugins', 'headerandfooter');
+						oNode.setAttribute('name', 'headerandfooter');
+						oNode.setAttribute('templatename', templateName);
+						oNode.setAttribute('headerdefinitions', headerDefinitions);
+						oNode.setAttribute('footerdefinitions', footerDefinitions);
+
+						editor.execCommand('insertHtml', oNode.outerHTML);
+						return true;
+					} catch (e) {
+						try {
+							editor.execCommand('error');
+						} catch (e) {
+							alert('控件异常，请到 与我们反馈或寻求帮助！');
+						}
+						return false;
+					}
+				} else {
+					oNode.setAttribute('placeholder', '头/底部模板控件');
+					oNode.setAttribute('leipiPlugins', 'headerandfooter');
+					oNode.setAttribute('name', 'headerandfooter');
+					oNode.setAttribute('templatename', templateName);
+					oNode.setAttribute('headerdefinitions', headerDefinitions);
+					oNode.setAttribute('footerdefinitions', footerDefinitions);
+
+
+					delete UE.plugins[thePlugins].editdom; //使用后清空这个对象，变回新增模式
+				}
+
+			};
+		</script>
+	</body>
+
+</html>

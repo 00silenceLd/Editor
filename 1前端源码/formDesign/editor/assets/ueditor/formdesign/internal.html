@@ -1,0 +1,187 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title>积分列表</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta name="generator" content="www.leipi.org" />
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="leipi.style.css">
+    <script type="text/javascript" src="../dialogs/internal.js"></script>
+    <script type="text/javascript" src="./jquery-3.2.1.min.js"></script>
+    <script type="text/javascript" src="../httpData.config.js"></script>
+    <script src="self/js/py.js"></script>     
+    <script type="text/javascript">
+        function createElement( type, name ) {
+            var element = null;
+            try {
+                element = document.createElement( '<' + type + ' name="' + name + '">' );
+            } catch ( e ) {}
+            if ( element == null ) {
+                element = document.createElement( type );
+                element.name = name;
+            }
+            return element;
+        }
+
+    </script>
+  <link rel="stylesheet" href="self/formlist/css/css.css">
+</head>
+<body>
+    <div class="content">
+        <table class="table table-bordered table-striped table-hover">
+            <thead>
+                <tr>
+                    <th width="40%">
+                        <span>名称 ：</span>
+                        <input id="orgname" onclick="javascript:this.select()" placeholder="必填项" type="text" class="span2 input-medium" value="兑换记录"  onblur="getPY(this.value)" />
+                        <span class="label label-important">*</span>
+                        <input type="text" class="span2" id="pluName" placeholder="字段" value="" >
+                    </th>
+                    <th>                        
+                        高：<input type="text" class="span2" id="pluheight" name="pluheight" value="30px" placeholder="如:30px">                       
+                        字体大小：<input type="text" class="span2" id="fontsize" name="fontsize" value="14px">                        
+                    </th>
+                </tr>
+                <!-- <tr>
+                    <th>
+                        <span>过滤条件</span>
+                    </th>
+                    <th>                        
+                    </th>
+                </tr>
+                <tr>
+                    <td>
+                       <select id="datasource">
+                           <option value="全部">全部</option>
+                           <option value="完成">完成</option>
+                           <option value="未完成">未完成</option>
+                           <option value="催办">催办</option>
+                       </select>
+                   </td>
+                   <td>             
+                   </td>
+               </tr> -->
+                    
+            </thead>
+        </table>      
+    </div>
+    <script type="text/javascript">
+        var oNode = null,
+            gdataSource=null,
+            control_name=null,
+            nodeId=null,
+            searchcon=null,
+            datafield=[],
+            thePlugins = 'internal';
+
+        window.onload = function () {
+            $G('orgname').select();
+
+            //弹出窗口初始化函数
+            if ( UE.plugins[ thePlugins ].editdom ) {
+                oNode = UE.plugins[ thePlugins ].editdom;
+                $G( 'orgname' ).value = oNode.getAttribute( 'title' );
+                // var datasource = oNode.getAttribute( 'datasource' );                          
+                var name = oNode.getAttribute( 'name' );
+                control_name=name;              
+                
+                var pluheight = oNode.getAttribute( 'pluheight' );               
+                var fontsize = oNode.getAttribute( 'fontsize' );                
+                $G( 'pluName' ).value = name;               
+                // $("option[value='"+datasource+"']").attr("selected",true);
+                $("#pluheight").val(pluheight);
+                $("#fontsize").val(fontsize);   
+               
+            }
+
+            /*
+             * 绑定数据源
+             * 链接后台获取 数据链接
+             * 原：http://192.168.0.213:20890/nodeQueryFacade/getDataSourcePage?nodeId=14916&uid=551
+             */
+            var nodeParentId = $( '#nodeParentId', window.parent.document ).val();
+            nodeId = $('#node_id',window.parent.document).val();
+            var userinfo=window.localStorage['user']?JSON.parse(window.localStorage['user']):null;
+        }
+
+        dialog.oncancel = function () {
+            if ( UE.plugins[ thePlugins ].editdom ) {
+                delete UE.plugins[ thePlugins ].editdom;
+            }
+        };
+
+        dialog.onok = function () {
+            var gName = $G( 'orgname' ).value.replace( /\"/g, "&quot;" );
+            // var datasource=$("#datasource").val();                      
+            var pluheight=$("input[name=pluheight]").val();            
+            var fontsize=$("input[name='fontsize']").val();           
+            if ( gName == '' ) {
+                alert( '控件名称不能为空' );
+                $G( 'orgname' ).focus();
+                return false;
+            }           
+            
+            var PN=$('#pluName');
+                cupy=PN.val();
+                if(cupy==''){
+                  getPY($G( 'orgname' ).value);
+                }
+            if ( !oNode ) {
+                try {
+                    oNode = createElement( 'input', cupy );
+                    oNode.setAttribute( 'leipiPlugins', thePlugins );
+                    oNode.setAttribute( 'type', 'text' );
+                    oNode.setAttribute( 'value', gName );
+                    oNode.setAttribute( 'title', gName );
+                    // oNode.setAttribute( 'datasource', datasource );                    
+                    oNode.setAttribute( 'pluheight', pluheight );                   
+                    oNode.setAttribute( 'fontsize', fontsize );                                                
+                    oNode.style.width="80px";
+                    editor.execCommand( 'insertHtml', oNode.outerHTML );
+                    var editNewData={"node_id": nodeId,"title":gName,"control_name": cupy}
+                      $.ajax({
+                        url: prevent_HOST + `pageDesignOperatorFacade/insertControl`,
+                        type: 'POST',
+                        dataType: 'json',
+                        contentType: 'application/json; charset=UTF-8',
+                        data: JSON.stringify(editNewData),
+                        async: false,
+                        success: function ( res ) {
+                        }
+                      })
+                    return true;
+                } catch ( e ) {
+                    try {
+                        editor.execCommand( 'error' );
+                    } catch ( e ) {
+                        alert( '控件异常，请反馈或寻求帮助！' );
+                    }
+                    return false;
+                }
+            } else {
+                //修改                
+                oNode.setAttribute( 'name', cupy );
+                oNode.setAttribute( 'title', gName );
+                // oNode.setAttribute( 'datasource', datasource );                
+                oNode.setAttribute( 'pluheight', pluheight );                   
+                oNode.setAttribute( 'fontsize', fontsize );
+                delete UE.plugins[ thePlugins ].editdom; //使用后清空这个对象，变回新增模式
+                var editNewData={"node_id": nodeId,"title":gName,"control_name": control_name,"new_control_name": cupy}
+                    $.ajax({
+                        url: prevent_HOST + `pageDesignOperatorFacade/updateControl`,
+                        type: 'POST',
+                        dataType: 'json',
+                        contentType: 'application/json; charset=UTF-8',
+                        data: JSON.stringify(editNewData),
+                        async: false,
+                        success: function ( res ) {
+                        }
+                    })
+            }
+        };
+
+    </script>
+</body>
+
+</html>

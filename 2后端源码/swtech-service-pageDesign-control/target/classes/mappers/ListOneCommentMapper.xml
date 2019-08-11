@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace命名空间，唯一特性 -->
+<mapper
+	namespace="swtech.pageDesignControl.mapper.ListOneCommentMapper">
+	
+	<resultMap id="commentInfoMap"
+		type="swtech.pageDesignControl.entity.CommentInfo">
+		<id column="id" property="id" />
+		<id column="uid" property="uid" />
+		<result column="node_id" property="nodeId" />
+		<result column="select_id" property="selectId" />
+		<result column="pub_user" property="pubUser" />
+		<result column="pub_content" property="pubContent" />
+		<result column="pub_time" property="pubTime" />
+		<result column="pub_approve" property="pubApprove" />
+	</resultMap>
+
+
+	<select id="getComment" parameterType="Integer"
+		resultMap="commentInfoMap">
+		select
+		id,node_id,select_id,pub_user,pub_content,pub_time,pub_approve,uid
+		from ht_comment_data
+		where node_id=#{nodeId} and select_id=#{selectId}
+		and pub_approve = 1
+		ORDER BY id desc
+	</select>
+	<select id="commentCount" parameterType="Integer"
+		resultType="Integer">
+		select
+		count(id)
+		from ht_comment_data
+		where id=#{id}
+	</select>
+
+	<delete id="deleteComment" parameterType="Integer">
+		delete from
+		ht_comment_data
+		where id = #{id}
+	</delete>
+
+
+	<insert id="releaseComment"
+		parameterType="swtech.pageDesignControl.entity.CommentInfo">
+		insert into
+		ht_comment_data(node_id,select_id,pub_user,pub_content,pub_time,pub_approve,uid)
+		values
+		(#{nodeId},#{selectId},#{pubUser},#{pubContent},#{pubTime},#{pubApprove},#{uid})
+	</insert>
+
+
+	<select id="getUserByUidOnComment" parameterType="Integer"
+		resultType="java.util.Map">
+		select username,chinese_name from ht_user where uid =
+		#{uid}
+	</select>
+
+
+	<update id="passApproveComment" parameterType="Integer">
+		UPDATE
+		ht_comment_data set pub_approve = 1 where id = #{id}
+
+	</update>
+
+	<select id="getNotApproveComment" parameterType="Integer"
+		resultMap="commentInfoMap">
+		select
+		id,node_id,select_id,pub_user,pub_content,pub_time,pub_approve,uid
+		from ht_comment_data
+		where pub_approve = 0 limit #{begin},#{limit}
+	</select>
+	<select id="getNodeNameByNodeIdz" parameterType="Integer"
+		resultType="String">
+		select node_name
+		from
+		ht_pageEditor
+		where node_id = #{nodeId}
+		and is_delete=0
+	</select>
+	<select id="getThemeByNodeName" parameterType="java.util.Map"
+		resultType="String">
+		select swprefixtitle from ${nodeName} where id =
+		#{selectId}
+
+	</select>
+
+	<select id="getNotApproveCommentCount" resultType="Integer">
+		select
+		count(id) from ht_comment_data where pub_approve = 0
+	</select>
+
+</mapper>

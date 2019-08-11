@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<!-- <meta name="keywords" content=""/>
+		<meta name="description" content=""/> -->
+		<!-- <link rel="stylesheet" type="text/css" href="./self/commentControl/css/bootstrap.min.css"> -->
+		<link rel="stylesheet" type="text/css" href="../../commentControl/css/commentController.css">
+		<!-- Bootstrap 图标-->
+		<link rel="stylesheet" href="../../../bootstrap/css/bootstrap.same.css">
+
+		<title>处理中...</title>
+		<!-- jQuery -->
+		<script src="../../js/jquery-3.2.1.min.js"></script>
+		
+		<!-- 请求 前缀 配置文件 -->
+        <script src="../../../../httpData.config.js"></script>
+        
+        <!-- 本页面的样式 -->
+		<link rel="stylesheet" href="../../../self/css/style.css"> 
+		 <link rel="stylesheet" href="../../../self/swiper/swiper-4.2.2.min.css">
+		
+		<!-- Bootstrap -->
+		<!-- <link rel="stylesheet" href="../../../bootstrap/css/bootstrap.css">
+		<script src="../../../bootstrap/js/bootstrap.js"></script> -->
+		<script src="../../js/fun.js"></script>
+		<link rel="stylesheet" type="text/css" href="../../../layui/css/layui.css" />
+		<script src="../../../layui/layui.js" type="text/javascript" charset="utf-8"></script>
+		<style type="text/css">
+			/*登陆框*/
+			#loginbox {
+				display: none;
+				width: 360px;
+				height: 405px;
+				background: #fff;
+				position: absolute;
+				left: 50%;
+				top: 50%;
+				margin-left: -175px;
+				margin-top: -150px;
+				/*text-align: center;*/
+			}
+
+			#loginbox label {
+				display: block;
+				font-size: 16px;
+				margin-bottom: 20px;
+			}
+
+			#loginbox label input {
+				width: 300px;
+				height: 40px;
+				color: #cccccc;
+			}
+
+			#loginbox #btn {
+				width: 278px;
+				height: 30px;
+			}
+
+			#loginbox #btn button {
+				width: 120px;
+				height: 30px;
+				background: #0B5AA6;
+				border-radius: 3px;
+				border: none;
+				margin-top: 30px;
+				color: #fff;
+			}
+
+			#close {
+				font-size: 18px;
+				position: absolute;
+				top: 0;
+				right: 5px;
+				cursor: pointer;
+			}
+
+			/*登陆框结束*/
+			#tip {
+				margin: 40px 0 40px 0;
+			}
+
+			#over {
+				position: absolute;
+				left: 0;
+				top: 0;
+				width: 100%;
+				height: 100%;
+				background: #000;
+				opacity: 0.7;
+				display: none;
+				z-index: 6;
+			}
+
+			#next {
+				display: inline-block;
+				width: 300px;
+				height: 20px;
+				margin-left: 30px;
+			}
+
+			#zhuce {
+				width: 360px;
+				height: 60px;
+				background: #f0f6ff;
+				margin-top: 22px;
+			}
+
+			a:hover {
+				opacity: 0.7;
+			}
+		</style>
+
+	</head>
+	<body class="mnPhone">
+
+		<div id="lian" style="width: 110px;height: 110px;position: fixed;right: 10px;bottom: 200px;display: none;">
+			<p id="close1" style="position: absolute;right: 1px;top: -16px;color: black;font-size: 12px;width: 25px;height: 20px;z-index: 1;cursor: pointer;">关闭</p>
+			<img src="../image/liannanzugong.jpg" alt="" style="width: 110px;height: 110px;">
+		</div>
+
+		<section class="container phone">
+			<form id="insertForm" onkeydown="if(event.keyCode==13)return false;">
+				<div class="bodyContent">
+                    <table width="357">
+						<tbody>
+							<tr class="firstRow">
+								<td style="border-color: rgb(48, 45, 62); background-color: rgb(48, 45, 62); height: 48px; word-break: break-all;"
+								 width="123" valign="middle" align="left"><a href="javascript:history.go(-1)"
+									 target="_self"><img src="../../htreservation/image/15514287821041543307245145返回.png" width="32" height="32" title=""></a><br></td>
+								<td style="border-color:  #302d3e; word-break: break-all; background-color:  #302d3e;" width="123" valign="middle"
+								 align="center"><span style="color:#ffffff"><span style="font-size: 20px;">支付成功</span></span></td>
+								<td style="border-color: #302d3e; background-color:  #302d3e;" width="123" valign="middle" align="center"></td>
+							</tr>
+						</tbody>
+					</table>
+					<p><br></p>
+					<p><span style="font-size: 10px;"><br><br><br></span></p>
+					<table width="357">
+						<tbody>
+							<tr class="firstRow">
+								<td valign="middle" style="border-color: rgb(255, 255, 255); word-break: break-all;" width="372" align="center"><img
+									 src="../../htreservation/image/15604926595611559283740264支付成功.png" title="" alt="1559283740264支付成功.png" width="60" height="60"
+									 border="0" vspace="0" style="width: 60px; height: 60px;"></td>
+							</tr>
+							<tr style="height:65px;">
+								<td valign="middle" style="word-break: break-all; border-color: rgb(255, 255, 255);" width="372" align="center"><span
+									 style="font-family: 微软雅黑, &quot;Microsoft YaHei&quot;; font-size: 18px;">已完成支付！</span></td>
+							</tr>
+						</tbody>
+					</table>
+					<p><br></p>
+					<p><span style="font-size: 10px;"><br><br></span></p>
+					<table data-sort="sortDisabled">
+						<tbody>
+							<tr class="firstRow">
+								<td style="border-color: rgb(255, 255, 255); background-color: rgb(255, 255, 255); word-break: break-all;"
+								 valign="middle" align="center" colspan="2"><a href="http://gzdjd.m13w.cn/editor/assets/ueditor/formdesign/preview.html?link=51"
+									 target="_self"><button type="button" style="width:60%;height:35px;border-radius:10px;border:1px solid #a5a5a5;background-color:#fff;color:#a5a5a5">返回首页</button></a></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+	
+
+			</form>
+
+	</body>
+<script>
+		function huoqu(){
+		var shiyongma=$("#shiyongma").val();
+		if(shiyongma!=""&&shiyongma!=null){
+			window.location.href="orderdetails.html?reBeiId="+shiyongma;
+		}else{
+			alert("使用码获取不到,请输入");
+		}
+		
+	}
+	
+</script>
+</html>

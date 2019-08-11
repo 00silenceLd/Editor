@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="swtech.service.pageDesign.dao.impl.MyStoreManagementDaoImpl" >
+  <resultMap id="BaseResultMap" type="swtech.facade.pageDesign.entity.MyStoreManagement" >
+    <id column="sm_id" property="smId" jdbcType="INTEGER" />
+    <result column="sm_name" property="smName" jdbcType="VARCHAR" />
+    <result column="sm_site" property="smSite" jdbcType="VARCHAR" />
+    <result column="sm_phone" property="smPhone" jdbcType="VARCHAR" />
+    <result column="sm_info" property="smInfo" jdbcType="VARCHAR" />
+    <result column="sm_picture" property="smPicture" jdbcType="VARCHAR" />
+     <result column="sm_time" property="smTime" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    sm_id, sm_name, sm_site, sm_phone, sm_info, sm_picture, sm_time
+  </sql>
+  <select id="selectSm" resultMap="BaseResultMap">
+  	SELECT * FROM  my_store_management  ORDER BY sm_id DESC  LIMIT 0,1
+  </select>
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from my_store_management
+    where sm_id = #{smId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from my_store_management
+    where sm_id = #{smId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="swtech.facade.pageDesign.entity.MyStoreManagement" >
+    insert into my_store_management (sm_id, sm_name, sm_site, 
+      sm_phone, sm_info, sm_picture , sm_time
+      )
+    values (#{smId,jdbcType=INTEGER}, #{smName,jdbcType=VARCHAR}, #{smSite,jdbcType=VARCHAR}, 
+      #{smPhone,jdbcType=VARCHAR}, #{smInfo,jdbcType=VARCHAR}, #{smPicture,jdbcType=VARCHAR},
+      #{smTime,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertMyStoreManagement" parameterType="swtech.facade.pageDesign.entity.MyStoreManagement" >
+    insert into my_store_management
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="smId != null" >
+        sm_id,
+      </if>
+      <if test="smName != null" >
+        sm_name,
+      </if>
+      <if test="smSite != null" >
+        sm_site,
+      </if>
+      <if test="smPhone != null" >
+        sm_phone,
+      </if>
+      <if test="smInfo != null" >
+        sm_info,
+      </if>
+      <if test="smPicture != null" >
+        sm_picture,
+      </if>
+       <if test="smTime != null" >
+        sm_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="smId != null" >
+        #{smId,jdbcType=INTEGER},
+      </if>
+      <if test="smName != null" >
+        #{smName,jdbcType=VARCHAR},
+      </if>
+      <if test="smSite != null" >
+        #{smSite,jdbcType=VARCHAR},
+      </if>
+      <if test="smPhone != null" >
+        #{smPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="smInfo != null" >
+        #{smInfo,jdbcType=VARCHAR},
+      </if>
+      <if test="smPicture != null" >
+        #{smPicture,jdbcType=VARCHAR},
+      </if>
+       <if test="smTime != null" >
+        #{smTime,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="swtech.facade.pageDesign.entity.MyStoreManagement" >
+    update my_store_management
+    <set >
+      <if test="smName != null" >
+        sm_name = #{smName,jdbcType=VARCHAR},
+      </if>
+      <if test="smSite != null" >
+        sm_site = #{smSite,jdbcType=VARCHAR},
+      </if>
+      <if test="smPhone != null" >
+        sm_phone = #{smPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="smInfo != null" >
+        sm_info = #{smInfo,jdbcType=VARCHAR},
+      </if>
+      <if test="smPicture != null" >
+        sm_picture = #{smPicture,jdbcType=VARCHAR},
+      </if>
+      <if test="smTime != null" >
+        sm_time = #{smTime,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where sm_id = #{smId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="swtech.facade.pageDesign.entity.MyStoreManagement" >
+    update my_store_management
+    set sm_name = #{smName,jdbcType=VARCHAR},
+      sm_site = #{smSite,jdbcType=VARCHAR},
+      sm_phone = #{smPhone,jdbcType=VARCHAR},
+      sm_info = #{smInfo,jdbcType=VARCHAR},
+      sm_picture = #{smPicture,jdbcType=VARCHAR},
+      sm_time = #{smTime,jdbcType=VARCHAR}
+    where sm_id = #{smId,jdbcType=INTEGER}
+  </update>
+</mapper>

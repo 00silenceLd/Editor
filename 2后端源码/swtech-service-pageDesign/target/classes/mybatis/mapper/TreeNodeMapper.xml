@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="swtech.service.pageDesign.dao.impl.TreeNodeDaoImpl">
+	<sql id="table">ht_node</sql>
+	<resultMap id="treeNodeMap" type="swtech.facade.pageDesign.entity.TreeNode">
+		<id column="id" property="id" />
+		<result column="version" property="version" />
+		<result column="is_delete" property="is_delete" />
+		<result column="node_name" property="value" />
+		<result column="node_level" property="node_level" />
+		<result column="node_type" property="node_type" />
+		<result column="parent_id" property="parent_id" />
+		<result column="node_sore" property="node_sore" />
+		<result column="isLeaf" property="isLeaf" />
+		<result column="createrUid" property="createrUid" />
+	</resultMap>
+	<resultMap type="swtech.facade.pageDesign.entity.TreeNode"
+		id="treeNode_map">
+		<id column="id" property="id" />
+		<result column="is_delete" property="is_delete" />
+		<result column="node_name" property="value" />
+		<result column="node_level" property="node_level" />
+		<result column="node_type" property="node_type" />
+		<result column="parent_id" property="parent_id" />
+		<result column="node_sore" property="node_sore" />
+		<result column="isLeaf" property="isLeaf" />
+		<result column="createrUid" property="createrUid" />
+		<collection property="children" column="id"
+			ofType="swtech.facade.pageDesign.entity.TreeNode" select="selectTreeNodeChildrenById"></collection>
+	</resultMap>
+	
+	<!-- 模糊查询父ID下 名字 -->
+	<select id="getLikeName" resultMap="treeNodeMap" parameterType="java.util.Map">
+		select * from ht_node where is_delete = 0 AND parent_id=#{pid} And id != 16 
+		<if test="name != null">
+		AND node_name LIKE #{name}
+		</if>
+	</select>
+	
+	<!-- 查询所有ht_node -->
+	<select id="getTreeNode" resultMap="treeNodeMap">
+			select * from ht_node where is_delete = 0 And id != 16 
+	</select>
+	
+	<!-- 根据父键查询 -->
+	<select id="findNodeByparentId" parameterType="long" resultMap="treeNode_map">
+		select * from ht_node where is_delete = 0 And parent_id= #{pid} And id != 16  order by
+		node_sore
+	</select>
+	<!-- 再递归查询出一级部门下的所有子部门 -->
+	<select id="selectTreeNodeChildrenById" resultMap="treeNode_map"
+		parameterType="long">
+		select * from ht_node where is_delete=0 and
+		parent_id=#{id} And id != 16 order by node_sore
+	</select>
+	<insert id="insert" parameterType="swtech.facade.pageDesign.entity.TreeNode"
+		keyProperty="id" useGeneratedKeys="true">
+		insert into
+		<include refid="table" />
+		(node_name,node_level,node_type,parent_id,node_sore,isLeaf)
+		values
+		(#{node_name},#{node_level},#{node_type},#{parent_id},#{node_sore},#{isLeaf})
+		<selectKey resultType="java.lang.Long" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	<!-- 更新:version+1 实现乐观锁 -->
+	<update id="update" parameterType="swtech.facade.pageDesign.entity.TreeNode">
+		update
+		<include refid="table" />
+		<trim prefix="set" suffixOverrides=",">
+			<if test="version != null">
+				version = #{version,jdbcType=INTEGER}+1,
+			</if>
+			<if test="node_name != null">
+				node_name = #{node_name,jdbcType=VARCHAR},
+			</if>
+			<if test="node_type != null">
+				node_type = #{node_type,jdbcType=INTEGER},
+			</if>
+			<if test="node_sore != null">
+				node_sore = #{node_sore,jdbcType=INTEGER},
+			</if>
+			<if test="parent_id != null">
+				parent_id = #{parent_id,jdbcType=INTEGER},
+			</if>
+			<if test="node_level != null">
+				node_level = #{node_level,jdbcType=CHAR},
+			</if>
+			<if test="is_delete != null">
+				is_delete = #{is_delete,jdbcType=BIT},
+			</if>
+		</trim>
+		<where>
+			id = #{id}
+		</where>
+	</update>
+	<select id="getChildCountById" parameterType="long" resultType="java.lang.Integer">
+		select count(id) from ht_node where is_delete=0 and parent_id =#{id}
+	</select>
+	<select id="getUpSoreById" parameterType="java.util.Map"
+		resultMap="treeNodeMap">
+		select * from ht_node where is_delete=0 and parent_id
+		=${pid} and node_sore &lt;=${node_sore} ORDER BY node_sore DESC LIMIT
+		2
+	</select>
+	<select id="getDownSoreById" parameterType="java.util.Map"
+		resultMap="treeNodeMap">
+		select * from ht_node where is_delete=0 and parent_id
+		=#{parent_id} and node_sore &gt;=${node_sore} ORDER BY node_sore LIMIT
+		2
+	</select>
+	<select id="getById" parameterType="long" resultMap="treeNodeMap">
+		select * from
+		<include refid="table" />
+		where id = #{id}
+	</select>
+	<sql id="condition_sql">
+		<if test="is_delete != null and is_delete !=''"> and is_delete = #{is_delete} </if>
+		<if test="node_id != null and node_id != ''"> and node_id = #{node_id} </if>
+		<if test="node_name != null and node_name != ''"> and node_name = #{node_name} </if>
+		<if test="node_level != null and node_level != ''"> and node_level = #{node_level} </if>
+		<if test="node_type != null and node_type != ''"> and node_type = #{node_type} </if>
+		<if test="parent_id != null and parent_id != ''"> and parent_id = #{parent_id} </if>
+		<if test="node_sore != null and node_sore != ''"> and node_sore = #{node_sore} </if>
+	</sql>
+	<!-- 根据多参数进行查询数据 -->
+	<select id="listPage" parameterType="java.util.Map" resultMap="treeNodeMap">
+		select * from
+		<include refid="table" />
+		<where>
+			is_delete=0 and
+			<include refid="condition_sql" />
+		</where>
+	</select>
+	<select id="listBy" parameterType="java.util.Map" resultMap="treeNodeMap">
+		select * from
+		<include refid="table" />
+		<where>
+			<include refid="condition_sql" />
+		</where>
+	</select>
+	<update id="change_is_delete" parameterType="long">
+		update
+		<include refid="table" />
+		<choose>
+			<when test="is_delete =='0'">
+				set is_delete = '1'
+			</when>
+			<otherwise>
+				set is_delete = '0'
+			</otherwise>
+		</choose>
+		<where>
+			id = #{id}
+		</where>
+	</update>
+</mapper>

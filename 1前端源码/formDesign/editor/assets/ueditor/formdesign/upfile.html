@@ -1,0 +1,311 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+
+<head>
+  <title>文本框</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <link rel="stylesheet" href="bootstrap/css/bootstrap.css">
+  <!--[if lte IE 6]>
+  <link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap-ie6.css">
+  <![endif]-->
+  <!--[if lte IE 7]>
+  <link rel="stylesheet" type="text/css" href="bootstrap/css/ie.css">
+  <![endif]-->
+  <link rel="stylesheet" href="leipi.style.css">
+  <script type="text/javascript" src="../dialogs/internal.js"></script>
+  <script type="text/javascript" src="jquery-3.2.1.min.js" ></script>
+  <script src="self/js/py.js"></script>
+  <script type="text/javascript" src="../httpData.config.js"></script>
+
+  <script type="text/javascript">
+    /* Thank you by
+                                http://www.alt-tag.com/blog/2006/02/ie-dom-bugs/ */
+
+    function createElement( type, name ) {
+      var element = null;
+      try {
+        element = document.createElement( '<' + type + ' name="' + name + '">' );
+      } catch ( e ) {}
+      if ( element == null ) {
+        element = document.createElement( type );
+        element.name = name;
+      }
+      return element;
+    }
+
+  </script>
+
+</head>
+
+<body>
+<div class="content">
+  <table class="table table-bordered table-striped table-hover">
+    <tr>
+      <th>
+        <span>控件名称</span>
+        <span class="label label-important">*</span>
+        <span>字段拼音</span>
+      </th>
+      <th>
+        <span>提示内容</span>
+        <span class="label label-important">*</span>
+      </th>
+    </tr>
+    <tr>
+      <td>
+        <input type="text" class="span2" id="orgname" onclick="javascript:this.select()" placeholder="必填项" value="文本框" onblur="getPY(this.value)">
+        <input type="text" class="span2" id="pluName" placeholder="字段" value="" >
+      </td>
+      <td>
+        <input type="text" id="orgvalue">
+      </td>
+    </tr>
+    <tr>
+      <th>
+        <span>数据源</span>
+      </th>
+      <th>
+        <span>数据字段</span>
+      </th>
+    </tr>
+    <tr>
+      <td>
+        <select id="datasource">
+          <option value="0">请选择</option>
+
+        </select>
+      </td>
+      <td>
+        <select id="datazid">
+          <option value="0">请选择</option>
+
+        </select>
+      </td>
+    </tr>
+    <tr>
+      <th>
+        <span>数据类型</span>
+      </th>
+      <th>
+        <span>对齐方式</span>
+      </th>
+    </tr>
+    <tr>
+      <td>
+        <select id="orgtype" onchange="checkType(event)">
+          <option value="text">普通文本</option>
+          <option value="email">邮箱地址</option>
+          <option value="int">整数</option>
+          <option value="float">小数</option>
+          <option value="idcard">身份证号码</option>
+        </select>
+      </td>
+      <td>
+        <select id="orgalign">
+          <option value="left">左对齐</option>
+          <option value="center">居中对齐</option>
+          <option value="right">右对齐</option>
+        </select>
+      </td>
+    </tr>
+    <tr>
+      <th >
+        <span>显示个数控制</span>
+      </th>
+      <th >
+        <span></span>
+      </th>
+    </tr>
+    <tr>
+      <td>
+        <!--  -->
+        <span><input id="orgprintlength" type="number" value="" min="0"  placeholder="auto"></span>
+      </td>
+      <td >
+        <span></span>
+      </td>
+    </tr>
+    <tr>
+      <th colspan="2">
+        <span>输入框样式</span>
+      </th>
+    </tr>
+    <tr>
+      <td colspan="2">
+        宽:
+        <input id="orgwidth" type="text"   class="input-small span1" placeholder="auto" value="" onclick="this.value=this.value.replace(/\D/g,'')" onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')"/>
+        <select id="orgvarfontwidth" style="width:65px;">
+          <option>PX</option>
+          <option selected>%</option>
+        </select>
+        &nbsp;&nbsp; 高:
+        <input id="orgheight" type="text"  class="input-small span1" placeholder="auto" value="" onclick="this.value=this.value.replace(/\D/g,'')"  onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')"/>
+        <select id="orgvarfontheight" style="width:65px;">
+          <option>PX</option>
+          <option>%</option>
+        </select>
+        &nbsp;&nbsp;字体大小
+        <input id="orgfontsize" type="text" value="16" class="input-small span1" placeholder="auto" />
+        <select id="orgvarfontwidth" style="width:75px;">
+          <option>PX</option>
+        </select>
+      </td>
+    </tr>
+    <tr>
+      <th>
+        <span>限制在一个块元素显示的文本的行数</span>
+      </th>
+      <th>
+        <span>输入限制文本的字数</span>
+      </th>
+    </tr>
+    <tr>
+      <td>
+        <input type="number" id="lineClamp" value="1">
+      </td>
+      <td>
+        <input type="number" id="maxLength" value="">
+      </td>
+    </tr>
+    <tr>
+      <th colspan="2">
+        <span>隐藏</span>
+      </th>
+    </tr>
+    <tr>
+      <td colspan="2">
+        <label class="checkbox inline">
+          <input id="orghide" type="checkbox" /> 可见性 </label>
+        <label class="checkbox inline">
+          <input id="orgthide" type="checkbox" /> 边框 </label>
+        <label class="checkbox inline">
+          <input id="orgbghide" type="checkbox" /> 底色 </label>
+        <label class="checkbox inline">
+          <input id="orgdisabled" type="checkbox" /> 是否禁用</label>
+      </td>
+    </tr>
+  </table>
+</div>
+<script>
+  var gVarfontwidth = $("#orgvarfontwidth option:selected").val();
+  $("#orgvarfontwidth").click(function(){
+    gVarfontwidth = $("#orgvarfontwidth option:selected").val();
+  });
+  var gVarfontheight = $("#orgvarfontheight option:selected").val();
+  $("#orgvarfontheight").click(function(){
+    gVarfontheight = $("#orgvarfontheight option:selected").val();
+  });
+</script>
+
+<script type="text/javascript">
+  var oNode = null,
+    gdataSource=null,
+    //gdataid,
+    //gdataField,
+    thePlugins = 'text';
+  window.onload = function () {
+    $G('orgname').select();
+    if ( UE.plugins[ thePlugins ].editdom ) {
+      oNode = UE.plugins[ thePlugins ].editdom;
+      var gValue = '';
+      if ( oNode.getAttribute( 'value' ) );
+
+      var  gValue = oNode.getAttribute( 'value' ).replace( /&quot;/g, "\"" ),
+        gTitle = oNode.getAttribute( 'title' ).replace( /&quot;/g, "\"" ),
+        name = oNode.getAttribute( 'name' );
+    }
+  }
+
+  dialog.oncancel = function () {
+    if ( UE.plugins[ thePlugins ].editdom ) {
+      delete UE.plugins[ thePlugins ].editdom;
+    }
+  };
+  dialog.onok = function () {
+    if ( $G( 'orgname' ).value == '' ) {
+      alert( '请输入控件名称' );
+      return false;
+    }
+    var PN=$('#pluName');
+    cupy=PN.val();
+    if(cupy==''){
+      getPY($G( 'orgname' ).value);
+    }
+    //输入框的值做显示控制判断
+    var text_length,    //文本框长度
+      print_length,       //控制的显示长度
+      gValue,             //文本框的数据
+      temp_Value;         //文本框的临时数据
+    temp_Value = $G( 'orgvalue' ).value.replace( /\"/g, "&quot;" );     //保存文本框的值
+    gPrintLength = $G( 'orgprintlength' ).value;
+    text_length = temp_Value.length;
+    print_length = gPrintLength;
+    if( print_length == "" || print_length == 0 )  //不做限制的时候
+    {
+      gValue = temp_Value;
+    }
+    else if( text_length > print_length ){    //大于
+      var html = "";
+      for( var i=0; i<print_length; i++ ){
+        html += temp_Value[i];
+      }
+      html += '...';
+      gValue = html;
+    }
+    else if( text_length <= print_length ){   //输入长度小于限制长度
+      gValue = temp_Value;
+    }
+    var gTitle = $G( 'orgname' ).value.replace( /\"/g, "&quot;" ),
+      gFontSize = $G( 'orgfontsize' ).value,
+      gAlign = $G( 'orgalign' ).value,
+      gWidth = $G( 'orgwidth' ).value,
+      gHeight = $G( 'orgheight' ).value,
+      gType = $G( 'orgtype' ).value,
+      gds = $G('datasource').value,
+      //gMLenght=$G('orgmaxlenght').value,
+      glineClamp = $G('lineClamp').value,
+      //gmaxLength = $G( 'maxLength' ).value,
+      datasource;
+    if ($G('datasource').value == 0 ) {
+      var   gdataS = "",
+        dataId = 0
+    } else {
+      gdataS = $("#datasource option:selected").text();
+      dataId = $("#datasource option:selected").val();
+    }
+    if ($G('datazid').value == 0) {
+      var  gdataId = "";
+      // dataField = 0;
+    } else {
+      gdataId = $G('datazid').value;
+      //dataField = $("#datazid option:selected").val();
+    }
+    datasource = '{\"data\":\"' + gdataS + '\",\"field\":\"' + gdataId + '\"}';
+    if ( !oNode ) {
+      try {
+        if(cupy=='')cupy='leipiNewField';
+        oNode = createElement( 'input', cupy );
+        oNode.setAttribute( 'type', 'text' );
+        oNode.setAttribute( 'title', gTitle );
+        oNode.setAttribute( 'value', gValue );
+        oNode.setAttribute( 'leipiPlugins', thePlugins );
+        editor.execCommand( 'insertHtml', oNode.outerHTML );
+      } catch ( e ) {
+        try {
+          editor.execCommand( 'error' );
+        } catch ( e ) {
+          alert( '控件异常，请反馈或寻求帮助！' );
+        }
+        return false;
+      }
+    } else {
+      oNode.setAttribute( 'title', gTitle );
+      oNode.setAttribute( 'name', cupy );
+      oNode.setAttribute( 'value', $G( 'orgvalue' ).value );
+      delete UE.plugins[ thePlugins ].editdom;
+    }
+  };
+</script>
+</body>
+</html>

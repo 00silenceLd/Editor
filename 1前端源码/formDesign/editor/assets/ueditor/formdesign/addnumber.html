@@ -1,0 +1,404 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+
+<head>
+    <title>报名/字段值自增加控件</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <!-- jQuery - 3.2.1 -->
+    <script src="./self/js/jquery-3.2.1.min.js"></script>
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.css">
+    <!-- <script type="text/javascript" src="bootstrap/js/bootstrap.js"></script> -->
+    <!-- Leipi -->
+    <link rel="stylesheet" href="leipi.style.css">
+    <script type="text/javascript" src="../dialogs/internal.js"></script>
+    <!-- Self -->
+    <script src="./self/js/publicMethod.js"></script>
+   <script src="../httpData.config.js"></script>
+   <script src="self/js/py.js"></script>
+<style>
+
+        .fileLabel {
+            position: absolute;
+            top: 50%;
+            transform: translate(0, -50%);
+            background: #74cbe4;
+            border: 1px solid #b4e4f3;
+            width: 60px;
+            padding: 3px 5px;
+            border-radius: 5px;
+            color: #fff;
+            text-align: center;
+        }
+
+        .fileLabel input {
+            display: none;
+        }
+
+        .fileLabel+img {
+            width: 20%;
+            left: 30%;
+            margin-left: 20%;
+        }
+  .btntypetext{
+    width: 65px;
+    margin-right: 10px;
+  }
+  #orgid{           /*高亮的显示ID*/
+      color:#000;
+      font-weight: bold;
+  }
+
+#datasource,#datafiled{
+    margin-bottom: 5px;
+}  
+    
+</style>
+    <script type="text/javascript">
+      var userinfo=window.localStorage['user']?JSON.parse(window.localStorage['user']):null;
+        function createElement( type, name ) {
+            var element = null;
+            try {
+                element = document.createElement( '<' + type + ' name="' + name + '">' );
+            } catch ( e ) {}
+            if ( element == null ) {
+                element = document.createElement( type );
+                element.name = name;
+            }
+            return element;
+        }        
+
+        var isUpload; // 判断是否已经上传了图片
+        $( function () {
+            /*
+             * 点击上传图片，先不上传，先预览
+             *
+             */
+            $( '.fileLabel > input' ).on( 'click', function ( e ) {
+                if ( FileReader === undefined ) {
+                    if ( confirm( '抱歉, 您的浏览器并不支持预览功能, 如想显示预览图片, 请点确定, 我们为您跳转下载最新的Chrome浏览器！ ' ) ) window.open( 'https://www.baidu.com/link?url=W8-UUy0Mr_nSpYmg0iMxyMEzKDWBWcqcxnidV5Dqg0TccQFepC5Ew6vuRT5w-MelxeEEc5272AEwqm6e2bJsm9NMB_U811t1vI2vZvxhjRK&wd=&eqid=8910596e00010137000000065a684a73' )
+                } else {
+                    e.target.addEventListener( 'change', readFile );
+                }
+            } );
+
+            function readFile() {
+                var file = this.files[ 0 ];
+                if ( !/image\/\w+/.test( file.type ) ) {
+                    alert( '文件必须为图片！' );
+                    return false;
+                }
+                var render = new FileReader();
+                render.readAsDataURL( file );
+                render.onload = function ( e ) {
+                    $( '.previewImg' ).attr( 'src', this.result )
+                }
+            }
+
+          var nodeParentId = $( '#nodeParentId', window.parent.document ).val();
+          var nodeId = $('#node_id',window.parent.document).val();          
+        } )
+
+    </script>
+</head>
+
+<body>
+    <div class="content">
+        <!-- <input id="hidname" type="hidden" /> -->
+        <table class="table table-bordered table-striped">
+            <tr>
+                <th style="width:430px;">
+                    <span>控件名称</span>
+                    <span class="label label-important">*</span>
+                    <span>字段拼音</span>
+                </th>
+                <th>
+                    <span>模式</span>
+                </th>
+            </tr>
+            <tr>
+                <td>
+                    <input id="orgname" onclick="javascript:this.select()" placeholder="必填项" type="text" value="报名" onblur="getPY(this.value)" />
+                    <input type="text" class="span2" id="pluName" placeholder="字段" value="" >
+                </td>
+                <td>
+                    <label class="radio" title="图片">
+                        <input id="mode0" name="mode" value="0" type="radio" checked="checked"> 图片 </label>
+                    <label class="radio" title="文字">
+                        <input id="mode1" value="1" name="mode" type="radio"> 文字 </label>
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    <span>标题</span>
+                </th>
+                <th>
+                    <span>字体大小：</span>
+                </th>
+            </tr>
+            <tr>
+                <td>
+                    <input type="text" class="span3" name="orgtitle" id="orgtitle"  placeholder="选项值">
+                </td>
+                <td>
+                    <input type="text" style="width:50px;" name="orgheight" id="orgfontsize" name="orgfontsize" value="16">&nbsp;px
+                    
+                </td>
+            </tr>
+            <tr>
+                <th>宽：</th>
+                <th>高：</th>
+            </tr>
+            <tr>
+                <td>
+                    <input id="orgwidth" value="100px" style="width:100px;" type="text" class="input-small" placeholder="auto 100px" />
+                </td>
+                <td>
+                    <input id="orgheight" value="40px" style="width:100px;" type="text" class="input-small" placeholder="auto 40px" />
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    <span>图片</span>
+                </th>
+                <th>
+                    <span>数据源</span>
+                    <span class="label label-important">*</span>
+                </th>
+            </tr>
+            <tr>
+                <td style="position: relative;">
+                    <label class="fileLabel">上传图片
+                        <input type="file" class="fileUpload upload" />
+                    </label>
+                    <img src="" class="previewImg" name="orgsrc" alt="">
+                </td>
+                <td>
+                        数据源：<select name="datasource" id="datasource">
+                                <option value="0">请选择</option>
+                            </select> <br>
+                    增值字段：<select name="datafiled" id="datafiled">
+                            <option value="0">请选择</option>
+                        </select> <br>
+                    增值：&nbsp;&nbsp;&nbsp;<input type="number" min="1" max="100" value="1" name="addvalue" id="addvalue" class="span2"><br/>
+                                     
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    <span>背景颜色</span>
+                </th>
+                <th>
+                    <span>文字颜色</span>
+                </th>
+            </tr>
+            <tr>
+                <td>
+                    <input type="color" name="orgBgColor" id="orgBgColor">
+                </td>
+                <td>
+                    <input type="color" name="orgFontColor" id="orgFontColor">
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div class="alert alert-danger">提示：选择了
+        <strong>“图片”</strong> 模式 ，则
+        <strong>“背景颜色”</strong> 选项不会生效</div>
+    <script type="text/javascript">
+        var oNode = null,
+            thePlugins = 'addnumber';
+            var nodeParentId = null;
+            var nodeId = null;
+            var control_name=null;
+        window.onload = function () {
+            /*
+             * 链接后台获取 数据链接
+             *
+             */
+             nodeParentId = $('#nodeParentId', window.parent.document).val();
+             nodeId = $("#node_id", window.parent.document).val();
+            var userinfo=window.localStorage['user']?JSON.parse(window.localStorage['user']):null;
+            var ldatasource=window.localStorage['datasource_'+userinfo.id]?window.localStorage['datasource_'+userinfo.id]:null;
+            if(ldatasource==null){                
+                setDataSource(userinfo.id);
+            }else{
+                $( "#datasource" ).append(ldatasource);
+            }
+            $(document).on("change","#datasource",function(e){
+              var nodeParentId = $(this).val().split(":");
+                $("#datafiled").empty();
+                $( "#datafiled").append( '<option value="0">请选择</option>' );
+                $.ajax({
+                  url: prevent_HOST + 'pageDesignQueryFacade/getPageEditorData?id=' + nodeParentId[0],
+                  method:"GET",
+                  success:function(res){
+                     $.each( res.msg, function ( index, value ) {
+                              $( "#datafiled").append( '<option value="' + value.value+'">' + value.text + '</option>' );
+                          })
+                  }
+                })
+            });
+            $G( 'orgname' ).select();           
+            if ( UE.plugins[ thePlugins ].editdom ) {
+                oNode = UE.plugins[ thePlugins ].editdom;                
+                var mode = oNode.getAttribute( 'mode' );
+                mode == '0' ? $G( 'mode0' ).checked = true : $G( 'mode1' ).checked = true;
+                // 获取oNode的值赋予变量
+                var valArr = [ 'Title', 'Name', 'Height', 'Width' ];
+                var gTitle = oNode.getAttribute( 'orgtitle' ),
+                    gSrc = oNode.getAttribute( 'orgsrc' ),
+                    gBgColor = oNode.getAttribute( 'orgbgcolor' ),
+                    gName = oNode.getAttribute( 'value' ),
+                    gHeight = oNode.getAttribute( 'orgheight' ),
+                    gWidth = oNode.getAttribute( 'orgwidth' ),                    
+                    gFontColor = oNode.getAttribute( 'orgfontcolor' ),
+                    datasource = oNode.getAttribute( 'datasource' ),
+                    datafiled = oNode.getAttribute( 'datafiled' ),
+                    addvalue = oNode.getAttribute( 'addvalue' ),
+                    name = oNode.getAttribute( 'name' );                    
+                    control_name=name;                
+                
+                $G( "orgheight" ).value = gHeight;
+                $G( "orgwidth" ).value = gWidth;
+
+                $( '#orgname' ).val( gName );
+                $( '#orgtitle' ).val( gTitle );                
+                $( '.previewImg' ).prop( 'src', gSrc );
+                $( '#orgBgColor' ).val( gBgColor );
+                $( '#orgFontColor' ).val( gFontColor ); 
+                $( '#addvalue' ).val( addvalue );               
+                $G( 'pluName' ).value = name;
+
+                var datasources=datasource.split(":");                
+                $( "#datasource" ).prepend( '<option value="' + datasource +'" selected>' + datasources[1] + '</option>');
+                
+
+                if(datasources.length>1){
+                    $.ajax({
+                        url: prevent_HOST + 'pageDesignQueryFacade/getPageEditorData?id=' + datasources[0],
+                        method:"GET",
+                        success:function(res){
+                            var datafiledhtml='';                            
+                            $( "#datafiled").html('');
+                            $( "#datafiled").append( '<option value="0">请选择</option>' );
+                            $.each( res.msg, function ( index, value ) {
+                                if(datafiled==value.value){
+                                    datafiledhtml+='<option value="' + value.value+'" selected>' + value.text + '</option>';
+                                }else{
+                                    datafiledhtml+='<option value="' + value.value+'">' + value.text + '</option>';
+                                }                                
+                            });
+                            $("#datafiled").append(datafiledhtml);
+                        }                        
+                    })
+                }
+
+
+            }
+        }
+        dialog.oncancel = function () {
+            if ( UE.plugins[ thePlugins ].editdom ) {
+                delete UE.plugins[ thePlugins ].editdom;
+            }
+        };
+        dialog.onok = function () {          
+            if ( $G( 'orgname' ).value == '' ) {
+                alert( '控件名称不能为空' );
+                return false;
+            }
+
+            var gFontSize = $G( 'orgfontsize' ).value+"px";
+            var orgName = $G( 'orgname' ).value.replace( /\"/g, "&quot;" );
+            
+            var orgvarfontheight = $("#orgvarfontheight").val();
+            var orgvarfontwidth = $("#orgvarfontwidth").val();
+            
+            var mode = '0';
+            var orgUrlId='';
+            var orgUrlName='';
+            
+            if ( $G( 'mode1' ).checked ) mode = '1';
+            var orgTitle = $( '#orgtitle' ).val(),
+                orgWidth = $( '#orgwidth' ).val(),
+                orgHeight = $( '#orgheight' ).val(),
+                orgSrc = $( '.previewImg' ).attr('src'),
+                datasource = $( '#datasource' ).val(),
+                datafiled=$("#datafiled").val(),
+                orgBgColor = $( '#orgBgColor' ).val(),
+                addvalue=$( '#addvalue' ).val(),
+                orgFontColor = $( '#orgFontColor' ).val();
+                var PN=$('#pluName');
+
+                cupy=PN.val();
+                if(cupy==''){
+                  getPY($G( 'orgname' ).value);
+                }                          
+            if ( !oNode ) {
+                oNode = createElement( 'input', cupy );                
+                oNode.setAttribute( 'leipiPlugins', thePlugins );
+                oNode.setAttribute( 'mode', mode );
+                oNode.setAttribute( 'orgtitle', orgTitle );
+                oNode.setAttribute( 'orgsrc', orgSrc );
+                oNode.setAttribute( 'value', orgName );
+                oNode.setAttribute( 'orgheight', orgHeight);
+                oNode.setAttribute( 'orgwidth', orgWidth);
+                oNode.setAttribute('orgfontsize',gFontSize);
+                oNode.setAttribute( 'orgbgcolor', orgBgColor );
+                oNode.setAttribute( 'orgfontcolor', orgFontColor );
+                oNode.setAttribute( 'datasource',datasource);
+                oNode.setAttribute( 'datafiled',datafiled);   
+                oNode.setAttribute( 'addvalue',addvalue);            
+
+                editor.execCommand( 'insertHtml', oNode.outerHTML );
+                var editNewData={"node_id": nodeId,"title":orgName,"control_name": cupy}
+                    $.ajax({
+                    url: prevent_HOST + `pageDesignOperatorFacade/insertControl`,
+                    type: 'POST',
+                    dataType: 'json',
+                    contentType: 'application/json; charset=UTF-8',
+                    data: JSON.stringify(editNewData),
+                    async: false,
+                    success: function ( res ) {
+                    }
+                    })
+                return true;
+
+            } else {
+                oNode.setAttribute( 'name', cupy );
+                oNode.setAttribute( 'leipiPlugins', thePlugins );
+                oNode.setAttribute( 'mode', mode );
+                oNode.setAttribute( 'orgtitle', orgTitle );
+                oNode.setAttribute( 'orgsrc', orgSrc );
+                oNode.setAttribute( 'orgbgcolor', orgBgColor );
+                    
+                oNode.setAttribute( 'value', orgName );
+                oNode.setAttribute( 'orgheight', orgHeight );
+                oNode.setAttribute( 'orgwidth', orgWidth );
+                oNode.setAttribute( 'orgfontsize',gFontSize);
+                oNode.setAttribute( 'orgfontcolor', orgFontColor );                
+                oNode.setAttribute( 'datasource', datasource );
+                oNode.setAttribute( 'datafiled',datafiled);
+                oNode.setAttribute( 'addvalue',addvalue);             
+
+                delete UE.plugins[ thePlugins ].editdom;
+                var editNewData={"node_id": nodeId,"title":orgName,"control_name": control_name,"new_control_name": cupy}
+                    $.ajax({
+                        url: prevent_HOST + `pageDesignOperatorFacade/updateControl`,
+                        type: 'POST',
+                        dataType: 'json',
+                        contentType: 'application/json; charset=UTF-8',
+                        data: JSON.stringify(editNewData),
+                        async: false,
+                        success: function ( res ) {
+                        }
+                    })
+                return true;
+            }
+        };
+
+    </script>
+</body>
+
+</html>

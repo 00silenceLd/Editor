@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN" "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+
+<generatorConfiguration>
+
+  
+  <context id="dynamicForm" targetRuntime="MyBatis3" defaultModelType="flat">
+    <!-- 鐢熸垚鐨凧ava鏂囦欢鐨勯粯璁ょ紪鐮� -->
+    <property name="javaFileEncoding" value="UTF-8"/>
+    <!-- 鐢熸垚limit鍒嗛〉灞炴�� 銆愭墿灞曟彃浠躲�� -->
+    <plugin type="swtech.facade.pageDesign.util.mybitisPlugin.PaginationPlugin"/>
+    <!--鐢熸垚鐨勫疄浣撶被瀹炵幇搴忓垪鍖栨帴鍙� 銆愭墿灞曟彃浠躲�� -->
+    <plugin type="swtech.facade.pageDesign.util.mybitisPlugin.SerializablePlugin"/>
+    <!--鐢熸垚鐨勫疄浣撶被閲嶅啓toString鏂规硶 -->
+    <plugin type="org.mybatis.generator.plugins.ToStringPlugin"/>
+    <!-- 鐢熸垚鐨勫疄浣撶被閲嶅啓hashCode鍜宔quals鏂规硶 -->
+    <plugin type="org.mybatis.generator.plugins.EqualsHashCodePlugin"/>
+    <!-- 鐢熸垚鏁版嵁搴撳瓧娈垫敞閲婂強鑷畾涔夋敞閲� 銆愭墿灞曟彃浠躲�� -->
+    <commentGenerator type="swtech.facade.pageDesign.util.mybitisPlugin.RemarksCommentGenerator">
+      <!-- 鏍煎紡鍖杍ava浠ｇ爜 -->
+      <property name="javaFormatter" value="org.mybatis.generator.api.dom.DefaultJavaFormatter"/>
+      <!-- 鏍煎紡鍖朮ML浠ｇ爜 -->
+      <property name="xmlFormatter" value="org.mybatis.generator.api.dom.DefaultXmlFormatter"/>
+      <!-- 寮�鍚姂鍒剁被鍨嬬殑璀﹀憡淇℃伅 -->
+      <property name="suppressTypeWarnings" value="true"/>
+      <!-- 鏄惁鍘婚櫎鑷姩鐢熸垚鐨勬敞閲� true锛氭槸 锛� false:鍚� -->
+      <property name="suppressAllComments" value="true"/>
+      <!-- 鏄惁缁欏疄浣撶被鐢熸垚鐨勬敞閲� true锛氭槸 锛� 榛樿涓篺alse:鍚� -->
+      <property name="addRemarkComments" value="true"/>
+      <property name="suppressDate" value="true"/>
+    </commentGenerator>
+    <!--MySql鏁版嵁搴撹繛鎺ョ殑淇℃伅锛氶┍鍔ㄧ被銆佽繛鎺ュ湴鍧�銆佺敤鎴峰悕銆佸瘑鐮� -->
+    <jdbcConnection driverClass="com.mysql.jdbc.Driver" connectionURL="jdbc:mysql://localhost:3306/hbsxt" userId="root" password="admin123!@#QWE"/>
+    <!-- 榛樿false锛屾妸jdbc decimal 鍜� numeric 绫诲瀷瑙ｆ瀽涓� Integer锛屼负 true鏃舵妸jdbc decimal 
+			鍜� numeric 绫诲瀷瑙ｆ瀽涓簀ava.math.BigDecimal -->
+    <javaTypeResolver>
+      <property name="forceBigDecimals" value="false"/>
+    </javaTypeResolver>
+    <!-- targetProject:鐢熸垚PO瀹炰綋绫荤殑浣嶇疆 -->
+    <javaModelGenerator targetPackage="Cs" targetProject="G:\test\swtech-service-pageDesign/">
+      <!-- enableSubPackages:鏄惁璁﹕chema浣滀负鍖呯殑鍚庣紑 -->
+      <property name="enableSubPackages" value="true"/>
+      <!-- 浠庢暟鎹簱杩斿洖鐨勫�艰娓呯悊鍓嶅悗鐨勭┖鏍� -->
+      <property name="trimStrings" value="true"/>
+    </javaModelGenerator>
+    <!-- targetProject:mapper.xml鏄犲皠鏂囦欢鐢熸垚鐨勪綅缃� -->
+    <sqlMapGenerator targetPackage="Cs" targetProject="G:\test\swtech-service-pageDesign/">
+      <!-- enableSubPackages:鏄惁璁﹕chema浣滀负鍖呯殑鍚庣紑 -->
+      <property name="enableSubPackages" value="false"/>
+    </sqlMapGenerator>
+    <!-- targetPackage锛歮apper鎺ュ彛鐢熸垚鐨勪綅缃� -->
+    <javaClientGenerator type="XMLMAPPER" targetPackage="Cs" targetProject="G:\test\swtech-service-pageDesign/">
+      <!-- enableSubPackages:鏄惁璁﹕chema浣滀负鍖呯殑鍚庣紑 -->
+      <property name="enableSubPackages" value="true"/>
+    </javaClientGenerator>
+    <!-- 鎸囧畾鏁版嵁搴撹〃 -->
+    <table tableName="Cs" domainObjectName="Cs278">
+      <!-- 鎵�鏈�*Model鐨勫疄浣撶被缁ф壙缁熶竴鐖剁被 WebBasicModel 娉ㄦ剰杩欓噷鐨勬槸*Model绫昏�屼笉鏄�*Example绫�,*Example缁ф壙鍦ㄥ悗闈細璇村埌 -->
+      <property name="rootClass" value="swtech.common.entity.BaseEntity"/>
+    </table>
+  </context>
+</generatorConfiguration>

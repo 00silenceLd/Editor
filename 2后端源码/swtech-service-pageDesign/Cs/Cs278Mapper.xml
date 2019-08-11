@@ -1,0 +1,448 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Cs.Cs278Mapper">
+  <resultMap id="BaseResultMap" type="Cs.Cs278">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="version" jdbcType="INTEGER" property="version" />
+    <result column="is_delete" jdbcType="BIT" property="isDelete" />
+    <result column="data1" jdbcType="VARCHAR" property="data1" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="gid" jdbcType="INTEGER" property="gid" />
+    <result column="assignee" jdbcType="VARCHAR" property="assignee" />
+    <result column="taskid" jdbcType="VARCHAR" property="taskid" />
+    <result column="processinsid" jdbcType="VARCHAR" property="processinsid" />
+    <result column="processdefid" jdbcType="VARCHAR" property="processdefid" />
+    <result column="userid" jdbcType="VARCHAR" property="userid" />
+    <result column="other" jdbcType="VARCHAR" property="other" />
+    <result column="deploymentid" jdbcType="VARCHAR" property="deploymentid" />
+    <result column="username" jdbcType="VARCHAR" property="username" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, version, is_delete, data1, create_time, gid, assignee, taskid, processinsid, 
+    processdefid, userid, other, deploymentid, username, update_time
+  </sql>
+  <select id="selectByExample" parameterType="Cs.Cs278Example" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from cs
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+    <if test="null != page  and pageSize>=0">
+      limit #{page} , #{pageSize}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from cs
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from cs
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="Cs.Cs278Example">
+    delete from cs
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+<insert id="insert" parameterType="Cs.Cs278" useGeneratedKeys="true" keyProperty="id" >
+    insert into cs (id, version, is_delete, 
+      data1, create_time, gid, 
+      assignee, taskid, processinsid, 
+      processdefid, userid, other, 
+      deploymentid, username, update_time
+      )
+    values (#{id,jdbcType=INTEGER}, #{version,jdbcType=INTEGER}, #{isDelete,jdbcType=BIT}, 
+      #{data1,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{gid,jdbcType=INTEGER}, 
+      #{assignee,jdbcType=VARCHAR}, #{taskid,jdbcType=VARCHAR}, #{processinsid,jdbcType=VARCHAR}, 
+      #{processdefid,jdbcType=VARCHAR}, #{userid,jdbcType=VARCHAR}, #{other,jdbcType=VARCHAR}, 
+      #{deploymentid,jdbcType=VARCHAR}, #{username,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="Cs.Cs278">
+    insert into cs
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="version != null">
+        version,
+      </if>
+      <if test="isDelete != null">
+        is_delete,
+      </if>
+      <if test="data1 != null">
+        data1,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="gid != null">
+        gid,
+      </if>
+      <if test="assignee != null">
+        assignee,
+      </if>
+      <if test="taskid != null">
+        taskid,
+      </if>
+      <if test="processinsid != null">
+        processinsid,
+      </if>
+      <if test="processdefid != null">
+        processdefid,
+      </if>
+      <if test="userid != null">
+        userid,
+      </if>
+      <if test="other != null">
+        other,
+      </if>
+      <if test="deploymentid != null">
+        deploymentid,
+      </if>
+      <if test="username != null">
+        username,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="version != null">
+        #{version,jdbcType=INTEGER},
+      </if>
+      <if test="isDelete != null">
+        #{isDelete,jdbcType=BIT},
+      </if>
+      <if test="data1 != null">
+        #{data1,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="gid != null">
+        #{gid,jdbcType=INTEGER},
+      </if>
+      <if test="assignee != null">
+        #{assignee,jdbcType=VARCHAR},
+      </if>
+      <if test="taskid != null">
+        #{taskid,jdbcType=VARCHAR},
+      </if>
+      <if test="processinsid != null">
+        #{processinsid,jdbcType=VARCHAR},
+      </if>
+      <if test="processdefid != null">
+        #{processdefid,jdbcType=VARCHAR},
+      </if>
+      <if test="userid != null">
+        #{userid,jdbcType=VARCHAR},
+      </if>
+      <if test="other != null">
+        #{other,jdbcType=VARCHAR},
+      </if>
+      <if test="deploymentid != null">
+        #{deploymentid,jdbcType=VARCHAR},
+      </if>
+      <if test="username != null">
+        #{username,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="Cs.Cs278Example" resultType="java.lang.Long">
+    select count(*) from cs
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update cs
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.version != null">
+        version = #{record.version,jdbcType=INTEGER},
+      </if>
+      <if test="record.isDelete != null">
+        is_delete = #{record.isDelete,jdbcType=BIT},
+      </if>
+      <if test="record.data1 != null">
+        data1 = #{record.data1,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createTime != null">
+        create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.gid != null">
+        gid = #{record.gid,jdbcType=INTEGER},
+      </if>
+      <if test="record.assignee != null">
+        assignee = #{record.assignee,jdbcType=VARCHAR},
+      </if>
+      <if test="record.taskid != null">
+        taskid = #{record.taskid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.processinsid != null">
+        processinsid = #{record.processinsid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.processdefid != null">
+        processdefid = #{record.processdefid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.userid != null">
+        userid = #{record.userid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.other != null">
+        other = #{record.other,jdbcType=VARCHAR},
+      </if>
+      <if test="record.deploymentid != null">
+        deploymentid = #{record.deploymentid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.username != null">
+        username = #{record.username,jdbcType=VARCHAR},
+      </if>
+      <if test="record.updateTime != null">
+        update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update cs
+    set id = #{record.id,jdbcType=INTEGER},
+      version = #{record.version,jdbcType=INTEGER},
+      is_delete = #{record.isDelete,jdbcType=BIT},
+      data1 = #{record.data1,jdbcType=VARCHAR},
+      create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      gid = #{record.gid,jdbcType=INTEGER},
+      assignee = #{record.assignee,jdbcType=VARCHAR},
+      taskid = #{record.taskid,jdbcType=VARCHAR},
+      processinsid = #{record.processinsid,jdbcType=VARCHAR},
+      processdefid = #{record.processdefid,jdbcType=VARCHAR},
+      userid = #{record.userid,jdbcType=VARCHAR},
+      other = #{record.other,jdbcType=VARCHAR},
+      deploymentid = #{record.deploymentid,jdbcType=VARCHAR},
+      username = #{record.username,jdbcType=VARCHAR},
+      update_time = #{record.updateTime,jdbcType=TIMESTAMP}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="Cs.Cs278">
+    update cs
+    <set>
+      <if test="version != null">
+        version = #{version,jdbcType=INTEGER},
+      </if>
+      <if test="isDelete != null">
+        is_delete = #{isDelete,jdbcType=BIT},
+      </if>
+      <if test="data1 != null">
+        data1 = #{data1,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="gid != null">
+        gid = #{gid,jdbcType=INTEGER},
+      </if>
+      <if test="assignee != null">
+        assignee = #{assignee,jdbcType=VARCHAR},
+      </if>
+      <if test="taskid != null">
+        taskid = #{taskid,jdbcType=VARCHAR},
+      </if>
+      <if test="processinsid != null">
+        processinsid = #{processinsid,jdbcType=VARCHAR},
+      </if>
+      <if test="processdefid != null">
+        processdefid = #{processdefid,jdbcType=VARCHAR},
+      </if>
+      <if test="userid != null">
+        userid = #{userid,jdbcType=VARCHAR},
+      </if>
+      <if test="other != null">
+        other = #{other,jdbcType=VARCHAR},
+      </if>
+      <if test="deploymentid != null">
+        deploymentid = #{deploymentid,jdbcType=VARCHAR},
+      </if>
+      <if test="username != null">
+        username = #{username,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="Cs.Cs278">
+    update cs
+    set version = #{version,jdbcType=INTEGER},
+      is_delete = #{isDelete,jdbcType=BIT},
+      data1 = #{data1,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      gid = #{gid,jdbcType=INTEGER},
+      assignee = #{assignee,jdbcType=VARCHAR},
+      taskid = #{taskid,jdbcType=VARCHAR},
+      processinsid = #{processinsid,jdbcType=VARCHAR},
+      processdefid = #{processdefid,jdbcType=VARCHAR},
+      userid = #{userid,jdbcType=VARCHAR},
+      other = #{other,jdbcType=VARCHAR},
+      deploymentid = #{deploymentid,jdbcType=VARCHAR},
+      username = #{username,jdbcType=VARCHAR},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+
+    <select id="selectList"  resultMap="BaseResultMap">
+        select * from Cs where is_delete = 0
+    </select>
+
+    <select id="searchKey" parameterType="Cs.Cs278" resultMap="BaseResultMap">
+        select * from Cs where is_delete = 0
+		<if test="data1 != null">
+			AND data1 LIKE #{data1}
+		</if>
+    </select>
+
+    <select id="searchAllKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select * from Cs where is_delete = 0
+		<if test="_parameter != null">
+			OR data1 LIKE #{_parameter,jdbcType=VARCHAR}
+		</if>
+    </select>
+
+	<delete id="deleteArray" parameterType="int">
+		delete from Cs where id in
+		<foreach item="ids" collection="array" open="(" separator="," close=")">
+			#{ids}
+		</foreach>
+	</delete>
+
+		<select id="getQueryPage" parameterType="java.util.Map" resultMap="BaseResultMap">
+			select * from Cs where is_delete = 0
+			<if test="orderByClause != null">
+				order by ${orderByClause}
+			</if>
+			<if test="page != null and pageSize >= 0">
+				limit #{page} , #{pageSize}
+			</if>
+    </select>
+
+	<select id="getCount" resultType="java.lang.Long">
+		select count(*) from Cs where is_delete = 0
+	</select>
+
+	<update id="updateDelete" parameterType="java.util.Map">
+		update Cs set is_delete = #{bl} where id = #{id}
+	</update>
+
+	<update id="isDeleteArray" parameterType="int">
+		update Cs set is_delete = 1 where id in
+		<foreach item="ids" collection="array" open="(" separator="," close=")">
+			#{ids}
+		</foreach>
+	</update>
+
+	<update id="reNewData" parameterType="int">
+		update Cs set is_delete = 0 where id = #{id}
+	</update>
+
+	<update id="reNewDataArray" parameterType="int">
+		update Cs set is_delete = 0 where id in
+		<foreach item="ids" collection="array" open="(" separator="," close=")">
+			#{ids}
+		</foreach>
+	</update>
+
+	<select id="getReportForm" parameterType="java.lang.String" resultMap="BaseResultMap">
+		${_parameter}
+	</select>
+
+	<select id="getResourceLibrary" parameterType="java.lang.String" resultType="java.util.Map">
+		${_parameter}
+	</select>
+
+	<select id="searchIsDelete" resultMap="BaseResultMap">
+		        select * from Cs where is_delete = 1
+	</select>
+
+</mapper>

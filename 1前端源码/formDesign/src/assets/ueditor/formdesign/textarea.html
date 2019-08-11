@@ -1,0 +1,511 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title>文本框</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" >
+    <meta name="generator" content="www.leipi.org" />
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.css">
+    <!--[if lte IE 6]>
+    <link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap-ie6.css">
+    <![endif]-->
+    <!--[if lte IE 7]>
+    <link rel="stylesheet" type="text/css" href="bootstrap/css/ie.css">
+    <![endif]-->
+    <link rel="stylesheet" href="leipi.style.css">
+    <script type="text/javascript" src="../dialogs/internal.js"></script>
+    <script type="text/javascript" src="jquery-3.2.1.min.js"></script>
+    <script src="self/js/py.js"></script>
+    <script type="text/javascript" src="../httpData.config.js"></script>
+
+</head>
+<body>
+<div class="content">
+    <table class="table table-bordered table-striped table-hover">
+     <tr>
+        <th><span>控件名称</span><span class="label label-important">*</span><span>字段拼音</span></th>
+        <th><span>字体大小</span> </th>
+    </tr>
+    <tr>
+        <td>
+          <input id="orgname" class="span2" type="text" onclick="javascript:this.select()" placeholder="必填项" value="多行文本框" onblur="getPY(this.value)"/>
+          <input type="text" class="span2" id="pluName" placeholder="只允许拼音、不允许有相同名" value="" >
+        </td>
+        <td>
+            <input id="orgfontsize" type="text" class="input-small span1" value="16" placeholder="auto" onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g)"/>
+            <select style="width:80px;">
+                    <option>PX</option>
+            </select>
+        </td>
+    </tr>
+        <tr>
+           <th>
+                <span>数据源</span>
+            </th>
+            <th>
+                <span>数据字段</span>
+            </th>
+            </tr>
+            <tr>
+            	 <td>
+                    <select  id="datasource">
+                        <option value="0">请选择</option>
+                    </select>
+                </td>
+                <td>
+                    <select id="datazid">
+                        <option value="0">请选择</option>
+                    </select>
+                </td>
+            </tr>
+    <tr>
+        <th><span>显示个数控制</span> </th>
+        <th><span>禁用文本框</span> </th>
+    </tr>
+    <tr>
+        <th><span><input type="number" id="orgprintlength" value="" placeholder="auto" min="0"></span></th>
+
+        <th><label  class="checkbox"><input type="checkbox" id="chbDisabled">是否禁用 </label> </th>
+    </tr>
+    <tr>
+        <th><span>控件样式</span> </th>
+        <th><span>增强</span> </th>
+    </tr>
+    <tr>
+        <td>
+            <div>
+                宽:
+                <input id="orgwidth" type="text"   class="input-small span1" value="100" placeholder="auto" onclick="this.value=this.value.replace(/\D/g,'')" onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')"/>
+                <select id="orgvarfontwidth" style="width:80px;">
+                        <option>PX</option>
+                        <option selected>%</option>
+                </select>
+            </div>
+            <div style="margin-top:10px;">
+                高:
+                <input id="orgheight" type="text"  class="input-small span1" value="" placeholder="auto" onclick="this.value=this.value.replace(/\D/g,'')" onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')"/>
+                <select id="orgvarfontheight" style="width:80px;">
+                        <option>PX</option>
+                        <option>%</option>
+                </select>
+                   &nbsp;行高：<input type="text" class="span1" id="listheight" name="listheight" value="26px" placeholder="如:26px">
+            </div>
+        </td>
+        <td>
+            <label style="font-size:18px; margin:25px 0 0 20px;"  class="checkbox" title="以编辑器的形式展示"><input id="orgrich" type="checkbox" title="以编辑器的形式展示"/> 富文本形式 </label>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2">
+            <label for="orgvalue">内容</label>
+            <textarea style="resize:none;" rows="2" cols="20" name="usrtxt" wrap="hard" class="input-block-level" id="orgvalue" placeholder="多行文本框显示的内容..." ></textarea>
+        </td>
+    </tr>
+
+    </table>
+</div>
+<script>
+  //读取cookie
+  var cookieStr = unescape(document.cookie);
+  var arr = cookieStr.split("|");
+  var cookieWidth="";
+  var cookieHeight="";
+  if(cookieStr!=""){
+    for(var i=0;i<arr.length;i++){
+      var temp = arr[i].split("=");
+      if(temp[0]=="width"){
+        // debugger;
+        cookieWidth = temp[1];
+        $("#orgvarfontwidth").val(cookieWidth);
+      }else if(temp[0]=="height"){
+        cookieHeight=temp[1];
+        $("#orgvarfontheight").val(cookieHeight);
+      }
+    }
+  }
+  var gVarfontwidth = $("#orgvarfontwidth").val();
+  $("#orgvarfontwidth").change(function(){
+    gVarfontwidth = $("#orgvarfontwidth").val();
+    var height="";
+    var str=unescape(document.cookie);
+    //存在height
+    if(str.indexOf("height")!= -1){
+      var arr = str.split("|");
+      for(var i=0;i<arr.length;i++){
+        var temp = arr[i].split("=");
+        if(temp[0]=="height"){
+          height=temp[1];
+        }
+      }
+    }else{//不存在就清空
+      document.cookie="";
+    }
+    //保存cookie
+    if(height!=""){
+      document.cookie="width="+gVarfontwidth+"|"+"height="+height+"|";
+    }else{
+      document.cookie="width="+gVarfontwidth+"|";
+    }
+  });
+  var gVarfontheight = $("#orgvarfontheight").val();
+  $("#orgvarfontheight").change(function(){
+    gVarfontheight = $("#orgvarfontheight").val();
+    var width="";
+    var str=unescape(document.cookie);
+    //存在height
+    if(str.indexOf("width")!= -1){
+      var arr = str.split("|");
+      for(var i=0;i<arr.length;i++){
+        var temp = arr[i].split("=");
+        if(temp[0]=="width"){
+          width=temp[1];
+        }
+      }
+    }else{//不存在就清空
+      document.cookie="";
+      width=$("#orgvarfontwidth").val();
+    }
+    document.cookie="width="+width+"|"+"height="+gVarfontheight+"|";
+  });
+</script>
+<script type="text/javascript">
+  var oNode = null,
+      control_name=null,
+      nodeId=null;
+    //dataZid,
+    //gdataField,
+    thePlugins = 'textarea';
+window.onload = function() {
+    $G('orgname').select();
+    if( UE.plugins[thePlugins].editdom ){
+        oNode = UE.plugins[thePlugins].editdom;
+        var gValue = oNode.getAttribute('value').replace(/&quot;/g,"\""),
+        gTitle=oNode.getAttribute('title').replace(/&quot;/g,"\""),
+        gFontSize=oNode.getAttribute('orgfontsize'),
+        gWidth=oNode.getAttribute('orgwidth'),
+        gHeight=oNode.getAttribute('orgheight'),
+        gRich=oNode.getAttribute('orgrich'),
+        gDisabled=oNode.getAttribute('orgdisabled'),
+        gPrintLength = oNode.getAttribute( 'orgprintlength' ),
+        datasource = oNode.getAttribute('orgdatasource'),
+        name = oNode.getAttribute('name'),
+        dataZid = oNode.getAttribute('orgdataZid');
+        //gdataid = oNode.getAttribute( 'dataid' );
+        //gdataField = oNode.getAttribute( 'datafield' );
+        gValue = gValue==null ? '' : gValue;
+        gTitle = gTitle==null ? '' : gTitle;
+        control_name=name;
+
+        $G('orgvalue').value = gValue;
+        $G('orgname').value = gTitle;
+        $G( 'orgprintlength' ).value = gPrintLength;
+        if ( gRich == '1' ) {
+            $G('orgrich').checked = true ;
+        }
+
+        if(gDisabled == '1'){
+            $G('chbDisabled').checked=true;
+        }
+        $G('orgfontsize').value = parseInt( gFontSize ) ;
+        $G('orgwidth').value = parseInt( gWidth );
+        $G('orgheight').value = parseInt( gHeight );
+        $G('pluName').value = name;
+        var listheight = oNode.getAttribute( 'listheight' );
+        if(listheight!='null'){
+            $("input[name='listheight']").val(listheight);
+        }
+
+
+
+   }
+            /*
+             * 链接后台获取 数据链接
+             *
+             */
+            var nodeParentId = $( '#nodeParentId', window.parent.document ).val();
+            nodeId =$('#node_id',window.parent.document).val();
+            var userinfo=window.localStorage['user']?JSON.parse(window.localStorage['user']):null;
+
+            var datasource=window.localStorage['datasource_'+userinfo.id]?window.localStorage['datasource_'+userinfo.id]:null;
+            if(datasource==null){
+                $.ajax( {
+                    url: prevent_HOST + 'nodeQueryFacade/getDataSourcePage?nodeId='+nodeId+"&uid="+userinfo.id,
+                    success: function ( res ) {
+                    method: 'GET',
+                        $.each( res.msg, function ( index, value ) {
+                            $( "#datasource").append( '<option value=' + value.id +'>' + value.value + '</option>' );
+                        } )
+                    //  $('#datasource').find('option[value='+dataZid+']').attr('selected','true');
+                    },
+                    error: function ( res ) {
+                        alert( '抱歉！获取 数据链接 失败！因为您好像还没有选择表哦！' )
+                    }
+                } );
+            }else{
+                $( "#datasource" ).append(datasource);
+            }
+            
+        $(document).on("change","#datasource",function(e){
+        	var nodeParentId =$(this).val().split(":");
+        	 $("#datazid").empty();
+          $.ajax({
+        		url: prevent_HOST + 'pageDesignQueryFacade/getPageEditorData?id=' + nodeParentId[0],
+        		method:"GET",
+        		success:function(res){
+        			 $.each( res.msg, function ( index, value ) {
+                        $( "#datazid").append( '<option value=' + value.value +'>' + value.text + '</option>' );
+                    } )
+                   // $('#datazid').find('option[value='+gdataField+']').attr('selected','true');
+        		}
+        	})
+        });
+}
+dialog.oncancel = function () {
+    if( UE.plugins[thePlugins].editdom ) {
+        delete UE.plugins[thePlugins].editdom;
+    }
+};
+dialog.onok = function (){
+    if($G('orgname').value==''){
+        alert('请输入控件名称');
+        return false;
+    }
+
+    var text_length,    //文本框长度
+        print_length,       //控制的显示长度
+        gValue,             //文本框的数据
+        temp_Value;         //文本框的临时数据
+        temp_Value = $G( 'orgvalue' ).value.replace( /\"/g, "&quot;" );     //保存文本框的值
+        gPrintLength = $G( 'orgprintlength' ).value;
+        text_length = temp_Value.length;
+        print_length = gPrintLength;
+        if( print_length == "" || print_length == 0 )  //不做限制的时候
+        {
+            gValue = temp_Value;
+        }
+        else if( text_length > print_length ){    //大于
+                var html = "";
+                for( var i=0; i<print_length; i++ ){
+                    html += temp_Value[i];
+                 }
+                  html += '...';
+                  gValue = html;
+         }
+         else if( text_length <= print_length ){   //输入长度小于限制长度
+              gValue = temp_Value;
+          }
+    var gTitle=$G('orgname').value.replace(/\"/g,"&quot;"),
+        gFontSize=$G('orgfontsize').value,
+        gWidth=$G('orgwidth').value,
+        gHeight=$G('orgheight').value,
+        gdataS,gdatazId;
+        gds = $G('datasource').value;
+    
+    var listheight=$("input[name='listheight']").val();
+
+    //dataId = $("#datasource option:selected").val(),
+    //dataField =   $("#datazid option:selected").val(),
+    var PN=$('#pluName');
+    cupy=PN.val();
+    if(cupy==''){
+      getPY(gTitle);
+    }
+    if($G('datasource').value == 0){
+       	gdataS = "";
+     }else{
+     	   gdataS =  $("#datasource option:selected").text();
+     }
+     if($G('datazid').value == 0){
+        gdatazId	= "";
+     }else{
+     	gdatazId =  $G('datazid').value;
+     }
+        var datasource ='{\"data\":\"'+gdataS+'\",\"field\":\"'+gdatazId+'\"}';
+    if( !oNode ) {        
+        try {
+            var html = '<textarea';
+            html += ' title = "' + gTitle + '"';
+            html += ' name = "'+cupy+'"';
+            html += ' leipiPlugins = "'+thePlugins+'"';
+            html += ' value = "' + gValue + '"';
+            html +=" datasource = '" + datasource+"'";
+            //html +=" dataid = '" + dataId + "'";
+           // html +=" datafield = '" + dataField + "'";
+            if ( $G('orgrich').checked ) {
+                html += ' orgrich = "1"';
+            } else {
+                html += ' orgrich = "0"';
+            }
+            if ( $G('chbDisabled').checked ) {
+                html += ' orgdisabled = "1" disabled="true" ';
+            } else {
+                html += ' orgdisabled = "0"  ';
+            }
+
+
+           if( gPrintLength !='' ){
+                 html +=" orgprintlength= '" + gPrintLength+"'";
+                 html +=" value_2= '" + temp_Value +"'";
+            }
+
+
+
+            if( gFontSize != '' ) {
+                html += ' orgfontsize = "' + gFontSize + 'px' + '"';
+            } else {
+                html += ' orgfontsize = ""';
+            }
+            /*if( gWidth != '' ) {
+                html += ' orgwidth = "' + gWidth + '"';
+            } else {
+                html += ' orgwidth = ""';
+            }*/
+            if ( gWidth != '' ) {
+                if( gVarfontwidth == "PX"){
+                    html += 'orgwidth = "' + gWidth + "px" + '"';
+                }
+                if( gVarfontwidth == "%" ){
+                    html += ' orgwidth = " ' + gWidth + '%' + '"';
+                }
+            } else {
+                html += ' orgwidth = ""';
+            }
+            if(gHeight != '') {
+                if( gVarfontheight == "PX"){
+                    html += ' orgheight = "' + gHeight + 'px;"';
+                }
+                if( gVarfontheight == "%" ){
+                    html += ' orgheight = "' + gHeight + '%"';
+                }
+            } else {
+                html += ' orgheight = ""';
+            }
+            if(listheight !=''){
+                html += ' listheight="' + listheight+'"';
+            }
+
+            html += ' style = "';
+            if( gFontSize != '' ) {
+                html += 'font-size:' + gFontSize + 'px;';
+            }
+            if( gWidth != '' ) {
+                if( gVarfontwidth == "PX"){
+                    html += 'width:' + gWidth + 'px;';
+                }
+                if( gVarfontwidth == "%" ){
+                    html += 'width:' + gWidth + '%;';
+                }
+            }
+            if( gHeight != '' ) {
+                if( gVarfontheight == "PX"){
+                    html += 'height:' + gHeight + 'px;';
+                }
+                if( gVarfontheight == "%" ){
+                    html += 'height:' + gHeight + '%;';
+                }
+            }
+            
+
+            html += 'overflow:hidden;text-overflow:ellipsis">';
+            html += gValue + '</textarea>';
+            editor.execCommand('insertHtml',html);
+
+          var editNewData={"node_id": nodeId,"title":gTitle,"control_name": cupy}
+          $.ajax({
+            url: prevent_HOST + `pageDesignOperatorFacade/insertControl`,
+            type: 'POST',
+            dataType: 'json',
+            contentType: 'application/json; charset=UTF-8',
+            data: JSON.stringify(editNewData),
+            async: false,
+            success: function ( res ) {
+            }
+          })
+        } catch (e) {
+            try {
+                editor.execCommand('error');
+            } catch ( e ) {
+                alert('控件异常，请与我们反馈或寻求帮助！');
+            }
+            return false;
+        }
+    } else {
+        oNode.setAttribute('title', gTitle);
+        oNode.setAttribute('value',gValue);
+        oNode.setAttribute('name',cupy);
+        // oNode.setAttribute('maxlength',gFontNum);    ////dasaasdaasdas
+       // oNode.setAttribute('dataid',dataId);
+        //oNode.setAttribute('datafield',dataField);
+        oNode.innerHTML = gValue;
+        if( $G('orgrich').checked ) {
+            oNode.setAttribute('orgrich', 1);
+        } else {
+            oNode.setAttribute('orgrich', 0);
+        }
+        if( $G('chbDisabled').checked ) {
+            oNode.setAttribute('disabled', "true");
+            oNode.setAttribute('orgdisabled', "1");
+        } else {
+            oNode.setAttribute('orgdisabled', "0");
+            oNode.removeAttribute('disabled');
+        }
+        if( gFontSize != '' ) {
+            oNode.style.fontSize = gFontSize+ 'px';
+            oNode.setAttribute('orgfontsize',gFontSize + 'px' );
+        }else{
+            oNode.setAttribute('orgfontsize', '');
+        }
+        if( gds != ''){
+        	oNode.setAttribute('datasource',datasource);
+        }else{
+        	oNode.setAttribute('datasource',"");
+        }
+        if ( gWidth != '' ) {
+            if( gVarfontwidth == "PX"){
+                oNode.style.width = gWidth + 'px';
+                oNode.setAttribute( 'orgwidth', gWidth + 'px');
+            }
+            if( gVarfontwidth == "%" ){
+                oNode.style.width = gWidth + '%';
+                oNode.setAttribute( 'orgwidth', gWidth + '%');
+            }
+        } else {
+            oNode.style.width = '';
+            oNode.setAttribute( 'orgwidth', '' );
+        }
+        if( gHeight != '' ) {
+            if( gVarfontheight == "PX"){
+                oNode.style.height = gHeight+ 'px';
+                oNode.setAttribute('orgheight',gHeight + 'px' );
+            }
+            if( gVarfontheight == "%" ){
+                oNode.style.height = gHeight+ '%';
+                oNode.setAttribute('orgheight',gHeight + '%' );
+            }
+        }else{
+            oNode.setAttribute('orgheight', '');
+        }
+        if( gPrintLength !='' ){
+            oNode.setAttribute( 'orgprintlength', gPrintLength );
+
+          }else{
+            oNode.setAttribute( 'orgprintlength', 0 );
+          }
+          oNode.setAttribute('listheight',listheight); 
+        delete UE.plugins[thePlugins].editdom;
+      var editNewData={"node_id": nodeId,"title":gTitle,"control_name": control_name,"new_control_name": cupy}
+      $.ajax({
+        url: prevent_HOST + `pageDesignOperatorFacade/updateControl`,
+        type: 'POST',
+        dataType: 'json',
+        contentType: 'application/json; charset=UTF-8',
+        data: JSON.stringify(editNewData),
+        async: false,
+        success: function ( res ) {
+        }
+      })
+    }
+};
+</script>
+</body>
+</html>

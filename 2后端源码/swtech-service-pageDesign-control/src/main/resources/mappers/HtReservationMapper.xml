@@ -1,0 +1,350 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+	namespace="swtech.pageDesignControl.mapper.HtReservationMapper">
+	<resultMap id="BaseResultMapProduct"
+		type="swtech.pageDesignControl.entity.HtProducts">
+		<id column="products_id" property="productsId" jdbcType="INTEGER" />
+		<result column="products_name" property="productsName"
+			jdbcType="VARCHAR" />
+		<result column="prodycts_price" property="prodyctsPrice"
+			jdbcType="DOUBLE" />
+		<result column="products_info" property="productsInfo"
+			jdbcType="VARCHAR" />
+		<result column="products_category" property="productsCategory"
+			jdbcType="INTEGER" />
+		<result column="products_comment" property="productsComment"
+			jdbcType="VARCHAR" />
+		<result column="products_status" property="productsStatus"
+			jdbcType="INTEGER" />
+		<result column="products_shop" property="productsShop"
+			jdbcType="INTEGER" />
+		<result column="number" property="number" jdbcType="INTEGER" />
+		<result column="products_picture" property="productsPicture"
+			jdbcType="VARCHAR" />
+	</resultMap>
+	<resultMap id="BaseResultMapbest"
+		type="swtech.pageDesignControl.entity.HtShopcar">
+		<id column="shopcar_id" property="shopcarId" jdbcType="INTEGER" />
+		<result column="products_id" property="productsId"
+			jdbcType="INTEGER" />
+		<result column="shopcar_status" property="shopcarStatus"
+			jdbcType="INTEGER" />
+		<result column="shopcar_bei" property="shopcarBei"
+			jdbcType="INTEGER" />
+		<collection property="shopProduct"
+			resultMap="BaseResultMapProduct" />
+	</resultMap>
+	<resultMap id="BaseResultMapReservation"
+		type="swtech.pageDesignControl.entity.HtReservation">
+		<id column="rid" property="rid" jdbcType="INTEGER" />
+		<result column="num" property="num" jdbcType="INTEGER" />
+		<result column="products_id" property="productsId"
+			jdbcType="VARCHAR" />
+		<result column="re_user_id" property="reUserId"
+			jdbcType="INTEGER" />
+		<result column="recanceltime" property="recanceltime"
+			jdbcType="VARCHAR" />
+		<result column="getshoptime" property="getshoptime"
+			jdbcType="VARCHAR" />
+		<result column="re_perpor" property="rePerpor"
+			jdbcType="VARCHAR" />
+		<result column="re_phone" property="rePhone" jdbcType="VARCHAR" />
+		<result column="re_per_num" property="rePerNum"
+			jdbcType="INTEGER" />
+		<result column="re_url" property="reUrl" jdbcType="VARCHAR" />
+		<result column="order_id" property="orderId" jdbcType="INTEGER" />
+		<result column="re_bei_id" property="reBeiId"
+			jdbcType="INTEGER" />
+		<result column="orderid" property="orderid" jdbcType="VARCHAR" />
+		<collection property="reserShop"
+			resultMap="BaseResultMapbest" />
+	</resultMap>
+
+	<resultMap id="BaseResultMap"
+		type="swtech.pageDesignControl.entity.HtReservation">
+		<id column="rid" property="rid" jdbcType="INTEGER" />
+		<result column="num" property="num" jdbcType="INTEGER" />
+		<result column="products_id" property="productsId"
+			jdbcType="VARCHAR" />
+		<result column="re_user_id" property="reUserId"
+			jdbcType="INTEGER" />
+		<result column="recanceltime" property="recanceltime"
+			jdbcType="VARCHAR" />
+		<result column="getshoptime" property="getshoptime"
+			jdbcType="VARCHAR" />
+		<result column="re_perpor" property="rePerpor"
+			jdbcType="VARCHAR" />
+		<result column="re_phone" property="rePhone" jdbcType="VARCHAR" />
+		<result column="re_per_num" property="rePerNum"
+			jdbcType="INTEGER" />
+		<result column="re_url" property="reUrl" jdbcType="VARCHAR" />
+		<result column="order_id" property="orderId" jdbcType="INTEGER" />
+		<result column="re_bei_id" property="reBeiId"
+			jdbcType="INTEGER" />
+		<result column="orderid" property="orderid" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		rid, num, products_id, re_user_id, recanceltime,
+		getshoptime,re_perpor, re_phone, re_per_num,
+		re_url, order_id,
+		re_bei_id, orderid
+	</sql>
+
+	<sql id="LData">
+		rid,getshoptime,re_perpor,
+		re_phone,re_per_num,orderid,re_url, re_bei_id
+	</sql>
+	<select id="allsss" resultMap="BaseResultMapReservation"
+		parameterType="java.lang.Integer">
+		SELECT shopcar_bei, COUNT(shop.products_id)AS number,
+		shop.*,re.*,pro.products_name,pro.prodycts_price ,pro.products_picture
+		FROM ht_shopcar shop,ht_products pro ,ht_reservation re
+		WHERE shop.products_id= pro.products_id AND re.rid = shop.shopcar_bei AND
+		shopcar_status= #{shopcarStatus,jdbcType=INTEGER}
+		GROUP BY re.orderid,shop.products_id ORDER BY re.rid DESC
+
+	</select>
+
+	<update id="orderIdrid"
+		parameterType="swtech.pageDesignControl.entity.HtReservation">
+		UPDATE ht_reservation SET
+		order_id=#{orderId,jdbcType=INTEGER} WHERE rid=#{rid,jdbcType=INTEGER}
+	</update>
+
+	<select id="estimateReoid" resultType="java.lang.Integer"
+		parameterType="java.lang.Integer">
+		SELECT order_id FROM ht_reservation WHERE re_bei_id
+		=#{reBeiId,jdbcType=INTEGER}
+	</select>
+
+	<update id="confirm" parameterType="java.lang.Integer">
+		UPDATE ht_reservation SET order_id=1 WHERE rid=(
+		SELECT t.rid FROM (
+		SELECT rid FROM ht_reservation WHERE re_bei_id =
+		#{reBeiId,jdbcType=INTEGER}) t
+		)
+	</update>
+
+	<select id="orderdetails" resultType="Map"
+		parameterType="java.lang.Integer">
+		SELECT re.rid,COUNT(shop.shopcar_id) as
+		num,re.re_perpor,re.orderid, re_perpor,re.getshoptime ,re.order_id,
+		shop.shopcar_status ,shopcar_id ,re.re_bei_id,t.*
+		FROM ht_reservation re ,ht_shopcar shop ,
+		(SELECT * FROM ht_products
+		WHERE products_id IN (
+		SELECT products_id FROM ht_shopcar WHERE shopcar_bei =(
+		SELECT rid FROM ht_reservation WHERE re_bei_id = #{reBeiId,jdbcType=INTEGER}
+		)
+		) )t
+		WHERE re.rid=shop.shopcar_bei AND shop.products_id=t.products_id AND rid =(
+		SELECT rid FROM ht_reservation WHERE re_bei_id =
+		#{reBeiId,jdbcType=INTEGER}
+		)GROUP BY shop.shopcar_id
+	</select>
+
+	<select id="ordercentel" resultType="Map">
+		SELECT re.orderid,re.rid
+		,shop.shopcar_status,re.re_bei_id
+		FROM ht_reservation re,ht_shopcar shop
+		WHERE re.rid=shop.shopcar_bei
+		GROUP BY orderid ORDER BY shop.shopcar_status
+	</select>
+
+	<select id="getReservationId" resultType="java.lang.Integer">
+		SELECT rid FROM
+		ht_reservation ORDER BY rid DESC LIMIT 0,1;
+	</select>
+	<select id="useTheCode" resultType="java.lang.Integer">
+		SELECT re_bei_id FROM
+		ht_reservation
+	</select>
+
+	<select id="latestData" resultMap="BaseResultMap">
+		SELECT
+		<include refid="LData" />
+		FROM ht_reservation ORDER BY rid DESC LIMIT 0,1
+	</select>
+	<select id="selectByPrimaryKeyReservation"
+		resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from ht_reservation
+		where rid = #{rid,jdbcType=INTEGER}
+	</select>
+	<delete id="deleteByPrimaryKeyReservation"
+		parameterType="java.lang.Integer">
+		delete from ht_reservation
+		where rid =
+		#{rid,jdbcType=INTEGER}
+	</delete>
+	<insert id="insert"
+		parameterType="swtech.pageDesignControl.entity.HtReservation">
+		insert into ht_reservation (rid, num, products_id,
+		re_user_id, recanceltime, getshoptime,
+		re_perpor, re_phone, re_per_num,
+		re_url, order_id, re_bei_id,orderid)
+		values (#{rid,jdbcType=INTEGER},
+		#{num,jdbcType=INTEGER}, #{productsId,jdbcType=VARCHAR},
+		#{reUserId,jdbcType=INTEGER}, #{recanceltime,jdbcType=VARCHAR},
+		#{getshoptime,jdbcType=VARCHAR},
+		#{rePerpor,jdbcType=VARCHAR},
+		#{rePhone,jdbcType=VARCHAR},#{rePerNum,jdbcType=INTEGER},
+		#{reUrl,jdbcType=VARCHAR}, #{orderId,jdbcType=INTEGER},
+		#{reBeiId,jdbcType=INTEGER},
+		#{orderid,jdbcType=VARCHAR})
+	</insert>
+	<insert id="insertSelectiveReservation"
+		parameterType="swtech.pageDesignControl.entity.HtReservation">
+		insert into ht_reservation
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="rid != null">
+				rid,
+			</if>
+			<if test="num != null">
+				num,
+			</if>
+			<if test="productsId != null">
+				products_id,
+			</if>
+			<if test="reUserId != null">
+				re_user_id,
+			</if>
+			<if test="recanceltime != null">
+				recanceltime,
+			</if>
+			<if test="getshoptime != null">
+				getshoptime,
+			</if>
+			<if test="rePerpor != null">
+				re_perpor,
+			</if>
+			<if test="rePhone != null">
+				re_phone,
+			</if>
+			<if test="rePerNum != null">
+				re_per_num,
+			</if>
+			<if test="reUrl != null">
+				re_url,
+			</if>
+			<if test="orderId != null">
+				order_id,
+			</if>
+			<if test="reBeiId != null">
+				re_bei_id,
+			</if>
+			<if test="orderid != null">
+				orderid,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="rid != null">
+				#{rid,jdbcType=INTEGER},
+			</if>
+			<if test="num != null">
+				#{num,jdbcType=INTEGER},
+			</if>
+			<if test="productsId != null">
+				#{productsId,jdbcType=VARCHAR},
+			</if>
+			<if test="reUserId != null">
+				#{reUserId,jdbcType=INTEGER},
+			</if>
+			<if test="recanceltime != null">
+				#{recanceltime,jdbcType=VARCHAR},
+			</if>
+			<if test="getshoptime != null">
+				#{getshoptime,jdbcType=VARCHAR},
+			</if>
+			<if test="rePerpor != null">
+				#{rePerpor,jdbcType=VARCHAR},
+			</if>
+			<if test="rePhone != null">
+				#{rePhone,jdbcType=VARCHAR},
+			</if>
+			<if test="rePerNum != null">
+				#{rePerNum,jdbcType=INTEGER},
+			</if>
+			<if test="reUrl != null">
+				#{reUrl,jdbcType=VARCHAR},
+			</if>
+			<if test="orderId != null">
+				#{orderId,jdbcType=INTEGER},
+			</if>
+			<if test="reBeiId != null">
+				#{reBeiId,jdbcType=INTEGER},
+			</if>
+			<if test="orderid != null">
+				#{orderid,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelectiveReservation"
+		parameterType="swtech.pageDesignControl.entity.HtReservation">
+		update ht_reservation
+		<set>
+			<if test="num != null">
+				num = #{num,jdbcType=INTEGER},
+			</if>
+			<if test="productsId != null">
+				products_id = #{productsId,jdbcType=VARCHAR},
+			</if>
+			<if test="reUserId != null">
+				re_user_id = #{reUserId,jdbcType=INTEGER},
+			</if>
+			<if test="recanceltime != null">
+				recanceltime = #{recanceltime,jdbcType=VARCHAR},
+			</if>
+			<if test="getshoptime != null">
+				getshoptime = #{getshoptime,jdbcType=VARCHAR},
+			</if>
+			<if test="rePerpor != null">
+				re_perpor = #{rePerpor,jdbcType=VARCHAR},
+			</if>
+			<if test="rePhone != null">
+				re_phone = #{rePhone,jdbcType=VARCHAR},
+			</if>
+			<if test="rePerNum != null">
+				re_per_num = #{rePerNum,jdbcType=INTEGER},
+			</if>
+			<if test="reUrl != null">
+				re_url = #{reUrl,jdbcType=VARCHAR},
+			</if>
+			<if test="orderId != null">
+				order_id = #{orderId,jdbcType=INTEGER},
+			</if>
+			<if test="reBeiId != null">
+				re_bei_id = #{reBeiId,jdbcType=INTEGER},
+			</if>
+			<if test="orderid != null">
+				orderid = #{orderid,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where rid = #{rid,jdbcType=INTEGER}
+	</update>
+	<update id="updateByPrimaryKeyReservation"
+		parameterType="swtech.pageDesignControl.entity.HtReservation">
+		update ht_reservation
+		set num = #{num,jdbcType=INTEGER},
+		products_id = #{productsId,jdbcType=VARCHAR},
+		re_user_id
+		=#{reUserId,jdbcType=INTEGER},
+		recanceltime =
+		#{recanceltime,jdbcType=VARCHAR},
+		getshoptime =
+		#{getshoptime,jdbcType=VARCHAR},
+		re_perpor
+		=#{rePerpor,jdbcType=VARCHAR},
+		re_phone = #{rePhone,jdbcType=VARCHAR},
+		re_per_num = #{rePerNum,jdbcType=INTEGER},
+		re_url =
+		#{reUrl,jdbcType=VARCHAR},
+		order_id = #{orderId,jdbcType=INTEGER},
+		re_bei_id = #{reBeiId,jdbcType=INTEGER},
+		orderid =
+		#{orderid,jdbcType=VARCHAR}
+		where rid = #{rid,jdbcType=INTEGER}
+	</update>
+</mapper>

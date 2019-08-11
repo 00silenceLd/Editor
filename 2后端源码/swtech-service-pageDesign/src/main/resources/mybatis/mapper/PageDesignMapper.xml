@@ -1,0 +1,2656 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+	namespace="swtech.service.pageDesign.dao.impl.PageDesignDaoImpl">
+	<sql id="table">ht_pageEditor</sql>
+	<resultMap
+		type="swtech.facade.pageDesign.entity.SearchControl" id="search">
+		<id column="id" property="id" />
+		<result column="title" property="title" />
+		<result column="leipiplugins" property="leipiplugins" />
+		<result column="search_name" property="searchname" />
+		<result column="search_content" property="searchcontent" />
+		<result column="name" property="name" />
+		<result column="type" property="type" />
+		<result column="style" property="style" />
+		<result column="prd_id" property="prdid" />
+		<result column="node_id" property="nodeid" />
+		<result column="orgtitle" property="orgtitle" />
+		<result column="orgwidth" property="orgwidth" />
+		<result column="orgheight" property="orgheight" />
+		<result column="orgchecked" property="orgchecked" />
+		<result column="search_field_text" property="searchfieldtext" />
+		<result column="search_field_value" property="searchfieldvalue" />
+		<result column="search_key_data_value"
+			property="searchkeydatavalue" />
+		<result column="search_key_data_text"
+			property="searchkeydatatext" />
+	</resultMap>
+	<resultMap id="pageEditorMap"
+		type="swtech.facade.pageDesign.entity.PageEditor">
+		<id column="id" property="id" />
+		<result column="version" property="version" />
+		<result column="node_id" property="node_id" />
+		<result column="node_name" property="node_name" />
+		<result column="parse" property="parse" />
+		<result column="fields" property="fields" />
+		<result column="title" property="title" />
+		<result column="selected" property="selected" />
+		<result column="phone_parse" property="phoneParse" />
+		<result column="shareTo_name" property="shareTo_name" />
+		<result column="shareTo_nodeId" property="shareTo_nodeId" />
+	</resultMap>
+	<resultMap id="optionMap"
+		type="swtech.facade.pageDesign.entity.OptionControl">
+		<id column="id" property="id" />
+		<result column="control_id" property="control_id" />
+		<result column="name" property="name" />
+		<result column="value" property="value" />
+		<result column="type" property="type" />
+		<result column="checked" property="checked" />
+	</resultMap>
+
+	<!-- 分类树形节点 -->
+	<resultMap id="sortMap"
+		type="swtech.facade.pageDesign.entity.SortChildren">
+		<id column="id" property="id" />
+		<result column="pId" property="pid" />
+		<result column="name" property="name" />
+		<result column="url" property="url" />
+		<result column="nodeId" property="nodeId" />
+		<collection property="children" column="id"
+			ofType="swtech.facade.pageDesign.entity.SortChildren"
+			select="selectSortChildrenById"></collection>
+	</resultMap>
+
+	<!-- 查询出数据库表名 -->
+	<select id="searchDatabase" parameterType="java.lang.String"
+		resultType="java.lang.String">
+		select table_name from information_schema.tables where
+		table_schema = #{baseName,jdbcType=VARCHAR}
+	</select>
+
+	<!-- 查询出数据表字段名 -->
+	<select id="searchDataField" parameterType="java.util.Map"
+		resultType="java.lang.String">
+		select COLUMN_NAME as column_name from
+		information_schema.COLUMNS
+		where table_name =
+		#{tableName,jdbcType=VARCHAR} and TABLE_SCHEMA =
+		#{baseName,jdbcType=VARCHAR}
+	</select>
+
+	<!-- 再递归查询出当前节点的所有下一级节点 -->
+	<select id="selectSortChildrenById" resultMap="sortMap"
+		parameterType="long">
+		select * from ht_sort_node where pId = #{id}
+	</select>
+
+	<!-- 删除分类树形控件 -->
+	<delete id="delSort" parameterType="int">
+		delete from ht_sort_node
+		where id = #{id}
+	</delete>
+
+	<!-- 更新分类树形控件 -->
+	<update id="upSort"
+		parameterType="swtech.facade.pageDesign.entity.SortChildren">
+		update ht_sort_node set pId =
+		#{pid} ,name = #{name},
+		url
+		= #{url},nodeId = #{nodeId},attributes =
+		#{attributes} where id = #{id}
+	</update>
+
+	<!-- 插入分类树形控件 -->
+	<insert id="addSort"
+		parameterType="swtech.facade.pageDesign.entity.SortChildren"
+		keyProperty="id" keyColumn="id" useGeneratedKeys="true">
+		insert into
+		ht_sort_node(pId,name,url,nodeId,attributes) values
+		(#{pid},#{name},#{url},#{nodeId},#{attributes})
+	</insert>
+
+	<!-- 查询所有根节点树形控件 -->
+	<select id="searchSort" parameterType="int" resultMap="sortMap">
+		select *
+		from ht_sort_node where nodeId = #{nodeId} AND pId = 0
+	</select>
+
+	<!-- 删除该分类树形下所有节点 -->
+	<delete id="delAllSort" parameterType="int">
+		delete from ht_sort_node
+		where nodeId = #{nodeId}
+	</delete>
+
+	<!-- 列表模板1控件 -->
+	<select id="selectListOne" parameterType="java.lang.Long"
+		resultType="swtech.facade.pageDesign.entity.ListOne">
+		select * from ht_listone where is_delete=0 and
+		page_id=#{id}
+	</select>
+
+	<insert id="ListOne"
+		parameterType="swtech.facade.pageDesign.entity.ListOne"
+		keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO ht_listone (page_id,type,title,value,name,style,
+		datasource,pagesize,datapic,datatitle,
+		datacontent,colnumber,bottomline,showpage,orderby,tpl,titlesize,consize,listpich,listpicw,url,titlelabel,conlabel,frmedit,frmdel,fontsize,searchcon,seardelval,listheight,picfontsize,isnotuser,prefix,isheader,headertitle,moreurl,headercolor,titlecolor,iscomment,outborder,prefixcolor,headstyle,headimgsrc,pagingstyle,isscore,onlyshowone,multisource,multititles,
+		multinodeids, multisourcenames, multidatapics,
+		multidatatitles,multidatacontents,multititlesizes, multiconsizes,
+		multititlelabels, multiconlabels, multifontsizes, multilistpicws,
+		multilistpichs,multilisturls, multisearchcons, multiseardelvals,
+		multipicfontsizes,
+		multilistheights,multirowsourcecount,multisourcepublic,iscolor,datacontent2,typesevendate,typesevenurl)
+		VALUES
+		(#{page_id},#{type},#{title},#{value},#{name},#{style},#{datasource},#{pagesize},#{datapic},#{datatitle},#{datacontent},#{colnumber},#{bottomline},#{showpage},#{orderby},#{tpl},
+		#{titlesize},#{consize},#{listpich},#{listpicw},#{url},#{titlelabel},#{conlabel},
+		#{frmedit},#{frmdel},#{fontsize},#{searchcon},#{seardelval},#{listheight},#{picfontsize},
+		#{isnotuser},#{prefix},#{isheader},#{headertitle},#{moreurl},#{headercolor},#{titlecolor},
+		#{iscomment},#{outborder},#{prefixcolor},#{headstyle},#{headimgsrc},#{pagingstyle},
+		#{isscore},#{onlyshowone},#{multisource},#{multititles},#{multinodeids},#{multisourcenames},#{multidatapics},
+		#{multidatatitles},#{multidatacontents},#{multititlesizes},#{multiconsizes},
+		#{multititlelabels},#{multiconlabels},#{multifontsizes},#{multilistpicws},
+		#{multilistpichs},#{multilisturls},#{multisearchcons},#{multiseardelvals},
+		#{multipicfontsizes},#{multilistheights},#{multirowsourcecount},#{multisourcepublic},#{iscolor},#{datacontent2},#{typesevendate},#{typesevenurl});
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	<!-- 微信列表控件 -->
+	<select id="selectWxList" parameterType="java.lang.Long"
+		resultType="swtech.facade.pageDesign.entity.WxList">
+		select * from ht_wx_list where is_delete=0 and
+		page_id=#{id}
+	</select>
+
+	<insert id="WxList"
+		parameterType="swtech.facade.pageDesign.entity.WxList"
+		keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO ht_wx_list (page_id,type, title, value, name, style,
+		wxsendtype, msgflag, pagesize)
+		VALUES
+		(#{page_id},#{type},#{title},#{value},#{name},#{style},#{wxsendtype},#{msgflag},#{pagesize});
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	<!-- 倒计时控件 -->
+	<select id="selectSettimeoutControl"
+		parameterType="java.lang.Long"
+		resultType="swtech.facade.pageDesign.entity.SettimeoutControl">
+		select * from ht_settimeout where is_delete=0 and
+		page_id=#{id}
+	</select>
+
+	<insert id="SettimeoutControl"
+		parameterType="swtech.facade.pageDesign.entity.SettimeoutControl"
+		keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO ht_settimeout (page_id,orgtime,orgwidth,orgheight, name,
+		type,color, title, value, orgfontsize, style)
+		VALUES
+		(#{page_id},#{orgtime},#{orgwidth},#{orgheight},#{name},#{type},#{color},#{title},#{value},#{orgfontsize},#{style});
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	<!-- 时间控件 -->
+	<select id="selectTimeDate" parameterType="java.lang.Long"
+		resultType="swtech.facade.pageDesign.entity.TimeDate">
+		select * from ht_timedate where is_delete=0 and
+		page_id=#{id}
+	</select>
+	<insert id="TimeDate"
+		parameterType="swtech.facade.pageDesign.entity.TimeDate"
+		keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO ht_timedate (page_id,dateid,name,placeholder,type
+		,title,orgwidth,orgheight,orgfontsize,style,value)
+		VALUES
+		(#{page_id},#{dateid},#{name},#{placeholder},#{type},#{title},#{orgwidth},#{orgheight},#{orgfontsize},
+		#{style},#{value});
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	<!-- 轮播控件 -->
+	<select id="selectBuylabel" parameterType="java.lang.Long"
+		resultType="swtech.facade.pageDesign.entity.Buylabel">
+		select * from ht_buylabel where is_delete=0 and
+		page_id=#{id}
+	</select>
+	<insert id="Buylabel"
+		parameterType="swtech.facade.pageDesign.entity.Buylabel"
+		keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO ht_buylabel
+		(page_id,name,mode,orgtitle,orgsrc,value,orgheight,orgwidth,orgfontsize,orgbgcolor,orgfontcolor,orgfurl,orgurl)
+		VALUES
+		(#{page_id},#{name},#{mode},#{orgtitle},#{orgsrc},#{value},#{orgheight},#{orgwidth},#{orgfontsize},
+		#{orgbgcolor},#{orgfontcolor},#{orgfurl},#{orgurl});
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	<!-- 弹窗控件 -->
+	<select id="selectPopup" parameterType="java.lang.Long"
+		resultType="swtech.facade.pageDesign.entity.Popup">
+		select * from ht_popup where is_delete=0 and
+		page_id=#{id}
+	</select>
+	<insert id="Popup"
+		parameterType="swtech.facade.pageDesign.entity.Popup" keyProperty="id"
+		useGeneratedKeys="true">
+		INSERT INTO ht_popup
+		(page_id,name,mode,orgtitle,orgsrc,value,orgheight,orgwidth,orgfontsize,orgbgcolor,orgfontcolor,orgfurl,orgurl
+		)
+		VALUES
+		(#{page_id},#{name},#{mode},#{orgtitle},#{orgsrc},#{value},#{orgheight},#{orgwidth},#{orgfontsize},
+		#{orgbgcolor},#{orgfontcolor},#{orgfurl},#{orgurl});
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	<!-- 排课控件 -->
+	<select id="selectScheduling" parameterType="java.lang.Long"
+		resultType="swtech.facade.pageDesign.entity.Scheduling">
+		select * from ht_scheduling where is_delete=0 and
+		page_id=#{id}
+	</select>
+	<insert id="Scheduling"
+		parameterType="swtech.facade.pageDesign.entity.Scheduling"
+		keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO ht_scheduling
+		(page_id,type,value,title,datasource,datafield,pagesize,headshow,tpl,frmedit,frmdel,showpage,listpicw,listpich,style,name)
+		VALUES
+		(#{page_id},#{type},#{value},#{title},#{datasource},#{datafield},#{pagesize},#{headshow},#{tpl},#{frmedit},#{frmdel},
+		#{showpage},#{listpicw},#{listpich},#{style},#{name});
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	<!-- 轮播控件 -->
+	<select id="selectLunbo" parameterType="java.lang.Long"
+		resultType="swtech.facade.pageDesign.entity.Lunbo">
+		select * from ht_lunbo where is_delete=0 and
+		page_id=#{id}
+	</select>
+	<insert id="Lunbo"
+		parameterType="swtech.facade.pageDesign.entity.Lunbo" keyProperty="id"
+		useGeneratedKeys="true">
+		INSERT INTO ht_lunbo
+		(page_id,name,type,value,title,datasource,limtvalue,datapic,datatitle,dataurl,orgwidth,orgheight,client,wtime,arrowselect)
+		VALUES
+		(#{page_id},#{name},#{type},#{value},#{title},#{datasource},#{limtvalue},#{datapic},#{datatitle},#{dataurl},#{orgwidth},#{orgheight},#{client},#{wtime},#{arrowselect});
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	<!-- 报名控件 -->
+	<select id="selectAddnumber" parameterType="java.lang.Long"
+		resultType="swtech.facade.pageDesign.entity.Addnumber">
+		select * from ht_addnumber where is_delete=0 and
+		page_id=#{id}
+	</select>
+	<insert id="Addnumber"
+		parameterType="swtech.facade.pageDesign.entity.Addnumber"
+		keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO ht_addnumber
+		(page_id,name,mode,value,orgtitle,orgsrc,orgfontsize,orgbgcolor,orgfontcolor,datasource,orgwidth,orgheight,datafiled,addvalue)
+		VALUES
+		(#{page_id},#{name},#{mode},#{value},#{orgtitle},#{orgsrc},#{orgfontsize},#{orgbgcolor},#{orgfontcolor},#{datasource},#{orgwidth},#{orgheight},#{datafiled},#{addvalue});
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+	<!-- 统计/记录控件 -->
+	<select id="selectRecordlabel" parameterType="java.lang.Long"
+		resultType="swtech.facade.pageDesign.entity.Recordlabel">
+		select * from ht_recordlabel where is_delete=0 and
+		page_id=#{id}
+	</select>
+	<insert id="Recordlabel"
+		parameterType="swtech.facade.pageDesign.entity.Recordlabel"
+		keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO ht_recordlabel
+		(page_id,name,type,value,title,datasource,datatitle)
+		VALUES
+		(#{page_id},#{name},#{type},#{value},#{title},#{datasource},#{datatitle});
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+	<!-- 背景控件 -->
+	<select id="selectBackground" parameterType="java.lang.Long"
+		resultType="swtech.facade.pageDesign.entity.Background">
+		select * from ht_background where is_delete=0 and
+		page_id=#{id}
+	</select>
+	<insert id="Background"
+		parameterType="swtech.facade.pageDesign.entity.Background"
+		keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO ht_background
+		(page_id,name,type,value,title,bagcolor,bagpic)
+		VALUES
+		(#{page_id},#{name},#{type},#{value},#{title},#{bagcolor},#{bagpic});
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+	<!-- 导出Excel控件 -->
+	<select id="selectExport" parameterType="java.lang.Long"
+		resultType="swtech.facade.pageDesign.entity.Export">
+		select * from ht_export where is_delete=0 and
+		page_id=#{id}
+	</select>
+	<insert id="Export"
+		parameterType="swtech.facade.pageDesign.entity.Export"
+		keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO ht_export
+		(page_id,name,type,value,title,datasource,datafield,pluwidth,pluheight,fontsize,style,bgcolor,fontcolor)
+		VALUES
+		(#{page_id},#{name},#{type},#{value},#{title},#{datasource},#{datafield},#{pluwidth},#{pluheight},#{fontsize},#{style},#{bgcolor},#{fontcolor});
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+	<!-- 审批列表控件 -->
+	<select id="selectShenpi" parameterType="java.lang.Long"
+		resultType="swtech.facade.pageDesign.entity.Shenpi">
+		select * from ht_shenpi where is_delete=0 and
+		page_id=#{id}
+	</select>
+	<insert id="Shenpi"
+		parameterType="swtech.facade.pageDesign.entity.Shenpi"
+		keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO ht_shenpi
+		(page_id,name,text,value,title,datasource,pluheight,fontsize,style,type,spdel,spdbox,spstate,datafiled)
+		VALUES
+		(#{page_id},#{name},#{text},#{value},#{title},#{datasource},#{pluheight},#{fontsize},#{style},#{type},#{spdel},#{spdbox},#{spstate},#{datafiled});
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+	<!-- 登陆控件 -->
+	<select id="selectLogin" parameterType="java.lang.Long"
+		resultType="swtech.facade.pageDesign.entity.Login">
+		select * from ht_login where is_delete=0 and
+		page_id=#{id}
+	</select>
+	<insert id="Login"
+		parameterType="swtech.facade.pageDesign.entity.Login" keyProperty="id"
+		useGeneratedKeys="true">
+		INSERT INTO ht_login
+		(page_id,name,mode,value,orgtitle,orgheight,orgwidth,orgfontsize,orgbgcolor,orgfontcolor,toaccount)
+		VALUES
+		(#{page_id},#{name},#{mode},#{value},#{orgtitle},#{orgheight},#{orgwidth},#{orgfontsize},#{orgbgcolor},#{orgfontcolor},#{toaccount});
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+	<!-- 兑换控件 -->
+	<select id="selectExchange" parameterType="java.lang.Long"
+		resultType="swtech.facade.pageDesign.entity.Exchange">
+		select * from ht_exchange where is_delete=0 and
+		page_id=#{id}
+	</select>
+	<insert id="Exchange"
+		parameterType="swtech.facade.pageDesign.entity.Exchange"
+		keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO ht_exchange
+		(page_id,name,mode,orgtitle,orgsrc,value,orgheight,orgwidth,orgfontsize,orgbgcolor,orgfontcolor,orgfurl,orgurl)
+		VALUES
+		(#{page_id},#{name},#{mode},#{orgtitle},#{orgsrc},#{value},#{orgheight},#{orgwidth},#{orgfontsize},#{orgbgcolor},#{orgfontcolor},#{orgfurl},#{orgurl});
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+	<!-- 连南组工控件 -->
+	<select id="selectLiannanzugong" parameterType="java.lang.Long"
+		resultType="swtech.facade.pageDesign.entity.Liannanzugong">
+		select * from ht_liannanzugong where is_delete=0 and
+		page_id=#{id}
+	</select>
+	<insert id="Liannanzugong"
+		parameterType="swtech.facade.pageDesign.entity.Liannanzugong"
+		keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO ht_liannanzugong
+		(page_id,name,mode,orgtitle,value,orgheight,orgwidth,orgfontsize,orgbgcolor,orgfontcolor)
+		VALUES
+		(#{page_id},#{name},#{mode},#{orgtitle},#{value},#{orgheight},#{orgwidth},#{orgfontsize},#{orgbgcolor},#{orgfontcolor});
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	<!--会议列表控件 -->
+	<select id="selectMeetinglist" parameterType="java.lang.Long"
+		resultType="swtech.facade.pageDesign.entity.Meetinglist">
+		select * from ht_meetinglist where is_delete=0 and
+		page_id=#{id}
+	</select>
+	<insert id="Meetinglist"
+		parameterType="swtech.facade.pageDesign.entity.Meetinglist"
+		keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO ht_meetinglist
+		(page_id,name,type,value,title,datasource,datafield,pagesize,headshow,tpl,showpage,listpicw,listpich,roomurl,listfontsize,style,mtype,searchcon,seardelval,mtitle)
+		VALUES
+		(#{page_id},#{name},#{type},#{value},#{title},#{datasource},#{datafield},#{pagesize},#{headshow},#{tpl},#{showpage},#{listpicw},#{listpich},#{roomurl},#{listfontsize},#{style},#{mtype},#{searchcon},#{seardelval},#{mtitle});
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+	<!--用户id控件 -->
+	<select id="selectGetuserid" parameterType="java.lang.Long"
+		resultType="swtech.facade.pageDesign.entity.Getuserid">
+		select * from ht_getuserid where is_delete=0 and
+		page_id=#{id}
+	</select>
+	<insert id="Getuserid"
+		parameterType="swtech.facade.pageDesign.entity.Getuserid"
+		keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO ht_getuserid
+		(page_id,name,disabled,placeholder,style,value)
+		VALUES
+		(#{page_id},#{name},#{disabled},#{placeholder},#{style},#{value});
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+
+	<!-- 兑换记录控件 -->
+	<select id="selectInternal" parameterType="java.lang.Long"
+		resultType="swtech.facade.pageDesign.entity.Internal">
+		select * from ht_internal where is_delete=0 and
+		page_id=#{id}
+	</select>
+	<insert id="Internal"
+		parameterType="swtech.facade.pageDesign.entity.Internal"
+		keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO ht_internal
+		(page_id,name,type,value,title,pluheight,fontsize,style)
+		VALUES
+		(#{page_id},#{name},#{type},#{value},#{title},#{pluheight},#{fontsize},#{style});
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+	<select id="selectDaydate" parameterType="java.lang.Long"
+		resultType="swtech.facade.pageDesign.entity.Daydate">
+		select * from ht_daydate where is_delete=0 and
+		page_id=#{id}
+	</select>
+	<insert id="Daydate"
+		parameterType="swtech.facade.pageDesign.entity.Daydate"
+		keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO ht_daydate (page_id,dateid,name,placeholder,type
+		,title,orgwidth,orgheight,orgfontsize,style,value)
+		VALUES
+		(#{page_id},#{dateid},#{name},#{placeholder},#{type},#{title},#{orgwidth},#{orgheight},#{orgfontsize},
+		#{style},#{value});
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+	<select id="selectSearchSelect" parameterType="java.lang.Long"
+		resultType="swtech.facade.pageDesign.entity.SearchSelect">
+		select * from ht_search_select where name like "%%" and
+		is_delete = 0
+	</select>
+	<insert id="SearchSelect"
+		parameterType="swtech.facade.pageDesign.entity.SearchSelect"
+		keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO ht_search_select
+		(page_id,data,name,type,leipiplugins,style,title,value,datasource,orghide,orgthide,orgheight,orgbghide,orgalign,orgwidth,orgtype,searchid,image,identity)
+		VALUES
+		(#{page_id},#{data},#{name},#{type},#{leipiplugins},#{style},#{title},#{value},
+		#{datasource}, #{orghide} ,#{orgthide},
+		#{orgheight},#{orgbghide},#{orgalign},#{orgwidth},#{orgtype},#{searchid},#{image},#{identity});
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+	<select id="SearchSelectSelect" parameterType="java.lang.Long"
+		resultType="swtech.facade.pageDesign.entity.SearchSelect">
+		select * from ht_search_select where
+		<if test="type != null and type !=''">
+			order by type desc
+		</if>
+		<if test="data ! = null and data ! =''">
+			order by data desc
+		</if>
+		<!-- <if test = "desc != null and desc !=''"> #{json.desc} </if> -->
+	</select>
+
+	<!-- <select id="SearchSelectSelect" parameterType="java.lang.Long" resultType="swtech.facade.pageDesign.entity.SearchSelect"> 
+		select * from ht_search_select ORDER BY type desc </select> -->
+
+
+	<!-- <select id="selectSearchById" parameterType="java.lang.Long" resultType="swtech.facade.pageDesign.entity.SearchSelect"> 
+		select * from ht_search_select where node_name="%%" and is_delete = 0 </select> -->
+
+	<!-- <select id="selectSearch1" parameterType="java.lang.Long" resultType="swtech.facade.pageDesign.entity.SearchSelect"> 
+		select * from ht_search_select where is_delete = 0 and page_id = #{id} </select> 
+		<insert id="Search1" parameterType="swtech.facade.pageDesign.entity.SearchSelect" 
+		keyProperty="id" useGeneratedKeys="true"> INSERT INTO ht_search_select (page_id,data,name,type,leipiplugins,style,title,value,datasource,orghide,orgthide,orgheight,orgbghide,orgalign,orgwidth,orgtype,searchid,image,identity) 
+		VALUES (#{page_id},#{data},#{name},#{type},#{leipiplugins},#{style},#{title},#{value}, 
+		#{datasource}, #{orghide} ,#{orgthide}, #{orgheight},#{orgbghide},#{orgalign},#{orgwidth},#{orgtype},#{searchid},#{image},#{identity}); 
+		<selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id"> 
+		SELECT LAST_INSERT_ID() </selectKey> </insert> -->
+
+	<select id="selectFlowbtn" parameterType="java.lang.Long"
+		resultType="swtech.facade.pageDesign.entity.Flowbtn">
+		select * from ht_flowbtn where is_delete=0 and
+		page_id=#{id}
+	</select>
+
+	<insert id="Flowbtn"
+		parameterType="swtech.facade.pageDesign.entity.Flowbtn"
+		keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO ht_flowbtn (
+		page_id,orgbgcolor,orgformid,
+		orgfontcolor,orgheight,orgvarfontheight,orgwidth,orgvarfontwidth,orgurl,orgflow,orgname,orgvalue,onclick,type,name,value,title,orgfontsize)
+		VALUES
+		(#{page_id},#{orgbgcolor},#{orgformid},
+		#{orgfontcolor},#{orgheight},#{orgvarfontheight},#{orgwidth},#{orgvarfontwidth},#{orgurl},#{orgflow},#{orgname},
+		#{orgvalue},#{onclick},#{type},#{name},#{value},#{title},#{orgfontsize});
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+	<select id="selectSlidebox" parameterType="java.lang.Long"
+		resultType="swtech.facade.pageDesign.entity.Slidebox">
+		select * from ht_slidebox where is_delete=0 and
+		page_id=#{id}
+	</select>
+
+	<insert id="Slidebox"
+		parameterType="swtech.facade.pageDesign.entity.Slidebox"
+		keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO ht_slidebox (
+		page_id,name,
+		title,style,datasource,orgheight,orgwidth)
+		VALUES
+		(#{page_id},#{name},
+		#{title},
+		#{style},#{datasource},#{orgheight},#{orgwidth});
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+
+	<select id="selectWxGroupTag" parameterType="java.lang.Long"
+		resultType="swtech.facade.pageDesign.entity.WxGroupTag">
+		select * from ht_wxgrouptag where is_delete=0 and
+		page_id=#{id}
+	</select>
+
+	<insert id="WxGroupTag"
+		parameterType="swtech.facade.pageDesign.entity.WxGroupTag"
+		keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO ht_wxgrouptag (
+		page_id,name,
+		title,value,style,type,wxtags,msgflag,wxtagtype)
+		VALUES
+		(#{page_id},#{name},
+		#{title},
+		#{value},#{style},#{type},#{wxtags},#{msgflag},#{wxtagtype});
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+	<select id="selectFormList" parameterType="java.lang.Long"
+		resultType="swtech.facade.pageDesign.entity.FormList">
+		select * from ht_formlist where is_delete=0 and
+		page_id=#{id}
+	</select>
+
+	<insert id="FormList"
+		parameterType="swtech.facade.pageDesign.entity.FormList"
+		keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO ht_formlist (
+		page_id,name,type,
+		title,orgwidth,
+		value,orgfontsize,orgheight,datasource,datafield,style,p_or_m,pagesize,headshow,tpl,frmedit,frmdel,showpage,listpich,listpicw,url,searchcon,listfontsize,seardelval,listheight,frmexa,personage_info,searchbyidorname,center,theaderbackground)
+		VALUES
+		(#{page_id},#{name},#{type},
+		#{title}, #{orgwidth},
+		#{value},
+		#{orgfontsize},
+		#{orgheight},
+		#{datasource},
+		#{datafield},
+		#{style},#{p_or_m},#{pagesize},#{headshow},#{tpl},#{frmedit},#{frmdel},#{showpage},#{listpich},#{listpicw},#{url},#{searchcon},#{listfontsize},#{seardelval},#{listheight},#{frmexa},#{personage_info},#{searchbyidorname},#{center},#{theaderbackground});
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+	<!-- 基于节点搜索控件 -->
+	<select id="selectSearchControl" parameterType="java.lang.Long"
+		resultMap="search">
+		select * from ht_search_control where is_delete=0 and
+		page_id=#{id}
+	</select>
+
+	<insert id="SearchControl"
+		parameterType="swtech.facade.pageDesign.entity.SearchControl"
+		keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO ht_search_control (
+		page_id,title,search_name,orgchecked,
+		search_content,name,type,style,
+		prd_id,node_id,orgtitle,orgwidth,
+		orgheight,search_field_text,
+		search_field_value,search_key_data_value,
+		search_key_data_text
+		)
+		VALUES
+		(#{page_id},#{title},#{searchname},#{orgchecked},
+		#{searchcontent},#{name},#{type},#{style}, #{prdid},
+		#{nodeid},#{orgtitle},#{orgwidth},#{orgheight},
+		#{searchfieldtext},#{searchfieldvalue},
+		#{searchkeydatavalue},#{searchkeydatatext}
+		);
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+	<select id="selectTextControls" parameterType="java.lang.Long"
+		resultType="swtech.facade.pageDesign.entity.TextControl">
+		select * from ht_textControl_page where is_delete=0 and
+		page_id=#{id}
+	</select>
+
+	<insert id="TextControl"
+		parameterType="swtech.facade.pageDesign.entity.TextControl"
+		keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO ht_textControl_page (
+		page_id, name,
+		title,orghide,orgthide,orgbghide,orgwidth,
+		value, orgalign,
+		type,orgfontsize,orgheight,orgtype,datasource,groupCon,style,p_or_m,
+		maxlength,lineclamp,disabled,orgdisabled,dataid,datafield,orgprintlength,value_2,fontset,writenickname)
+		VALUES
+		(#{page_id},
+		#{name}, #{title},
+		#{orghide},
+		#{orgthide},
+		#{orgbghide},
+		#{orgwidth},
+		#{value},
+		#{orgalign},
+		#{type},#{orgfontsize},#{orgheight},#{orgtype},#{datasource},#{groupcon},#{style},#{p_or_m},
+		#{maxlength},#{lineclamp},#{disabled},#{orgdisabled},#{dataid},#{datafield},#{orgprintlength},#{value_2},#{fontset},#{writenickname});
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+	<select id="selectSearch" parameterType="java.lang.Long"
+		resultType="swtech.facade.pageDesign.entity.Search">
+		select * from ht_search where is_delete = 0 and page_id =
+		#{id}
+	</select>
+	<insert id="Search"
+		parameterType="swtech.facade.pageDesign.entity.Search"
+		keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO ht_search
+		(page_id,type,prdid,searchid,key,classname,nodeid,orgwidth,orgheight,pname,name,istrue,style,title,orgtd,orgchecked,leipiplugins,p_or_m)
+		VALUES
+		(#{page_id},#{type},#{prdid},#{searchid},#{key},#{classname},#{nodeid},#{orgwidth},
+		#{orgheight}, #{pname} ,#{name},
+		#{istrue},#{style},#{title},#{orgtd},#{orgchecked},#{leipiplugins},#{p_or_m});
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+	<select id="selectassControls" parameterType="java.lang.Long"
+		resultType="swtech.facade.pageDesign.entity.assControl">
+		select * from ht_assControl where is_delete=0 and page_id =
+		#{id}
+	</select>
+
+	<insert id="assControl"
+		parameterType="swtech.facade.pageDesign.entity.assControl"
+		keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO ht_assControl (
+		page_id, name,
+		title,pname,ename,eid,nonull,p_or_m)
+		VALUES
+		(#{page_id},
+		#{name},
+		#{title},
+		#{pname},
+		#{ename},
+		#{eid},
+		#{nonull},#{p_or_m});
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	<select id="selectOnlinehard" parameterType="java.lang.Long"
+		resultType="swtech.facade.pageDesign.entity.Onlinehard">
+		select * from ht_onlinehard where is_delete = 0 and page_id
+		= #{id}
+	</select>
+	<insert id="Onlinehard"
+		parameterType="swtech.facade.pageDesign.entity.Onlinehard"
+		keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO ht_onlinehard
+		(page_id,type,value,classname,nodeid,orgwidth,orgheight,orgfontsize,home,name,title,style,p_or_m)
+		VALUES
+		(#{page_id},#{type},#{value},#{classname},#{nodeid},#{orgwidth},#{orgheight},#{orgfontsize},#{home},#{name},#{title},#{style},#{p_or_m});
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+
+
+	<select id="selectWorkword" parameterType="java.lang.Long"
+		resultType="swtech.facade.pageDesign.entity.Workword">
+		select * from ht_workword where is_delete = 0 and page_id =
+		#{id}
+	</select>
+	<insert id="Workword"
+		parameterType="swtech.facade.pageDesign.entity.Workword"
+		keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO ht_workword (page_id,type,value,classname,nodeid,orgwidth,
+		orgheight, orgfontsize, home,name, title,style,p_or_m)
+		VALUES
+		(#{page_id},#{type},#{value},#{classname},#{nodeid},#{orgwidth},
+		#{orgheight}, #{orgfontsize}, #{home},#{name},
+		#{title},#{style},#{p_or_m});
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	<select id="selectWorkform" parameterType="java.lang.Long"
+		resultType="swtech.facade.pageDesign.entity.Workform">
+		select * from ht_workform where is_delete = 0 and page_id =
+		#{id}
+	</select>
+	<insert id="Workform"
+		parameterType="swtech.facade.pageDesign.entity.Workform"
+		keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO ht_workform (page_id,type,value,classname,nodeid,orgwidth,
+		orgheight, orgfontsize, home,name, title,style,p_or_m)
+		VALUES
+		(#{page_id},#{type},#{value},#{classname},#{nodeid},#{orgwidth},
+		#{orgheight}, #{orgfontsize}, #{home},#{name},
+		#{title},#{style},#{p_or_m});
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	<select id="selectWorkflow" parameterType="java.lang.Long"
+		resultType="swtech.facade.pageDesign.entity.Workflow">
+		select * from ht_workflow where is_delete = 0 and page_id =
+		#{id}
+	</select>
+	<insert id="Workflow"
+		parameterType="swtech.facade.pageDesign.entity.Workflow"
+		keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO ht_workflow (page_id,type,value,classname,nodeid,orgwidth,
+		orgheight, orgfontsize, home,name, title,style,p_or_m)
+		VALUES
+		(#{page_id},#{type},#{value},#{classname},#{nodeid},#{orgwidth},
+		#{orgheight}, #{orgfontsize}, #{home},#{name},
+		#{title},#{style},#{p_or_m});
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	<select id="selectSchedule" parameterType="java.lang.Long"
+		resultType="swtech.facade.pageDesign.entity.Schedule">
+		select * from ht_schedule where is_delete = 0 and page_id =
+		#{id}
+	</select>
+	<insert id="Schedule"
+		parameterType="swtech.facade.pageDesign.entity.Schedule"
+		keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO ht_schedule (page_id,type,value,classname,nodeid,orgwidth,
+		orgheight, orgfontsize, home,name, title,style,p_or_m)
+		VALUES
+		(#{page_id},#{type},#{value},#{classname},#{nodeid},#{orgwidth},
+		#{orgheight}, #{orgfontsize}, #{home},#{name},
+		#{title},#{style},#{p_or_m});
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	<select id="selectTask" parameterType="java.lang.Long"
+		resultType="swtech.facade.pageDesign.entity.Task">
+		select * from ht_task where is_delete = 0 and page_id =
+		#{id}
+	</select>
+	<insert id="Task"
+		parameterType="swtech.facade.pageDesign.entity.Task" keyProperty="id"
+		useGeneratedKeys="true">
+		INSERT INTO ht_task (page_id,type,value,classname,nodeid,orgwidth,
+		orgheight, orgfontsize, home,name, title,style,p_or_m)
+		VALUES
+		(#{page_id},#{type},#{value},#{classname},#{nodeid},#{orgwidth},
+		#{orgheight}, #{orgfontsize}, #{home},#{name},
+		#{title},#{style},#{p_or_m});
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	<select id="selectBeike" parameterType="java.lang.Long"
+		resultType="swtech.facade.pageDesign.entity.Beike">
+		select * from ht_beike where is_delete = 0 and page_id =
+		#{id}
+	</select>
+	<insert id="Beike"
+		parameterType="swtech.facade.pageDesign.entity.Beike" keyProperty="id"
+		useGeneratedKeys="true">
+		INSERT INTO ht_beike (page_id,type,value,classname,nodeid,orgwidth,
+		orgheight, orgfontsize, home,name, title,style,p_or_m)
+		VALUES
+		(#{page_id},#{type},#{value},#{classname},#{nodeid},#{orgwidth},
+		#{orgheight}, #{orgfontsize}, #{home},#{name},
+		#{title},#{style},#{p_or_m});
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	<select id="selectResource" parameterType="java.lang.Long"
+		resultType="swtech.facade.pageDesign.entity.Resource">
+		select * from ht_resource where is_delete = 0 and page_id =
+		#{id}
+	</select>
+	<insert id="Resource"
+		parameterType="swtech.facade.pageDesign.entity.Resource"
+		keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO ht_resource (page_id,type,value,classname,nodeid,orgwidth,
+		orgheight, orgfontsize, home,name, title,style,p_or_m)
+		VALUES
+		(#{page_id},#{type},#{value},#{classname},#{nodeid},#{orgwidth},
+		#{orgheight}, #{orgfontsize}, #{home},#{name},
+		#{title},#{style},#{p_or_m});
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	<select id="selectTeach" parameterType="java.lang.Long"
+		resultType="swtech.facade.pageDesign.entity.Teach">
+		select * from ht_teach where is_delete = 0 and page_id =
+		#{id}
+	</select>
+	<insert id="Teach"
+		parameterType="swtech.facade.pageDesign.entity.Teach" keyProperty="id"
+		useGeneratedKeys="true">
+		INSERT INTO ht_teach (page_id,type,value,classname,nodeid,orgwidth,
+		orgheight, orgfontsize, home,name, title,style,p_or_m)
+		VALUES
+		(#{page_id},#{type},#{value},#{classname},#{nodeid},#{orgwidth},
+		#{orgheight}, #{orgfontsize}, #{home},#{name},
+		#{title},#{style},#{p_or_m});
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	<select id="selectClasses" parameterType="java.lang.Long"
+		resultType="swtech.facade.pageDesign.entity.Classes">
+		select * from ht_classes where is_delete = 0 and page_id =
+		#{id}
+	</select>
+	<insert id="Classes"
+		parameterType="swtech.facade.pageDesign.entity.Classes"
+		keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO ht_classes (page_id,type,value,classname,nodeid,orgwidth,
+		orgheight, orgfontsize, home,name, title,style,p_or_m)
+		VALUES
+		(#{page_id},#{type},#{value},#{classname},#{nodeid},#{orgwidth},
+		#{orgheight}, #{orgfontsize}, #{home},#{name},
+		#{title},#{style},#{p_or_m});
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	<select id="selectCurriculum" parameterType="java.lang.Long"
+		resultType="swtech.facade.pageDesign.entity.Curriculum">
+		select * from ht_curriculum where is_delete = 0 and page_id
+		= #{id}
+	</select>
+	<insert id="Curriculum"
+		parameterType="swtech.facade.pageDesign.entity.Curriculum"
+		keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO ht_curriculum
+		(page_id,type,value,classname,nodeid,orgwidth, orgheight, orgfontsize,
+		home,name, title,style,p_or_m)
+		VALUES
+		(#{page_id},#{type},#{value},#{classname},#{nodeid},#{orgwidth},
+		#{orgheight}, #{orgfontsize}, #{home},#{name},
+		#{title},#{style},#{p_or_m});
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+	<select id="selectClassifyControl"
+		parameterType="java.lang.Long"
+		resultType="swtech.facade.pageDesign.entity.ClassifyControl">
+		select * from ht_classify_control where is_delete = 0 and
+		page_id = #{id}
+	</select>
+
+
+	<insert id="ClassifyControl"
+		parameterType="swtech.facade.pageDesign.entity.ClassifyControl"
+		keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO ht_classify_control
+		(cid,is_delete,page_id,name,title,value,sonid,nid,type,classtype,datasource,datafiled)
+		VALUES
+		(#{cid},#{is_delete},#{page_id},#{name},#{title},#{value},#{sonid},#{nid},#{type},#{classtype},#{datasource},#{datafiled});
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+
+	<select id="selectJiangtang" parameterType="java.lang.Long"
+		resultType="swtech.facade.pageDesign.entity.Jiangtang">
+		select * from ht_jiangtang where is_delete = 0 and page_id
+		= #{id}
+	</select>
+
+
+	<insert id="Jiangtang"
+		parameterType="swtech.facade.pageDesign.entity.Jiangtang"
+		keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO ht_jiangtang
+		(page_id,type,value,classname,nodeid,orgwidth, orgheight, orgfontsize,
+		home,name, title,style,p_or_m)
+		VALUES
+		(#{page_id},#{type},#{value},#{classname},#{nodeid},#{orgwidth},
+		#{orgheight}, #{orgfontsize}, #{home},#{name},
+		#{title},#{style},#{p_or_m});
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	<select id="selectZujuan" parameterType="java.lang.Long"
+		resultType="swtech.facade.pageDesign.entity.Zujuan">
+		select * from ht_zujuan where is_delete = 0 and page_id =
+		#{id}
+	</select>
+	<insert id="Zujuan"
+		parameterType="swtech.facade.pageDesign.entity.Zujuan"
+		keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO ht_zujuan (page_id,type,value,classname,nodeid,orgwidth,
+		orgheight, orgfontsize, home,name, title,style,p_or_m)
+		VALUES
+		(#{page_id},#{type},#{value},#{classname},#{nodeid},#{orgwidth},
+		#{orgheight}, #{orgfontsize}, #{home},#{name},
+		#{title},#{style},#{p_or_m});
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	<select id="selectYuejuan" parameterType="java.lang.Long"
+		resultType="swtech.facade.pageDesign.entity.Yuejuan">
+		select * from ht_yuejuan where is_delete = 0 and page_id =
+		#{id}
+	</select>
+	<insert id="Yuejuan"
+		parameterType="swtech.facade.pageDesign.entity.Yuejuan"
+		keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO ht_yuejuan (page_id,type,value,classname,nodeid,orgwidth,
+		orgheight, orgfontsize, home,name, title,style,p_or_m)
+		VALUES
+		(#{page_id},#{type},#{value},#{classname},#{nodeid},#{orgwidth},
+		#{orgheight}, #{orgfontsize}, #{home},#{name},
+		#{title},#{style},#{p_or_m});
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	<select id="selectChaxun" parameterType="java.lang.Long"
+		resultType="swtech.facade.pageDesign.entity.Chaxun">
+		select * from ht_chaxun where is_delete = 0 and page_id =
+		#{id}
+	</select>
+	<insert id="Chaxun"
+		parameterType="swtech.facade.pageDesign.entity.Chaxun"
+		keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO ht_chaxun (page_id,type,value,classname,nodeid,orgwidth,
+		orgheight, orgfontsize, home,name, title,style,p_or_m)
+		VALUES
+		(#{page_id},#{type},#{value},#{classname},#{nodeid},#{orgwidth},
+		#{orgheight}, #{orgfontsize}, #{home},#{name},
+		#{title},#{style},#{p_or_m});
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	<select id="selectAudit" parameterType="java.lang.Long"
+		resultType="swtech.facade.pageDesign.entity.Audit">
+		select * from ht_audit where is_delete = 0 and page_id =
+		#{id}
+	</select>
+	<insert id="Audit"
+		parameterType="swtech.facade.pageDesign.entity.Audit" keyProperty="id"
+		useGeneratedKeys="true">
+		INSERT INTO ht_audit (page_id,type,value,classname,nodeid,orgwidth,
+		orgheight, orgfontsize, home,name, title,style,p_or_m)
+		VALUES
+		(#{page_id},#{type},#{value},#{classname},#{nodeid},#{orgwidth},
+		#{orgheight}, #{orgfontsize}, #{home},#{name},
+		#{title},#{style},#{p_or_m});
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+	<select id="selectTplControls" parameterType="java.lang.Long"
+		resultType="swtech.facade.pageDesign.entity.TplControl">
+		select * from ht_tpl where is_delete = 0 and page_id =
+		#{id}
+	</select>
+	<insert id="TplControl"
+		parameterType="swtech.facade.pageDesign.entity.TplControl"
+		keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO ht_tpl (name,page_id,
+		value,home,msg,site,work,workbench,personal, choicetpl, tpltype,
+		isshow,p_or_m)
+		VALUES
+		(#{name},#{page_id},#{value},
+		#{home}, #{msg},
+		#{site},
+		#{work},#{workbench},#{personal}, #{choicetpl}, #{tpltype},
+		#{isshow},#{p_or_m});
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	<select id="selectMTplControls" parameterType="java.lang.Long"
+		resultType="swtech.facade.pageDesign.entity.MTplControl">
+		select * from ht_mtpl where is_delete = 0 and page_id =
+		#{id}
+	</select>
+	<insert id="MTplControl"
+		parameterType="swtech.facade.pageDesign.entity.MTplControl"
+		keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO ht_mtpl (name,page_id,
+		value,home,msg,site,work,workbench,personal, choicetpl, tpltype,
+		isshow,p_or_m)
+		VALUES
+		(#{name},#{page_id},#{value},
+		#{home}, #{msg},
+		#{site},
+		#{work},#{workbench},#{personal}, #{choicetpl}, #{tpltype},
+		#{isshow},#{p_or_m});
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	<select id="selectGuanliControls" parameterType="java.lang.Long"
+		resultType="swtech.facade.pageDesign.entity.GuanliControl">
+		select * from ht_admintool where is_delete = 0 and page_id
+		= #{id}
+	</select>
+	<insert id="GuanliControl"
+		parameterType="swtech.facade.pageDesign.entity.GuanliControl"
+		keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO ht_admintool (
+		page_id, name,classname,
+		title,style,nodeid,p_or_m)
+		VALUES
+		(#{page_id},
+		#{name},#{classname},
+		#{title},
+		#{style},
+		#{nodeid},#{p_or_m});
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	<select id="selectCommentControls"
+		parameterType="java.lang.Long"
+		resultType="swtech.facade.pageDesign.entity.CommentControl">
+		select * from ht_commentControl where is_delete = 0 and
+		page_id = #{id}
+	</select>
+
+	<insert id="CommentControl"
+		parameterType="swtech.facade.pageDesign.entity.CommentControl"
+		keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO ht_commentControl (
+		page_id, name,
+		title,datasource,groupcon,p_or_m)
+		VALUES
+		(#{page_id},
+		#{name}, #{title},
+		#{datasource},
+		#{groupcon},#{p_or_m});
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+	<insert id="ImageControl"
+		parameterType="swtech.facade.pageDesign.entity.ImageControl"
+		keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO ht_image_control (
+		page_id,
+		name,src,title,type,value,datasource,allowupload,groupCon,identity,style,p_or_m,
+		orgpicheight,orgpicwidth,minfilesize,maxfilesize,orgwithin,orgouter,setwtype,sethtype)
+		VALUES
+		(#{page_id}, #{name},
+		#{src},
+		#{title},
+		#{type},
+		#{value},#{datasource},#{allowupload},#{groupcon},#{identity},#{style},#{p_or_m},
+		#{orgpicheight},#{orgpicwidth},#{minfilesize},#{maxfilesize},#{orgwithin},#{orgouter},#{setwtype},#{sethtype});
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+	<select id="selectImageControls" parameterType="java.lang.Long"
+		resultType="swtech.facade.pageDesign.entity.ImageControl">
+		select * from ht_image_control where is_delete= 0 and
+		page_id=#{id}
+	</select>
+	<!-- 8.24添加字段placeholder -->
+	<insert id="ButtonControl"
+		parameterType="swtech.facade.pageDesign.entity.ButtonControl"
+		keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO ht_button_control (
+		page_id,
+		name,orgname,orderby,mode,orgtitle,orgwidth,orgheight,orgsrc,orgurl,orgbgcolor,orgfontcolor,style,formnode,btntype,p_or_m,tgnode,winname,orgid,placeholder,fontsize)
+		VALUES
+		(#{page_id}, #{name},
+		#{orgname},
+		#{orderby},
+		#{mode},
+		#{orgtitle},#{orgwidth},#{orgheight},#{orgsrc},#{orgurl},#{orgbgcolor},#{orgfontcolor},#{style},#{formnode},#{btntype},#{p_or_m},#{tgnode},#{winname},#{orgid},#{placeholder},#{fontsize});
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+	<select id="selectButtonControls" parameterType="java.lang.Long"
+		resultType="swtech.facade.pageDesign.entity.ButtonControl">
+		select * from ht_button_control where is_delete= 0 and
+		page_id=#{id}
+	</select>
+
+	<!-- Mingxibiao控件 creatby ww -->
+	<insert id="Mingxibiao"
+		parameterType="swtech.facade.pageDesign.entity.Mingxibiao"
+		keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO ht_mingxibiao (
+		page_id,
+		name,orgname,leipiplugins,orgwidth,orgurl,orgfontcolor,orgid,recordid,placeholder,fontsize,size)
+		VALUES
+		(#{page_id}, #{name},
+		#{orgname},
+		#{leipiplugins},
+		#{orgwidth},#{orgurl},#{orgfontcolor},#{orgid},#{recordid},#{placeholder},#{fontsize},#{size});
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+	<select id="selectMingxibiao" parameterType="java.lang.Long"
+		resultType="swtech.facade.pageDesign.entity.Mingxibiao">
+		select * from ht_mingxibiao where is_delete= 0 and
+		page_id=#{id}
+	</select>
+
+	<insert id="JobProgress"
+		parameterType="swtech.facade.pageDesign.entity.JobProgress"
+		keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO ht_jobprogress (
+		page_id,
+		name,orgname,leipiplugins,orgwidth,orgurl,orgfontcolor,villageid,recordid,placeholder,title,fontsize,size)
+		VALUES
+		(#{page_id}, #{name},
+		#{orgname},
+		#{leipiplugins},
+		#{orgwidth},#{orgurl},#{orgfontcolor},#{villageid},#{recordid},#{placeholder},#{title},#{fontsize},#{size});
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+	<select id="selectJobprogress" parameterType="java.lang.Long"
+		resultType="swtech.facade.pageDesign.entity.JobProgress">
+		select * from ht_jobprogress where is_delete= 0 and
+		page_id=#{id}
+	</select>
+
+
+	<select id="selectTextareaControls"
+		parameterType="java.lang.Long"
+		resultType="swtech.facade.pageDesign.entity.TextareaControl">
+		select * from ht_textareaControl where is_delete = 0 and
+		page_id = #{id}
+	</select>
+	<insert id="TextareaControl"
+		parameterType="swtech.facade.pageDesign.entity.TextareaControl"
+		keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO
+		hbsxt.ht_textareaControl
+		(page_id, name,
+		title, orgrich,
+		orgfontsize,
+		orgwidth, orgheight,
+		value,datasource,groupCon,style,p_or_m,orgdisabled,maxlength,disabled,dataid,datafield,orgprintlength,value_2,listheight)
+		VALUES (#{page_id},#{name},
+		#{title}, #{orgrich}, #{orgfontsize},
+		#{orgwidth},
+		#{orgheight},
+		#{value},#{datasource},#{groupcon},#{style},#{p_or_m},#{orgdisabled},#{maxlength},#{disabled},#{dataid},#{datafield},#{orgprintlength},#{value_2},#{listheight});
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+	<select id="selectwifiBlockControls"
+		parameterType="java.lang.Long"
+		resultType="swtech.facade.pageDesign.entity.wifiBlockControl">
+		select * from ht_wifiBlock_Control where is_delete=0 and
+		page_id=#{id}
+	</select>
+	<insert id="wifiBlockControl"
+		parameterType="swtech.facade.pageDesign.entity.wifiBlockControl"
+		keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO
+		hbsxt.ht_wifiBlock_Control
+		(page_id, name,
+		title,orgalign,
+		orgborder,orgfonts,orgheight,orgwidth
+		,orgradius,value,orgbghide,orghide,orgthide,orgurl,orgcolor,groupCon,p_or_m)
+		VALUES (#{page_id},#{name},
+		#{title},#{orgalign},#{orgborder},#{orgfonts},#{orgheight},#{orgwidth}
+		,#{orgradius},#{value},#{orgbghide},#{orghide},#{orgthide},#{orgurl},#{orgcolor},#{groupcon},#{p_or_m});
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+	<select id="selectSelectControls" parameterType="java.lang.Long"
+		resultType="swtech.facade.pageDesign.entity.SelectControl">
+		select * from ht_selectControl_page where is_delete=0 and
+		page_id=#{id}
+	</select>
+	<insert id="SelectControl"
+		parameterType="swtech.facade.pageDesign.entity.SelectControl"
+		keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO
+		hbsxt.ht_selectControl_page (page_id, name,
+		title, size,
+		orgwidth,
+		selected,
+		value,groupCon,style,p_or_m,orgheight,orgfontsize,isstate,datatitle,datasources,conhide)
+		VALUES (#{page_id},#{name},
+		#{title}, #{size},
+		#{orgwidth},
+		#{selected},
+		#{value},#{groupcon},#{style},#{p_or_m},#{orgheight},#{orgfontsize},#{isstate},#{datatitle},#{datasources},#{conhide});
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	<select id="selectRadiosControls" parameterType="java.lang.Long"
+		resultType="swtech.facade.pageDesign.entity.RadiosControl">
+		select * from ht_radiosControl_page where is_delete=0 and
+		page_id=#{id}
+	</select>
+	<insert id="RadiosControl"
+		parameterType="swtech.facade.pageDesign.entity.RadiosControl"
+		keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO
+		hbsxt.ht_radiosControl_page (page_id, name,
+		title,value,
+		sortord,selected,orderby,groupCon,style,p_or_m,orgwidth,orgheight,orgfontsize)
+		VALUES (#{page_id},#{name},
+		#{title},#{value},
+		#{sortord,jdbcType=VARCHAR},#{selected},#{orderby},#{groupcon},#{style},#{p_or_m},#{orgwidth},#{orgheight},#{orgfontsize});
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+	<select id="selectiFrameRouterControls"
+		parameterType="java.lang.Long"
+		resultType="swtech.facade.pageDesign.entity.iFrameRouterControl">
+		select * from ht_iframerouter_control where is_delete = 0
+		and page_id = #{id}
+	</select>
+	<insert id="iFrameRouterControl"
+		parameterType="swtech.facade.pageDesign.entity.iFrameRouterControl"
+		keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO
+		hbsxt.ht_iframerouter_control (page_id, orderby,
+		orgchecked,orgsrc,
+		orgtarget,orgtitle,name,groupCon,orgwidth,
+		orgheight,p_or_m)
+		VALUES (#{page_id},#{orderby},
+		#{orgchecked},#{orgsrc},
+		#{orgtarget},#{orgtitle},#{name},#{groupcon},#{orgwidth},#{orgheight},#{p_or_m});
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+	<select id="selectReportControls" parameterType="java.lang.Long"
+		resultType="swtech.facade.pageDesign.entity.ReportControl">
+		select * from ht_report_control where is_delete = 0 and
+		page_id = #{id}
+	</select>
+	<insert id="ReportControl"
+		parameterType="swtech.facade.pageDesign.entity.ReportControl"
+		keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO
+		hbsxt.ht_report_control (page_id, orderby,node_name,
+		title,name,field,fields,sqlStr,pid,visualreport,placeholder,readonly,groupCon,p_or_m,scoresourceid,tps,statisticstheme,statisticalmaterials)
+		VALUES (#{page_id},#{orderby},#{node_name},
+		#{title},#{name},
+		#{field},#{fields},#{sqlStr},#{pid},#{visualreport},#{placeholder},#{readonly},#{groupcon},#{p_or_m},#{scoresourceid},#{tps},#{statisticstheme},#{statisticalmaterials});
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+	<select id="selectQrcodeControls" parameterType="java.lang.Long"
+		resultType="swtech.facade.pageDesign.entity.QrcodeControl">
+		select * from ht_qrcodeControl_page where is_delete=0 and
+		page_id=#{id}
+	</select>
+	<insert id="QrcodeControl"
+		parameterType="swtech.facade.pageDesign.entity.QrcodeControl"
+		keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO
+		hbsxt.ht_qrcodeControl_page (page_id, name,
+		title,orgwidth,
+		orgheight,
+		value,
+		src,orgtype,groupCon,p_or_m) VALUES
+		(#{page_id},#{name},
+		#{title}, #{orgwidth},
+		#{orgheight},
+		#{value},
+		#{src},#{orgtype},#{groupcon},#{p_or_m});
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	<select id="selectMacrosControls" parameterType="java.lang.Long"
+		resultType="swtech.facade.pageDesign.entity.MacrosControl">
+		select * from ht_macrosControl_page where is_delete=0 and
+		page_id=#{id}
+	</select>
+	<insert id="MacrosControl"
+		parameterType="swtech.facade.pageDesign.entity.MacrosControl"
+		keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO
+		hbsxt.ht_macrosControl_page (page_id, name,
+		title, orghide,
+		type,
+		orghight,
+		orgwidth, value,orgfontsize,orgtype,groupCon,p_or_m)
+		VALUES
+		(#{page_id},#{name},
+		#{title},
+		#{orghide},
+		#{type}, #{orghight},
+		#{orgwidth},
+		#{value},#{orgfontsize},#{orgtype},#{groupcon},#{p_or_m});
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	<select id="selectListctrlControls"
+		parameterType="java.lang.Long"
+		resultType="swtech.facade.pageDesign.entity.ListctrlControl">
+		select * from ht_listctrlControl_page where is_delete=0 and
+		page_id=#{id}
+	</select>
+
+	<insert id="ListctrlControl"
+		parameterType="swtech.facade.pageDesign.entity.ListctrlControl"
+		keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO
+		hbsxt.ht_listctrlControl_page (page_id,
+		name, title,
+		orgtitle, type,
+		orgcoltype, orgunit, orgsum,
+		orgcolvalue,orgrowvalue,orgsumvalue,
+		orgwidth,
+		readonly,
+		value,groupCon,style,p_or_m)
+		VALUES (#{page_id},
+		#{name}, #{title},
+		#{orgtitle},
+		#{type},
+		#{orgcoltype},#{orgunit}, #{orgsum},
+		#{orgcolvalue},#{orgrowvalue},#{orgsumvalue},
+		#{orgwidth},
+		#{readonly},#{value},#{groupcon},#{style},#{p_or_m});
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+	<insert id="SortControl"
+		parameterType="swtech.facade.pageDesign.entity.SortControl"
+		keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO
+		hbsxt.ht_sort_control (page_id, name,
+		title,groupCon,pluginId,action,nodes,isShow,p_or_m) VALUES
+		(#{page_id},#{name},
+		#{title},
+		#{groupcon},#{pluginId},#{action},#{nodes},#{isShow},#{p_or_m});
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	<select id="selectSortControls" parameterType="java.lang.Long"
+		resultType="swtech.facade.pageDesign.entity.SortControl">
+		select * from ht_sort_control where is_delete = 0 and
+		page_id = #{id}
+	</select>
+
+	<select id="selectCheckboxsControls"
+		parameterType="java.lang.Long"
+		resultType="swtech.facade.pageDesign.entity.CheckboxsControl">
+		select * from ht_checkboxControl_page where is_delete=0 and
+		page_id=#{id}
+	</select>
+	<insert id="CheckboxsControl"
+		parameterType="swtech.facade.pageDesign.entity.CheckboxsControl"
+		keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO
+		hbsxt.ht_checkboxControl_page (page_id,
+		name, name1,title,
+		value,
+		parse_name,
+		sortord,selected,orderby,groupCon,style,p_or_m,orgwidth,orgheight,orgfontsize)
+		VALUES (#{page_id},
+		#{name},#{name1},
+		#{title},#{value},
+		#{parse_name},
+		#{sortord},#{selected},#{orderby},#{groupcon},#{style},#{p_or_m},#{orgwidth},#{orgheight},#{orgfontsize});
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	<select id="selectProgressbarControls"
+		parameterType="java.lang.Long"
+		resultType="swtech.facade.pageDesign.entity.ProgressbarControl">
+		select * from ht_progressbarControl_page where is_delete=0
+		and page_id=#{id}
+	</select>
+	<insert id="ProgressbarControl"
+		parameterType="swtech.facade.pageDesign.entity.ProgressbarControl"
+		keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO
+		hbsxt.ht_progressbarControl_page (page_id,name, title,
+		value,
+		orgsigntype,src,groupCon,style,p_or_m,orgwidth,orgheight) VALUES
+		(#{page_id},#{name}, #{title},
+		#{value},
+		#{orgsigntype},#{src},#{groupcon},#{style},#{p_or_m},#{orgwidth},#{orgheight});
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	<select id="selectCboOptions" parameterType="java.lang.Long"
+		resultMap="optionMap">
+		select * from ht_option_control where is_delete=0 and
+		control_id=#{id} and type='checkbox'
+	</select>
+	<select id="selectRdoOptions" parameterType="java.lang.Long"
+		resultMap="optionMap">
+		select * from ht_option_control where is_delete=0 and
+		control_id=#{id} and type='radio'
+	</select>
+
+	<insert id="OptionControl"
+		parameterType="swtech.facade.pageDesign.entity.OptionControl"
+		keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO ht_option_control
+		(control_id, name, value, type, checked)
+		VALUES (#{control_id},
+		#{name},
+		#{value}, #{type}, #{checked});
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+
+	</insert>
+
+	<insert id="savePageEditor" parameterType="java.util.Map"
+		keyProperty="id" useGeneratedKeys="true">
+		insert into ht_pageEditor
+		(node_id,node_name,fields,parse,title,selected,phone_parse,shareTo_name,shareTo_nodeId)
+		values
+		(#{node_id},#{node_name},#{fields},#{parse},#{title},#{selected},#{phoneParse},#{shareTo_name},#{shareTo_nodeId})
+
+	</insert>
+
+	<insert id="insertPageEditor"
+		parameterType="swtech.facade.pageDesign.entity.PageEditor">
+		insert into
+		ht_pageEditor
+		(node_id,node_name,fields)
+		values
+		(#{node_id},#{node_name},#{fields})
+	</insert>
+
+	<!-- 动态创建数据表，传tableName(表名)，fieldName(字段名称) -->
+	<update id="createTable" parameterType="java.util.Map">
+		drop table IF EXISTS
+		${tableName};
+		CREATE TABLE ${tableName}
+		(
+		id int(8) PRIMARY KEY
+		AUTO_INCREMENT,
+		version int(8) DEFAULT 0,
+		is_delete tinyint(1) DEFAULT
+		0,
+		${fieldsStr}
+		create_time datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
+		COMMENT '创建时间',
+		gid int(8) COMMENT '关联的记录id',
+		assignee varchar(100)
+		COMMENT '处理人',
+		taskid varchar(100) COMMENT '任务id',
+		processinsid
+		varchar(100) COMMENT '流程实例id',
+		processdefid varchar(100) COMMENT
+		'流程定义id',
+		userid varchar(100) COMMENT '发起人用户id',
+		other varchar(100)
+		COMMENT '保留字段',
+		deploymentid varchar(100) COMMENT '流程部署id',
+		username
+		varchar(100) COMMENT '用户名',
+		update_time datetime COMMENT '更新时间'
+		)ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	</update>
+
+	<select id="existsTable" parameterType="java.util.Map"
+		resultType="java.util.Map">
+		select table_name from INFORMATION_SCHEMA.TABLES where
+		table_name =#{tableName} and TABLE_SCHEMA='hbsxt';
+	</select>
+	<update id="changeTableName" parameterType="java.util.Map">
+		ALTER TABLE
+		${tableName} RENAME ${new_tableName};
+	</update>
+	<select id="getCountForNodeId" parameterType="java.util.Map"
+		resultType="java.lang.Integer">
+		select count(id) from ht_pageEditor where is_delete=0 and
+		node_id
+		=#{node_id}
+	</select>
+	<select id="getByNode_Id" parameterType="long"
+		resultMap="pageEditorMap">
+		select * from
+		<include refid="table" />
+		where node_id = #{node_id} and is_delete=0
+	</select>
+
+	<select id="getById" parameterType="long"
+		resultMap="pageEditorMap">
+		select * from
+		<include refid="table" />
+		where id = #{id} and is_delete=0
+	</select>
+
+	<select id="selectPageEditor" parameterType="long"
+		resultMap="pageEditorMap">
+		select * from
+		<include refid="table" />
+		where node_id = #{id} and is_delete=0
+	</select>
+
+	<sql id="condition_sql">
+		<if test="is_delete != null and is_delete !="> and is_delete = #{is_delete} </if>
+		<if test="node_id != null and node_id != "> and node_id = #{node_id} </if>
+		<if test="node_name != null and node_name != "> and node_name = #{node_name} </if>
+		<if test="parse != null and parse != "> and parse = #{parse} </if>
+		<if test="fields != null and fields != "> and fields = #{fields} </if>
+	</sql>
+	<!-- 根据多参数进行查询数据 -->
+	<select id="listPage" parameterType="java.util.Map"
+		resultMap="pageEditorMap">
+		select * from
+		<include refid="table" />
+		<where>
+			is_delete=0 and
+			<include refid="condition_sql" />
+		</where>
+	</select>
+	<select id="listBy" parameterType="java.util.Map"
+		resultMap="pageEditorMap">
+		select * from
+		<include refid="table" />
+		<where>
+			<include refid="condition_sql" />
+		</where>
+	</select>
+	<update id="change_pageDesign_is_delete"
+		parameterType="java.util.Map">
+		update
+		<include refid="table" />
+		<choose>
+			<when test="is_delete">
+				set is_delete = 0
+			</when>
+			<otherwise>
+				set is_delete =1
+			</otherwise>
+		</choose>
+		<where>
+			node_id = #{node_id}
+		</where>
+	</update>
+
+	<update id="updatePageEditor"
+		parameterType="swtech.facade.pageDesign.entity.PageEditor">
+		update ht_pageEditor
+		<trim prefix="set" suffixOverrides=",">
+			<if test="node_id != null">
+				node_id = #{node_id,jdbcType=INTEGER},
+			</if>
+			<if test="node_name != null">
+				node_name = #{node_name,jdbcType=VARCHAR},
+			</if>
+			<if test="is_delete != null">
+				is_delete = #{is_delete,jdbcType=BIT},
+			</if>
+			<if test="version != null">
+				version = #{version,jdbcType=INTEGER}+1,
+			</if>
+			<if test="fields != null">
+				fields = #{fields,jdbcType=INTEGER},
+			</if>
+			<if test="parse != null">
+				parse = #{parse,jdbcType=LONGVARCHAR},
+			</if>
+			<if test="title != null">
+				title = #{title,jdbcType=LONGVARCHAR},
+			</if>
+			<if test="selected != null">
+				selected = #{selected,jdbcType=LONGVARCHAR},
+			</if>
+			<if test="phoneParse != null">
+				phone_parse = #{phoneParse,jdbcType=LONGVARCHAR},
+			</if>
+			<if test="shareTo_name != null">
+				shareTo_name = #{shareTo_name,jdbcType=VARCHAR},
+			</if>
+			<if test="shareTo_nodeId != null">
+				shareTo_nodeId = #{shareTo_nodeId,jdbcType=INTEGER},
+			</if>
+		</trim>
+		<where>
+			id = #{id}
+		</where>
+	</update>
+
+	<!-- 获取课程筛选条件 -->
+	<select id="getCourseEq" resultType="java.util.Map">
+		select
+		eq_field,eq_name,is_sort from ht_course_eq
+	</select>
+
+	<!-- 按条件搜索课程 -->
+	<select id="searchCourse" resultType="java.util.Map">
+		select * from ht_course where 1=1
+		<if test="key != null and key !=''">
+			key like concat('%',#{json.key},'%')
+		</if>
+		<if test="eq_field != null and eq_field !=''">
+			order by #{json.eq_field}
+		</if>
+		<if test="desc != null and desc !=''">
+			#{json.desc}
+		</if>
+	</select>
+
+	<!-- ******************排序筛选搜索功能控件**************** -->
+	<!-- 添加筛选搜索功能绑定数据源 -->
+	<insert id="insertSortSearch" parameterType="java.util.Map">
+		INSERT into ht_sort_search(name,data_source)
+		VALUES(#{name,jdbcType=VARCHAR},#{dataSource,jdbcType=VARCHAR})
+		<!-- <selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id"> 
+			SELECT LAST_INSERT_ID() </selectKey> -->
+	</insert>
+	<!-- 基于控件实现动态搜索 -->
+
+	<select id="">
+
+	</select>
+
+
+
+
+	<!-- 根据pkid查询分类对象 -->
+	<select id="getCascadeClassifyByRootId"
+		parameterType="java.lang.Integer" resultMap="cascadeClassify">
+		select id,name,parent_id
+		from ht_cascade_classify where id
+		=
+		#{rootId}
+	</select>
+
+	<resultMap id="cascadeClassify"
+		type="swtech.facade.pageDesign.entity.CascadeClassify">
+		<id column="id" property="id" />
+		<result column="name" property="name" />
+		<result column="parent_id" property="parentId" />
+
+	</resultMap>
+
+	<!-- 根据父id查询子id -->
+	<select id="getCascadeClassifyByParentId"
+		parameterType="java.lang.Integer" resultType="java.util.Map">
+		select id,name,parent_id
+		as parentId from
+		ht_cascade_classify
+		where
+		parent_id=#{rootId}
+	</select>
+
+	<!-- 插入分类记录 -->
+	<insert id="insertCascadeClassifyRecord"
+		parameterType="swtech.facade.pageDesign.entity.CascadeClassify"
+		useGeneratedKeys="true" keyProperty="id">
+		insert
+		into
+		ht_cascade_classify(id,name,parent_id,jobId,roleId)
+		values(#{id},#{name},#{parentId},#{jobId},#{roleId})
+
+	</insert>
+
+	<!-- 删除分类 -->
+	<delete id="delCascadeClassifyById"
+		parameterType="java.lang.Integer">
+		delete from
+		ht_cascade_classify where id = #{id}
+	</delete>
+
+
+	<update id="updateCascadeClassify"
+		parameterType="swtech.facade.pageDesign.entity.CascadeClassify">
+		update ht_cascade_classify
+		<trim prefix="set" suffixOverrides=",">
+
+			<if test="name != null">
+				name = #{name,jdbcType=VARCHAR},
+			</if>
+			<if test="parentId != null">
+				parent_id = #{parentId,jdbcType=INTEGER},
+			</if>
+		</trim>
+		<where>
+			id = #{id}
+		</where>
+	</update>
+
+	<!-- 根据中文名字转换拼音，拼音缩写即表名，查出该表字段名及备注 -->
+	<select id="getTableInformationByName"
+		parameterType="java.lang.String" resultType="java.util.HashMap">
+		select DISTINCT
+		COLUMN_NAME,column_comment from
+		information_schema.COLUMNS
+		where
+		table_name = #{tableName}
+	</select>
+
+	<!-- 根据中文名字转换拼音，拼音缩写即表名，查出该表所有字段名 -->
+	<select id="getTableFieldionByName"
+		parameterType="java.lang.String" resultType="java.lang.String">
+		select DISTINCT
+		COLUMN_NAME from information_schema.COLUMNS
+		where table_name
+		=
+		#{tableName}
+	</select>
+
+	<!-- 搜索控件之搜索 -->
+	<select id="selectDynamicSearch"
+		parameterType="swtech.facade.pageDesign.entity.QueryVo"
+		resultType="java.util.Map">
+		select id as AbsoluteId
+		<if test="table_field !=null and table_field !=''">
+			,${table_field}
+		</if>
+		from ${table_name}
+		<if test="searchContent !=null and searchContent !=''">
+			where CONCAT_WS('null',${table_field_all}) LIKE
+			"%"#{searchContent}"%"
+		</if>
+		<if test="sortingConditions !=null and sortingConditions !=''">
+			order by #{sortingConditions} desc
+		</if>
+	</select>
+
+	<select id="getUserWxOpenidByUid" resultType="java.util.Map">
+		select uid,wxopenid
+		as openid,chinese_name as nickname from ht_user where uid = #{uId}
+	</select>
+	<!-- <select id="getUserWxOpenidByGroup" resultType = "java.util.Map"> select 
+		u.uId,u.wxOpenid as openid,u.nickname from ht_wx_userinfo u left join ht_wx_user_group 
+		g on g.uId = u.uId </select> -->
+	<!-- 根据组织id获取成员openid（） -->
+	<select id="getUserWxOpenidByGroup" resultType="java.util.Map">
+		select
+		u.uid,u.wxopenid as openid,u.chinese_name as nickname from ht_user u
+		left join ht_role_user g
+		select
+		u.uid,u.wxopenid as
+		openid,u.chinese_name as nickname from ht_user u
+		left join ht_role_user
+		g
+		on g.uid = u.uId where role_id = #{groupId}
+	</select>
+
+	<select id="getAllCascadeClassify" resultType="java.util.Map">
+		select
+		id,name,parent_id as parentId from ht_cascade_classify
+		select
+		id,name,parent_id as parentId from ht_cascade_classify
+	</select>
+
+	<select id="getRoleClassifyIdByUid" resultMap="cascadeClassify">
+		SELECT
+		DISTINCT(id),parent_id,`name`,jobId,roleId from
+		ht_cascade_classify
+		where jobId in (select role_id from ht_role_user
+		where uid =#{uId}) and
+		parent_id = 0
+	</select>
+
+	<!-- 获取大于当前的组织id和父id -->
+	<select id="getRoleByThanRoleId" resultType="java.util.Map">
+		select pid,id from
+		ht_role where id >= #{roleId}
+	</select>
+
+	<select id="getUserWeiXinOpenidByUserList"
+		resultType="java.util.Map">
+		select uid,wxopenid as openid,chinese_name as nickname from ht_user
+		where wxpush = 1 and uid in
+		<foreach item="item" index="index" collection="list" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+		and is_delete = 0
+	</select>
+
+	<!-- 获取组织下用户 -->
+	<select id="getUserWeiXinOpenidByRoleIdList"
+		parameterType="java.util.List" resultType="java.lang.Integer">
+		SELECT pu.user_id from ht_position_user pu
+		LEFT JOIN ht_role_position
+		rp on rp.id = pu.pos_id
+		LEFT JOIN ht_role r on r.id = rp.role_id
+		LEFT
+		JOIN ht_user u on u.uid = pu.user_id
+		where r.id in
+
+		<foreach item="item" index="index" collection="list" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</select>
+
+	<!-- 获取职位下用户 -->
+	<select id="getUserWeiXinOpenidByPidList"
+		parameterType="java.util.List" resultType="java.lang.Integer">
+		SELECT user_id FROM ht_position_user where pos_id in
+
+		<foreach item="item" index="index" collection="list" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</select>
+
+	<!-- 保存通知内容 -->
+	<insert id="insertPushMsg"
+		parameterType="swtech.facade.pageDesign.entity.PushMsg"
+		keyProperty="id" useGeneratedKeys="true">
+		insert into
+		ht_pushmsg(sendUid,wxtagtype,msgflag,content,addTime,is_delete,title)
+		values(#{sendUid},#{wxtagtype},#{msgflag},#{content},#{addTime},#{isDelete},#{title})
+	</insert>
+
+	<!-- 获取通知内容 -->
+
+	<select id="selectPushMsgByUid" resultType="java.util.Map">
+		select * from
+		ht_pushmsg_receive
+	</select>
+
+	<insert id="insertPushReceive" parameterType="java.util.Map">
+		insert into
+		ht_pushmsg_receive(pushId,receiveUid) values(#{pushId},#{uId})
+	</insert>
+
+
+	<!-- 应需求将PC与手机端数据放置与一个数据源下 -->
+	<select id="existsPageEditorByNodeId"
+		parameterType="java.util.Map" resultType="java.lang.Integer">
+		select max(id )as id from
+		ht_pageEditor where node_id
+		=#{node_id}
+
+	</select>
+	<update id="updatePageEditorByex" parameterType="java.util.Map">
+		<!-- <selectKey keyProperty='id' resultType='int' order='BEFORE'> SELECT 
+			(select id FROM ht_pageEditor WHERE id = #{id})id from DUAL </selectKey> -->
+		UPDATE ht_pageEditor SET
+		<trim suffixOverrides=",">
+			<if test="parse!=null and parse!=''">
+				parse=#{parse},
+			</if>
+			<if test="phoneParse !=null and phoneParse!=''">
+				phone_parse=#{phoneParse}
+			</if>
+		</trim>
+		WHERE id=#{id}
+
+	</update>
+
+	<select id="findPageId" parameterType="java.util.Map"
+		resultType="java.lang.Integer">
+		select id from ht_pageEditor WHERE id=#{id}
+	</select>
+
+	<select id="selectUserMobileByuIds" resultType="java.util.Map">
+		select uid,mobile from ht_user where mobile is not null and uid in
+
+		<foreach collection="list" item="item" open="(" separator=","
+			close=")">
+			#{item}
+		</foreach>
+
+	</select>
+
+
+	<!-- 导出Excel表格 -->
+	<select id="derivedForm" resultType="java.util.Map"
+		statementType="STATEMENT">
+		select ${datafield} from ${node_name}
+	</select>
+
+	<!--根据nodeId查询对应的表，再从表中根据selectId查 -->
+	<select id="selectTableByNodeIdAndId" resultType="java.util.Map"
+		statementType="STATEMENT">
+		select * from ${node_name} where id=${selectId}
+	</select>
+	<!-- 根据nodeId查询对应的表，再从表中根据selectId删除 -->
+	<delete id="deleteTableByNodeIdAndId"
+		parameterType="java.util.Map" statementType="STATEMENT">
+		delete from ${node_name}
+		where id=${selectId}
+	</delete>
+
+	<!-- ，根据树形节点id查询出下属表名 -->
+	<select id="selectTableById" resultType="java.util.Map">
+		select distinct
+		node_name
+		from ht_pageEditor
+		where node_id in (select id from ht_node
+		where parent_id in (select id from
+		ht_node where parent_id=#{node_id}))
+		or
+		node_id in (select id from ht_node where parent_id=#{node_id}) or
+		node_id in (select id from ht_node where parent_id in (select id from
+		ht_node
+		where parent_id in (select id from ht_node where
+		parent_id=#{node_id})))
+	</select>
+	<!-- ，根据节点id查出来的表名，删除pageEditor中对应的表 -->
+	<delete id="deleteTableById" parameterType="java.util.Map"
+		statementType="STATEMENT">
+		drop table ${table_names}
+	</delete>
+	<!--，根据树形节点id删除对node中的相关记录 -->
+	<delete id="deleteNodeRecordById" parameterType="java.util.Map">
+		delete from
+		ht_node where parent_id=#{node_id} or id=#{node_id}
+	</delete>
+
+	<!-- 临时用的编辑器网站权限 -->
+
+	<insert id="registerWebShell" parameterType="java.util.Map">
+		INSERT into
+		ht_web_shell(username,PASSWORD,chinesename)VALUES(#{username},#{password},#{chinesename})
+	</insert>
+	<select id="logWebShell" parameterType="java.util.Map"
+		resultType="swtech.facade.pageDesign.entity.WebShell">
+		select username,isdelete,chinesename from ht_web_shell
+		where
+		username=#{username} and password=#{password} and isdelete=1
+	</select>
+
+
+	<select id="getWebShell" resultType="java.util.Map">
+		select * from ht_web_shell
+	</select>
+	<update id="updateWebShell" parameterType="java.util.Map">
+		update ht_web_shell
+		set isdelete=#{isdelete} where id=#{id}
+	</update>
+	<!-- 科普视频资源库 -->
+	<select id="getKPCount" resultType="java.lang.Integer">
+		select count(*) from
+		tb_kp_video where status=1
+	</select>
+
+	<select id="getKPQueryPage" parameterType="java.util.Map"
+		resultType="swtech.facade.pageDesign.entity.KePuVideo">
+		select *from tb_kp_video where status=1
+		<if test="orderByClause != null">
+			order by id ${orderByClause}
+		</if>
+		<if test="page != null and pageSize >= 0">
+			limit #{page} , #{pageSize}
+		</if>
+	</select>
+
+	<select id="getTableCOLUMNNAME" parameterType="java.util.Map"
+		resultType="java.util.Map">
+		select DISTINCT COLUMN_NAME,column_comment from
+		information_schema.COLUMNS
+		where table_name
+		= #{tableName} and
+		COLUMN_NAME LIKE 'swprefix%'
+	</select>
+	<!-- ajax修改控件 -->
+	<update id="updateControl" parameterType="java.util.Map">
+		alter table
+		${node_name} CHANGE ${control_name} ${new_control_name} mediumtext
+		COMMENT
+		#{title};
+	</update>
+	<!-- 增加控件 -->
+	<insert id="insertControl" parameterType="java.util.Map">
+		alter table
+		${node_name} add ${control_name} mediumtext DEFAULT NULL COMMENT
+		#{title} ;
+	</insert>
+
+	<!-- 删除控件 -->
+	<delete id="deleteControl" parameterType="java.util.Map">
+		alter table
+		${node_name} drop column ${control_name};
+	</delete>
+
+	<!-- 排课管理资源库 -->
+	<select id="getPaiCourseCount" resultType="java.lang.Integer">
+		select count(*) from
+		ht_paicourse where status=1
+	</select>
+
+	<select id="getPaiCourseQueryPage" parameterType="java.util.Map"
+		resultType="swtech.facade.pageDesign.entity.KePuVideo">
+		select *from ht_paicourse where status=1
+		<if test="orderByClause != null ">
+			order by id ${orderByClause}
+		</if>
+		<if test="page != null and pageSize >= 0">
+			limit #{page} , #{pageSize}
+		</if>
+	</select>
+
+	<select id="checkColumn" parameterType="java.util.Map"
+		resultType="int">
+		select count(*) from information_schema.columns where
+		table_name = '${tableName}' and column_name = '${column}'
+	</select>
+
+	<select id="getDataTableByStatisticsNodeId"
+		parameterType="java.lang.String" resultType="java.lang.String">
+		select node_name from
+		ht_pageEditor where node_id = #{statisticsNodeId} and
+		is_delete = 0
+	</select>
+
+	<select id="getStatisticsData" parameterType="java.util.Map"
+		resultType="int">
+		select ${statisticsField} from ${tableName} ORDER BY id
+		desc limit 1
+	</select>
+
+	<!-- 页面关键字控件 -->
+	<select id="selectPagekeywords" parameterType="java.lang.Long"
+		resultType="swtech.facade.pageDesign.entity.Pagekeywords">
+		select * from ht_pagekeywords where is_delete=0 and
+		page_id=#{id}
+	</select>
+
+	<insert id="Pagekeywords"
+		parameterType="swtech.facade.pageDesign.entity.Pagekeywords"
+		keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO ht_pagekeywords
+		(is_delete,page_id,name,title,leipiplugins,orgtype,style,name1,sqldata,groupcon,p_or_m,
+		value,type,pagetitle,keywords,description)
+		VALUES
+		(#{is_delete},#{page_id},#{name},#{title},#{leipiplugins},#{orgtype},#{style},#{name1},#{sqldata},#{groupcon},#{p_or_m},
+		#{value},#{type},#{pagetitle},#{keywords},#{description});
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+	<!-- 树形分类控件 -->
+	<select id="selectTreeClassify" parameterType="java.lang.Long"
+		resultType="swtech.facade.pageDesign.entity.TreeClassifyControl">
+		select * from ht_treeClassifyControl where is_delete=0 and
+		page_id=#{id}
+	</select>
+
+	<insert id="TreeClassifyControl"
+		parameterType="swtech.facade.pageDesign.entity.TreeClassifyControl"
+		keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO ht_treeClassifyControl
+		(is_delete,page_id,name,title,leipiplugins,orgtype,style,name1,sqldata,groupcon,p_or_m,
+		placeholder,node_id)
+		VALUES
+		(#{is_delete},#{page_id},#{name},#{title},#{leipiplugins},#{orgtype},#{style},#{name1},#{sqldata},#{groupcon},#{p_or_m},
+		#{placeholder},#{node_id});
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+	<!-- 树形分类2.0控件 -->
+	<select id="selectTreeClassify02" parameterType="java.lang.Long"
+		resultType="swtech.facade.pageDesign.entity.TreeClassify02Control">
+		select * from ht_treeClassify02Control where is_delete=0
+		and
+		page_id=#{id}
+	</select>
+
+	<insert id="TreeClassify02Control"
+		parameterType="swtech.facade.pageDesign.entity.TreeClassify02Control"
+		keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO ht_treeClassify02Control
+		(is_delete,page_id,name,title,leipiplugins,orgtype,style,name1,sqldata,groupcon,p_or_m,
+		placeholder,node_id)
+		VALUES
+		(#{is_delete},#{page_id},#{name},#{title},#{leipiplugins},#{orgtype},#{style},#{name1},#{sqldata},#{groupcon},#{p_or_m},
+		#{placeholder},#{node_id});
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+	<select id="getNodeNameByNodeId" parameterType="Integer"
+		resultType="String">
+		select node_name from ht_pageEditor where node_id =
+		#{dataTableId} and
+		is_delete = 0
+	</select>
+
+
+
+	<!-- 树形分类3.0控件 -->
+	<select id="selectTreeClassify03" parameterType="java.lang.Long"
+		resultType="swtech.facade.pageDesign.entity.TreeClassify03Control">
+		select * from ht_treeClassify03Control where is_delete=0
+		and
+		page_id=#{id}
+	</select>
+
+	<insert id="TreeClassify03Control"
+		parameterType="swtech.facade.pageDesign.entity.TreeClassify03Control"
+		keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO ht_treeClassify03Control
+		(is_delete,page_id,name,title,leipiplugins,orgtype,style,name1,sqldata,groupcon,p_or_m,
+		placeholder,node_id)
+		VALUES
+		(#{is_delete},#{page_id},#{name},#{title},#{leipiplugins},#{orgtype},#{style},#{name1},#{sqldata},#{groupcon},#{p_or_m},
+		#{placeholder},#{node_id});
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+
+	<!-- 树形分类4.0控件 -->
+	<select id="selectTreeClassify04" parameterType="java.lang.Long"
+		resultType="swtech.facade.pageDesign.entity.TreeClassify04Control">
+		select * from ht_treeClassify04Control where is_delete=0
+		and
+		page_id=#{id}
+	</select>
+
+	<insert id="TreeClassify04Control"
+		parameterType="swtech.facade.pageDesign.entity.TreeClassify04Control"
+		keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO ht_treeClassify04Control
+		(is_delete,page_id,name,title,leipiplugins,orgtype,style,name1,sqldata,groupcon,p_or_m,
+		placeholder,node_id)
+		VALUES
+		(#{is_delete},#{page_id},#{name},#{title},#{leipiplugins},#{orgtype},#{style},#{name1},#{sqldata},#{groupcon},#{p_or_m},
+		#{placeholder},#{node_id});
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+
+
+	<!-- 页面关键字控件 -->
+	<select id="selectScoreControl" parameterType="java.lang.Long"
+		resultType="swtech.facade.pageDesign.entity.ScoreControl">
+		select * from ht_score_control where is_delete=0 and
+		page_id=#{id}
+	</select>
+
+	<insert id="ScoreControl"
+		parameterType="swtech.facade.pageDesign.entity.ScoreControl"
+		keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO ht_score_control
+		(is_delete,page_id,name,title,leipiplugins,orgtype,style,name1,sqldata,groupcon,p_or_m,
+		placeholder)
+		VALUES
+		(#{is_delete},#{page_id},#{name},#{title},#{leipiplugins},#{orgtype},#{style},#{name1},#{sqldata},#{groupcon},#{p_or_m},
+		#{placeholder});
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+
+
+
+
+
+	<select id="selectHeaderAndFooter"
+		parameterType="java.lang.Long"
+		resultType="swtech.facade.pageDesign.entity.HeaderAndFooter">
+		select * from ht_header_and_footer where is_delete = 0 and
+		page_id = #{id}
+	</select>
+	<insert id="HeaderAndFooter"
+		parameterType="swtech.facade.pageDesign.entity.HeaderAndFooter"
+		keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO
+		hbsxt.ht_header_and_footer
+		(is_delete,page_id,name,leipiplugins,placeholder,templatename,headerdefinitions,footerdefinitions)
+		VALUES
+		(#{is_delete},#{page_id},#{leipiplugins},#{name},#{placeholder},#{templatename},#{headerdefinitions},#{footerdefinitions});
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+
+	<select id="selectSidebarNav" parameterType="java.lang.Long"
+		resultType="swtech.facade.pageDesign.entity.SidebarNav">
+		select * from ht_sidebarnav where is_delete = 0 and
+		page_id
+		= #{id}
+	</select>
+	<insert id="SidebarNav"
+		parameterType="swtech.facade.pageDesign.entity.SidebarNav"
+		keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO
+		hbsxt.ht_sidebarnav
+		(is_delete,page_id,name,leipiplugins,placeholder,leftnavdefinitions,bluestyle)
+		VALUES
+		(#{is_delete},#{page_id},#{leipiplugins},#{name},#{placeholder},#{leftnavdefinitions},#{bluestyle});
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+	<select id="selectMultiDataSourcePublic"
+		parameterType="java.lang.Long"
+		resultType="swtech.facade.pageDesign.entity.MultiDataSourcePublic">
+		select * from ht_multidatasourcepublic where is_delete = 0
+		and
+		page_id = #{id}
+	</select>
+	<insert id="MultiDataSourcePublic"
+		parameterType="swtech.facade.pageDesign.entity.MultiDataSourcePublic"
+		keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO
+		hbsxt.ht_multidatasourcepublic
+		(is_delete,page_id,name,leipiplugins,placeholder)
+		VALUES
+		(#{is_delete},#{page_id},#{leipiplugins},#{name},#{placeholder});
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+
+	<select id="selectAssetdetailControl"
+		parameterType="java.lang.Long"
+		resultType="swtech.facade.pageDesign.entity.AssetdetailControl">
+		select * from ht_asset_detail_control where is_delete = 0
+		and
+		page_id = #{id}
+	</select>
+	<insert id="AssetdetailControl"
+		parameterType="swtech.facade.pageDesign.entity.AssetdetailControl"
+		keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO
+		hbsxt.ht_asset_detail_control
+		(is_delete,page_id,name,leipiplugins,placeholder)
+		VALUES
+		(#{is_delete},#{page_id},#{leipiplugins},#{name},#{placeholder});
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+<!-- 袁君选 -->
+<select id="selectAddcategoryControl"
+		parameterType="java.lang.Long"
+		resultType="swtech.facade.pageDesign.entity.AddcategoryControl">
+		select * from ht_addcategory_control where is_delete = 0
+		and
+		page_id = #{id}
+	</select>
+	<insert id="AddcategoryControl"
+		parameterType="swtech.facade.pageDesign.entity.AddcategoryControl"
+		keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO
+		hbsxt.ht_addcategory_control
+		(is_delete,page_id,leipiplugins,name,placeholder,node_id)
+		VALUES
+		(#{is_delete},#{page_id},#{leipiplugins},#{name},#{placeholder},#{node_id});
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	
+<select id="selectHtProductsuploadControl"
+		parameterType="java.lang.Long"
+		resultType="swtech.facade.pageDesign.entity.HtProductsuploadControl">
+		select * from ht_productsupload_control where is_delete = 0
+		and
+		page_id = #{id}
+	</select>
+	<insert id="HtProductsuploadControl"
+		parameterType="swtech.facade.pageDesign.entity.HtProductsuploadControl"
+		keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO
+		hbsxt.ht_productsupload_control
+		(is_delete,page_id,leipiplugins,name,placeholder,node_id)
+		VALUES
+		(#{is_delete},#{page_id},#{leipiplugins},#{name},#{placeholder},#{node_id});
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+
+	
+
+<select id="selectHtPreviewProductsControl"
+		parameterType="java.lang.Long"
+		resultType="swtech.facade.pageDesign.entity.HtPreviewProductsControl">
+		select * from ht_previewproducts_control where is_delete = 0
+		and
+		page_id = #{id}
+	</select>
+	<insert id="HtPreviewProductsControl"
+		parameterType="swtech.facade.pageDesign.entity.HtPreviewProductsControl"
+		keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO
+		hbsxt.ht_previewproducts_control
+		(is_delete,page_id,leipiplugins,name,placeholder,node_id)
+		VALUES
+		(#{is_delete},#{page_id},#{leipiplugins},#{name},#{placeholder},#{node_id});
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>	
+
+<select id="selectHtOrdersCentreControl"
+		parameterType="java.lang.Long"
+		resultType="swtech.facade.pageDesign.entity.HtOrdersCentreControl">
+		select * from ht_orderscentre_control where is_delete = 0
+		and
+		page_id = #{id}
+	</select>
+	<insert id="HtOrdersCentreControl"
+		parameterType="swtech.facade.pageDesign.entity.HtOrdersCentreControl"
+		keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO
+		hbsxt.ht_orderscentre_control
+		(is_delete,page_id,leipiplugins,name,placeholder,node_id)
+		VALUES
+		(#{is_delete},#{page_id},#{leipiplugins},#{name},#{placeholder},#{node_id});
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>	
+
+<select id="selectHtVemOrderfoodControl"
+		parameterType="java.lang.Long"
+		resultType="swtech.facade.pageDesign.entity.HtVemOrderfoodControl">
+		select * from ht_vemorderfood_control where is_delete = 0
+		and
+		page_id = #{id}
+	</select>
+	<insert id="HtVemOrderfoodControl"
+		parameterType="swtech.facade.pageDesign.entity.HtVemOrderfoodControl"
+		keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO
+		hbsxt.ht_vemorderfood_control
+		(is_delete,page_id,leipiplugins,name,placeholder,node_id)
+		VALUES
+		(#{is_delete},#{page_id},#{leipiplugins},#{name},#{placeholder},#{node_id});
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>	
+
+<select id="selectHtUpproductsControl"
+		parameterType="java.lang.Long"
+		resultType="swtech.facade.pageDesign.entity.HtUpproductsControl">
+		select * from ht_upproducts_control where is_delete = 0
+		and
+		page_id = #{id}
+	</select>
+	<insert id="HtUpproductsControl"
+		parameterType="swtech.facade.pageDesign.entity.HtUpproductsControl"
+		keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO
+		hbsxt.ht_upproducts_control
+		(is_delete,page_id,leipiplugins,name,placeholder,node_id)
+		VALUES
+		(#{is_delete},#{page_id},#{leipiplugins},#{name},#{placeholder},#{node_id});
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>	
+	
+<select id="selectMyReleaseCommoditiesControl"
+		parameterType="java.lang.Long"
+		resultType="swtech.facade.pageDesign.entity.MyReleaseCommoditiesControl">
+		select * from ht_myreleasecommodities_control where is_delete = 0
+		and
+		page_id = #{id}
+	</select>
+	<insert id="MyReleaseCommoditiesControl"
+		parameterType="swtech.facade.pageDesign.entity.MyReleaseCommoditiesControl"
+		keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO
+		hbsxt.ht_myreleasecommodities_control
+		(is_delete,page_id,leipiplugins,name,placeholder,node_id)
+		VALUES
+		(#{is_delete},#{page_id},#{leipiplugins},#{name},#{placeholder},#{node_id});
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>	
+	
+<select id="selectMyUploadshopControl"
+		parameterType="java.lang.Long"
+		resultType="swtech.facade.pageDesign.entity.MyUploadshopControl">
+		select * from ht_myuploadshop_control where is_delete = 0
+		and
+		page_id = #{id}
+	</select>
+	<insert id="MyUploadshopControl"
+		parameterType="swtech.facade.pageDesign.entity.MyUploadshopControl"
+		keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO
+		hbsxt.ht_myuploadshop_control
+		(is_delete,page_id,leipiplugins,name,placeholder,node_id)
+		VALUES
+		(#{is_delete},#{page_id},#{leipiplugins},#{name},#{placeholder},#{node_id});
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>	
+	
+<select id="selectMyBeautybgControl"
+		parameterType="java.lang.Long"
+		resultType="swtech.facade.pageDesign.entity.MyBeautybgControl">
+		select * from ht_mybeautybg_control where is_delete = 0
+		and
+		page_id = #{id}
+	</select>
+	<insert id="MyBeautybgControl"
+		parameterType="swtech.facade.pageDesign.entity.MyBeautybgControl"
+		keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO
+		hbsxt.ht_mybeautybg_control
+		(is_delete,page_id,leipiplugins,name,placeholder,node_id)
+		VALUES
+		(#{is_delete},#{page_id},#{leipiplugins},#{name},#{placeholder},#{node_id});
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>	
+	
+<select id="selectMybeautypreviewControl"
+		parameterType="java.lang.Long"
+		resultType="swtech.facade.pageDesign.entity.MybeautypreviewControl">
+		select * from ht_mybeautypreview_control where is_delete = 0
+		and
+		page_id = #{id}
+	</select>
+	<insert id="MybeautypreviewControl"
+		parameterType="swtech.facade.pageDesign.entity.MybeautypreviewControl"
+		keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO
+		hbsxt.ht_mybeautypreview_control
+		(is_delete,page_id,leipiplugins,name,placeholder,node_id)
+		VALUES
+		(#{is_delete},#{page_id},#{leipiplugins},#{name},#{placeholder},#{node_id});
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>										
+</mapper>

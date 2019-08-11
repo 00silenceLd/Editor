@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>流程控件</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.css">
+    <script type="text/javascript" src="self/js/vue.js"></script>
+
+    <script type="text/javascript" src="jquery-3.2.1.min.js"></script>
+    <link rel="stylesheet" href="leipi.style.css">
+    <script type="text/javascript" src="../dialogs/internal.js"></script>
+    <link rel="stylesheet" href="self/btnSelect/btnSelect.css">
+
+    <script type="text/javascript" src="./cropper/cropper.js"></script>
+    <script type="text/javascript" src="self/btnSelect/btnSelect.js"></script>
+
+    <script type="text/javascript" src="../httpData.config.js"></script>
+
+    <script type="text/javascript">
+        /* Thank you by
+                                    http://www.alt-tag.com/blog/2006/02/ie-dom-bugs/ */
+        function createElement(type, name) {
+            var element = null;
+            try {
+                element = document.createElement('<' + type + ' name="' + name + '">');
+            } catch (e) { }
+            if (element == null) {
+                element = document.createElement(type);
+                element.name = name;
+            }
+            return element;
+        }
+
+    </script>
+</head>
+
+<body>
+    <table class="table table-bordered table-striped table-hover" id="app">
+        <tr>
+            <th>
+                <span>控件名称</span>
+                <span class="label label-important">*</span>
+                <span>字段拼音</span>
+            </th>
+        </tr>
+        <tr>
+            <th>
+                <input type="text" disabled placeholder="使用默认值">
+            </th>
+        </tr>
+    </table>
+    <script>
+        var app = new Vue({
+            el: "#app",
+            data: {
+                 orgValue: "用户ID"
+            }
+        });
+        //  gdataSource=null,
+        control_name=null,
+        oNode = null, thePlugins = "getuserid";
+
+        dialog.onok = function () {
+
+            //把信息保存到数据库
+            if (!oNode) {
+                try {
+                    oNode = createElement("input", "leipiNewField");
+                    oNode.setAttribute("name", "getuserid");
+                    oNode.setAttribute("value","用户id");
+                    oNode.setAttribute("title", "用户id");
+                    oNode.setAttribute("leipiplugins", "getuserid");
+                    oNode.setAttribute("style", "width:100%;");
+                    oNode.setAttribute("placeholder", "默认自动获取用户ID (注意：一个页面只能使用一个该控件)");
+
+
+                    editor.execCommand('insertHtml', oNode.outerHTML); 
+                    nodeId = $('#node_id',window.parent.document).val();
+                    var editNewData={"node_id": nodeId,"title":app.orgValue,"control_name": "getuserid"}
+                      $.ajax({
+                        url: prevent_HOST + `pageDesignOperatorFacade/insertControl`,
+                        type: 'POST',
+                        dataType: 'json',
+                        contentType: 'application/json; charset=UTF-8',
+                        data: JSON.stringify(editNewData),
+                        async: false,
+                        success: function ( res ) {
+                        }
+                      })
+                } catch (e) {
+                    try {
+                        console.log(e);
+                        editor.execCommand('error');
+                    } catch (e) {
+                        alert('控件异常，请到 与我们反馈或寻求帮助！');
+                    }
+                    return false;
+                }
+            }
+        }
+
+        dialog.oncancel = function () {
+            if (UE.plugins[thePlugins].editdom) {
+                delete UE.plugins[thePlugins].editdom;
+            }
+        };
+    </script>
+</body>
+
+</html>

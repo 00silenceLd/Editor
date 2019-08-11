@@ -1,0 +1,1780 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+  <head>
+    <title>列表模板1</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="leipi.style.css">
+    <link rel="stylesheet" href="layui/css/layui.css" media="all">
+    <script src="layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript" src="../dialogs/internal.js"></script>
+    <script type="text/javascript" src="./jquery-3.2.1.min.js"></script>
+    <script type="text/javascript" src="../httpData.config.js"></script>
+    <style type="text/css">
+      .addmultisource {
+        margin-left: 5px;
+        text-decoration: none;
+        padding: 0 5px 0 5px;
+        border-radius: 8px;
+        height: auto;
+        background: #29e6a7;
+        display: inline-block;
+      }
+
+      .tempDatasource {
+        display: inline-block;
+        padding: 0px 5px 0px 5px;
+        margin: 0px 5px 5px 0px;
+        text-decoration: none;
+        background: gainsboro;
+      }
+
+      .tempDatasource:visited {
+        text-decoration: none;
+      }
+
+      .tempDatasource:hover {
+        text-decoration: none;
+      }
+
+      .tempDatasource:active {
+        text-decoration: none;
+      }
+
+      #searchBtnId {
+        display: inline-block;
+        padding: 0px 10px 0px 10px;
+        background: pink;
+        text-decoration: none;
+      }
+    </style>
+
+    <script src="self/js/py.js"></script>
+    <script type="text/javascript">
+      function createElement(type, name) {
+        var element = null;
+        try {
+          element = document.createElement('<' + type + ' name="' + name + '">');
+        } catch (e) {}
+        if (element == null) {
+          element = document.createElement(type);
+          element.name = name;
+        }
+        return element;
+      }
+    </script>
+    <link rel="stylesheet" href="self/listone/css/css.css">
+    <style type="text/css">
+      #test-form i {
+        width: ;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="content">
+      <table class="table table-bordered table-striped table-hover">
+        <thead>
+          <tr>
+            <th width="40%">
+              <span> 控件名称 ：</span>
+              <input id="orgname" onclick="javascript:this.select()" placeholder="必填项" type="text" class="input-medium"
+                value="自定义列表" onblur="getPY(this.value)" />
+              <span class="label label-important">*</span>
+              <input type="text" class="span2" id="pluName" placeholder="字段" value="">
+            </th>
+            <th>
+
+              <input type="text" name="searchDatasource" id="searchDatasource" value="" />
+              <a href="#" id="searchBtnId" onclick="searchDatasource()">查找</a><br id="tempBrId">
+              数据源：<select id="datasource">
+                <option value="0">请选择</option>
+              </select>
+              开启多数据源查询：
+              <input type="radio" name="multisource" value="multisource"> 开启
+              <input type="radio" name="multisource" value="nomultisource" checked> 关闭
+              <div id="" class="multisourcePart" style="color:red">
+                新增功能见控件左下角
+              </div>
+
+
+
+              <div>URL：<input type="text" name="url"></div>
+              <div>搜索：
+                <select name="searchcon" id="searchcon">
+                  <option
+                  value=''>选支持搜索字段</option>
+                </select>
+                <input type="text" class="span2" name="seardelval" id="seardelval" value="" placeholder="默认搜索内容">
+              </div>
+            </th>
+          </tr>
+          <tr>
+            <th rowspan="2" style="vertical-align: top;">
+              <div class="tpl-type">
+                <input type="radio" name="tpl" value="type-one" checked >类型一
+                <input type="radio" name="tpl" value="type-two">类型二
+                <input type="radio" name="tpl" value="type-three">类型三
+                <input type="radio" name="tpl" value="type-four">类型四
+                <input type="radio" name="tpl" value="type-five">类型五
+                <input type="radio" name="tpl" value="type-six">类型六
+                <input type="radio" name="tpl" value="type-seven">类型七
+              </div>
+              <img id="tpl-demo-pic" src="self/listone/img/type-one.jpg">
+              <div style="padding-top: 15px;">
+                <input type="checkbox" name="bottomline" value="on"> 显示底部线
+                <input type="checkbox" name="showpage" value="on" id="selectpagingstyleId"> 显示分页
+                <input type="checkbox" name="orderby" value="asc"> 升序排列
+                <input type="checkbox" name="outborder" value="on"> 外边框
+              </div>
+              <div id="pagingstyleareaid" style="margin-left: 45px;display: none;">
+                <label for="pagingstyle1" style="display: inline-block;"><input type="radio" name="pagingstyle" id="pagingstyle1"
+                    value="pagingstyle1" checked="" />分页样式1</label>
+                <label for="pagingstyle2" style="display: inline-block;"><input type="radio" name="pagingstyle" id="pagingstyle2"
+                    value="pagingstyle2" />分页样式2</label>
+              </div>
+
+              <div id="prefixId" style="padding-top: 15px;display: none;">
+                行前符号：
+                <input type="radio" name="prefix" value="circle"> 圆形
+                <input type="radio" name="prefix" value="square"> 正方形
+                <input type="radio" name="prefix" value="triangle"> 三角形
+                <input type="radio" name="prefix" value="noneShape" checked> 不需要
+              </div>
+
+              <div id="prefixcolorId" style="padding-top: 15px;display:none ;">
+                符号颜色：
+                <input type="radio" name="prefixcolor" value="c1" checked=""> 黑色
+                <input type="radio" name="prefixcolor" value="c2"> 灰色
+              </div>
+
+
+              <script type="text/javascript">
+
+              </script>
+
+              <div id="isheaderId" style="padding-top: 15px;display: none;">
+                显示头部：
+                <input class="isheader" type="radio" name="isheader" value="yes"> 是
+                <input class="isheader" type="radio" name="isheader" value="no" checked> 否
+
+                <input type="hidden" name="headercolor" id="headercolor" value="" />
+
+                <div id="headerSettingArea" style="display: none;">
+                  <div id="headstyleId" style="display: ;">
+                    头部栏显示方式：
+                    <input class="headstyle" type="radio" name="headstyle" value="headImg">图片
+                    <input class="headstyle" type="radio" name="headstyle" value="customize" checked> 自定义
+                  </div>
+                  <div id="uploadHeadImgBtnId" style="display: none;">
+
+                    <input type="hidden" name="headImgSrc" id="headImgSrcId" value="" />
+                    <div id="imgAraeId"></div>
+                    <label class="btn btn-primary btn-small" for="uploadHeadImgId" title="上传头部栏图片">
+                      上传头部栏图片
+                      <input accept="image/jpeg,image/jpg,image/png,image/svg" type="file" name="uploadHeadImg" id="uploadHeadImgId"
+                        value="" style="display: none;" />
+                    </label>
+                  </div>
+                  <div id="settingId" style="display: ;">
+                    <div id="">
+                      头部栏背景颜色：<div id="headercolor-select"></div>
+                    </div>
+
+                  </div>
+                  头部标题：
+                  <input type="text" name="headerTitle" id="headerTitle" value="" placeholder="如:通知公告" />
+                  <input type="hidden" name="titlecolor" id="titlecolor" value="" />
+                  <div id="titlecolor-select"></div>
+                  <input type="text" name="moreurl" id="moreurl" value="" placeholder="URL跳转" />
+                </div>
+
+
+              </div>
+
+              <div id="iscommentId" style="padding-top: 15px;">
+                评论插件：
+                <input type="radio" name="iscomment" value="show"> 显示
+                <input type="radio" name="iscomment" value="hide" checked> 隐藏
+              </div>
+              <div id="isscoreId" style="padding-top: 15px;">
+                评分插件：
+                <input type="radio" name="isscore" value="score"> 开启
+                <input type="radio" name="isscore" value="noscore" checked> 关闭
+              </div>
+              <div id="iscolorId" style="padding-top: 15px;">
+                选择颜色：
+                <input type="radio" name="iscolor" value="1" checked> 红色
+                <input type="radio" name="iscolor" value="2"> 蓝色
+              </div>
+            </th>
+
+
+
+            <th>
+              <span>数据字段</span>
+            </th>
+          </tr>
+          <tr>
+            <td>
+              <table>
+                <tr>
+                  <td>图片</td>
+                  <td>
+                    <select id="datapic" class="datafiled">
+                      <option value="0">请选择</option>
+                    </select>
+                    宽：<input type="text" name="listpicw" class="span1" placeholder="100px" value="">
+                    高：<input type="text" name="listpich" class="span1" placeholder="100px" value="">
+                  </td>
+                  <td> <input   type="number" class="span2" name="picfontsize"class="input-medium" value="" placeholder="输入限制文本的字数"></td>
+                </tr>
+
+
+                <tr>
+                  <td><input type="text" value="" name="titlelabel" class="span1"></td>
+                  <td>
+                    <select id="datatitle" class="datafiled">
+                      <option value="0">请选择</option>
+                    </select>
+                  </td>
+                  <td><input type="number" class="span2" name="titlesize"class="input-medium" value="" placeholder="输入限制文本的字数"></td>
+                </tr>
+                <tr>
+                  <td><input type="text" value="" name="conlabel" class="span1"></td>
+                  <td>
+                    <select id="datacontent" class="datafiled">
+                      <option value="0">请选择</option>
+                    </select>
+                  </td>
+                  <td><input type="number" class="span2" name="consize"  class="input-medium" value="" placeholder="输入限制文本的字数"></td>
+                </tr>
+                <div id="typesevendateandurl">
+                 <tr><td colspan="3"><p>日期和url仅支持类型七</p></td></tr>
+                     <tr>
+                      <td><input type="hidden" value="" name="typesevendate" class="span1">
+                      <input type="text" value="日期" class="span1"></td>
+                      <td>
+                        <select id="datacontent2" class="datafiled">
+                          <option value="0">请选择</option>
+                        </select>
+                      </td>
+                      <td><input type="number" class="span2" name="consize"class="input-medium" value="" placeholder="输入限制文本的字数"></td>
+                    </tr>
+                  <tr>
+                  <td><input type="text" value="URL"  class="span1"></td>
+                  <td >
+                  <input name="typesevenurl" type="text" value=""  >
+                  </td>
+
+                </tr>
+                </div>
+              </table>
+
+            </td>
+          </tr>
+          <tr>
+            <th>
+              <span>每页记录条数</span>
+            </th>
+            <th>
+              <span>显示列数/其它功能</span>
+            </th>
+          </tr>
+          <tr>
+            <td>
+              <input name="pagesize" class="span1" type="number" value="5" min="1" max="100">
+
+
+              <div id="" class="multisourcePart">
+                仅显示第一条数据：
+                <input type="radio" name="onlyShowOne" value="onlyShowOne"> 是
+                <input type="radio" name="onlyShowOne" value="noonlyShowOne" checked> 否<br>
+                单行显示源数：<input type="text" name="multirowsourcecount" id="multirowsourcecount" value="4" maxlength="2"
+                  style="width: 20px;" /><br>
+                查询多数据发布源：
+                <input class="multiSourcePublicCla" type="radio" name="multiSourcePublic" value="multiSourcePublic"> 是
+                <input class="multiSourcePublicCla" type="radio" name="multiSourcePublic" value="noMultiSourcePublic"
+                  checked>
+                否<br>
+
+
+
+                <input type="text" name="multititle" id="multititle" placeholder="该数据源标题" value="" /><a id="addMultiSource"
+                  href="#">添加</a><br>
+                <a style="display: none;" id="editMultiSource" href="#">修改</a><a style="display: none;" id="delMultiSource"
+                  href="#">删除</a>
+                <div id="multisourceArea" style="margin-bottom: 10px;">
+
+                </div>
+              </div>
+            </td>
+            <td>
+              <input name="colnumber" type="number" value="1" min="1" max="5">&nbsp;&nbsp;&nbsp;
+              <input type="checkbox" value="1" name="frmedit"> 编辑
+              <input type="checkbox" value="1" name="frmdel"> 删除
+              &nbsp;&nbsp;&nbsp;字体大小：<input type="text" class="span1" name="fontsize" value="14px">
+              &nbsp;&nbsp;&nbsp;行高：<input type="text" class="span1" name="listheight" value="26px">
+              &nbsp;&nbsp;&nbsp;<input type="checkbox" value="1" name="isnotuser"> 用户ID显示
+            </td>
+          </tr>
+        </thead>
+      </table>
+    </div>
+
+    <script>
+
+    </script>
+    <script type="text/javascript">
+
+      var oNode = null,
+        gdataSource = null,
+        control_name = null,
+        nodeId = null,
+        thePlugins = 'listone';
+
+
+      var tempMultisourceArea = null;
+      var tempMultiPubsourceArea = null;
+      var tempMultiCount = null;
+      var tempMultiPubCount = null;
+      var thisMultiSourcePublic = null;
+      $('.multiSourcePublicCla').on('click', function() {
+        multiSourcePublic = $(this).attr('value');
+        if ($(this).attr('value') == 'multiSourcePublic') {
+          tempMultisourceArea = $('#multisourceArea').html();
+          $('#multisourceArea').html(tempMultiPubsourceArea)
+
+          tempMultiCount = multiCount;
+          /* if (tempMultiPubCount) {
+          	multiCount = tempMultiPubCount;
+          } else {
+          	multiCount = 0;
+          } */
+          multiCount = 0;
+
+          $('#multisourceArea').empty();
+
+          var datasource = $("#datasource").val();
+          var multinodeid = datasource.split(":")[0];
+          var multidatapic = $("#datapic").val();
+          var multidatatitle = $("#datatitle").val();
+          var multidatacontent = $("#datacontent").val();
+          var multititlesize = $("input[name=titlesize]").val();
+          var multiconsize = $("input[name=consize]").val();
+          var multititlelabel = $("input[name=titlelabel]").val();
+          var multiconlabel = $("input[name=conlabel]").val();
+          var multifontsize = $("input[name=fontsize]").val();
+          var multilistpicw = $("input[name=listpicw]").val();
+          var multilistpich = $("input[name=listpich]").val();
+          var multilisturl = $("input[name=url]").val();
+          var multisearchcon = $("#searchcon").val();
+          var multiseardelval = $("#seardelval").val();
+          var multipicfontsize = $("input[name=picfontsize]").val();
+          var multilistheight = $("input[name=listheight]").val();
+
+          if (multidatapic == '' && multidatatitle == '' && multidatacontent == '') {
+            alert('没有选择数据字段');
+            return false;
+          }
+
+          if (datasource == 0) {
+            alert('请选择多源发布数据源');
+            return false;
+          }
+
+          $.ajax({
+            url: prevent_HOST + 'nodeQueryFacade/getThisSlavePage?nodeId=' + datasource.split(":")[0],
+            async: false,
+            /* type: 'GET',
+            dataType: 'json',
+            contentType: 'application/json; charset=UTF-8',
+            data: JSON.stringify(data), */
+            success: function(res) {
+              if (res.status == "200") {
+                var slaveInfos = res.msg;
+                if (slaveInfos.length > 0) {
+                  for (var i = 0; i < slaveInfos.length; i++) {
+                    var slaveInfo = slaveInfos[i];
+
+
+
+                    multiCount += 1;
+                    var multinodeid = slaveInfo.nodeId;
+                    var multisourcename = slaveInfo.nodeName;
+                    var multititle = slaveInfo.nodeName.split('nid')[0];
+
+
+                    addmult(multiCount, multititle, multinodeid, multisourcename, multidatapic,
+                      multidatatitle,
+                      multidatacontent,
+                      multititlesize, multiconsize, multititlelabel, multiconlabel, multifontsize,
+                      multilistpicw,
+                      multilistpich,
+                      multilisturl, multisearchcon, multiseardelval, multipicfontsize, multilistheight)
+
+                  }
+                }
+              }
+            }
+          })
+
+          $('#multititle').hide();
+          $('#addMultiSource').hide();
+          $('#editMultiSource').hide();
+          $('#delMultiSource').hide();
+
+        } else {
+          tempMultiPubsourceArea = $('#multisourceArea').html();
+          // tempMultiPubCount = multiCount;
+          if (tempMultiCount) {
+            multiCount = tempMultiCount;
+          } else {
+            multiCount = 0;
+          }
+
+          $('#multisourceArea').html(tempMultisourceArea)
+          $('#multititle').show();
+          $('#addMultiSource').show();
+        }
+
+      })
+
+
+
+
+      $('input[name=multisource]').on('click', function() {
+        var multisource = $(this).val();
+        // alert(multisource)
+        if (multisource == 'multisource') {
+          $('.multisourcePart').show();
+        } else {
+          $('.multisourcePart').hide();
+        }
+      })
+
+      var multiCount;
+      $('#addMultiSource').on('click', function() {
+        var datasource = $("#datasource").val();
+        var multititle = $('#multititle').val();
+
+
+        var multidatapic = $("#datapic").val();
+        var multidatatitle = $("#datatitle").val();
+        var multidatacontent = $("#datacontent").val();
+        var multititlesize = $("input[name=titlesize]").val();
+        var multiconsize = $("input[name=consize]").val();
+        var multititlelabel = $("input[name=titlelabel]").val();
+        var multiconlabel = $("input[name=conlabel]").val();
+        var multifontsize = $("input[name=fontsize]").val();
+        var multilistpicw = $("input[name=listpicw]").val();
+        var multilistpich = $("input[name=listpich]").val();
+        var multilisturl = $("input[name=url]").val();
+        var multisearchcon = $("#searchcon").val();
+        var multiseardelval = $("#seardelval").val();
+        var multipicfontsize = $("input[name=picfontsize]").val();
+        var multilistheight = $("input[name=listheight]").val();
+
+
+        if (multidatapic == '' && multidatatitle == '' && multidatacontent == '') {
+          alert('没有选择数据字段');
+          return false;
+        }
+
+
+        if (datasource == 0) {
+          alert('请选择数据源');
+          return false;
+        }
+        if (multititle == '') {
+          alert('请输入数据源标题');
+          return false;
+        }
+
+        multiCount += 1;
+        var multinodeid = datasource.split(":")[0];
+        var multisourcename = datasource.split(":")[1];
+
+        addmult(multiCount, multititle, multinodeid, multisourcename, multidatapic, multidatatitle,
+          multidatacontent,
+          multititlesize, multiconsize, multititlelabel, multiconlabel, multifontsize, multilistpicw,
+          multilistpich,
+          multilisturl, multisearchcon, multiseardelval, multipicfontsize, multilistheight)
+
+
+      })
+
+      function addmult(multiCount, multititle, multinodeid, multisourcename, multidatapic, multidatatitle,
+        multidatacontent,
+        multititlesize, multiconsize, multititlelabel, multiconlabel, multifontsize, multilistpicw, multilistpich,
+        multilisturl, multisearchcon, multiseardelval, multipicfontsize, multilistheight) {
+        $('#multisourceArea').append('<a onclick="editmultisource(this)" class="addmultisource" id="multi' + multiCount +
+          '" href="javaSrcipt:void(0)" multinodeid="' +
+          multinodeid +
+          '" multisourcename="' + multisourcename + '" multidatapic="' + multidatapic + '" multidatatitle="' +
+          multidatatitle + '" multidatacontent="' + multidatacontent + '"' +
+          'multititlesize="' + multititlesize + '" multiconsize="' + multiconsize + '" multititlelabel="' +
+          multititlelabel +
+          '" multiconlabel="' + multiconlabel + '" multifontsize="' + multifontsize + '" multilistpicw="' +
+          multilistpicw +
+          '" multilistpich="' + multilistpich + '" ' +
+          'multilisturl="' + multilisturl + '" multisearchcon="' + multisearchcon + '" multiseardelval="' +
+          multiseardelval +
+          '" multipicfontsize="' + multipicfontsize + '" multilistheight="' + multilistheight + '"' +
+          '>' + multititle + '</a>')
+        $('#multititle').val('');
+
+      }
+
+
+
+      var thisEdimultiSource;
+
+      function editmultisource(e) {
+
+        if (thisMultiSourcePublic || thisMultiSourcePublic == 'multiSourcePublic') {
+          return false;
+        }
+
+
+
+
+
+        var omulti = $(e);
+
+        $('#addMultiSource').hide();
+        $('#editMultiSource').show();
+        $('#delMultiSource').show();
+
+        thisEdimultiSource = omulti.attr('id');
+
+
+        var d = omulti.attr('multinodeid') + ':' + omulti.attr('multisourcename');
+        var datasource = $("#datasource").val(d);
+        var multititle = $('#multititle').val(omulti.html());
+
+        var multidatapic = $("#datapic").val(omulti.attr('multidatapic'));
+        var multidatatitle = $("#datatitle").val(omulti.attr('multidatatitle'));
+        var multidatacontent = $("#datacontent").val(omulti.attr('multidatacontent'));
+        var multititlesize = $("input[name=titlesize]").val(omulti.attr('multititlesize'));
+        var multiconsize = $("input[name=consize]").val(omulti.attr('multiconsize'));
+        var multititlelabel = $("input[name=titlelabel]").val(omulti.attr('multititlelabel'));
+        var multiconlabel = $("input[name=conlabel]").val(omulti.attr('multiconlabel'));
+        var multifontsize = $("input[name=fontsize]").val(omulti.attr('multifontsize'));
+        var multilistpicw = $("input[name=listpicw]").val(omulti.attr('multilistpicw'));
+        var multilistpich = $("input[name=listpich]").val(omulti.attr('multilistpich'));
+        var multilisturl = $("input[name=url]").val(omulti.attr('multilisturl'));
+        var multisearchcon = $("#searchcon").val(omulti.attr('multisearchcon'));
+        var multiseardelval = $("#seardelval").val(omulti.attr('multiseardelval'));
+        var multipicfontsize = $("input[name=picfontsize]").val(omulti.attr('multipicfontsize'));
+        var multilistheight = $("input[name=listheight]").val(omulti.attr('multilistheight'));
+
+
+      }
+
+
+
+      $('#editMultiSource').on('click', function() {
+
+
+        var datasource = $("#datasource").val();
+        var multititle = $('#multititle').val();
+
+        var multidatapic = $("#datapic").val();
+        var multidatatitle = $("#datatitle").val();
+        var multidatacontent = $("#datacontent").val();
+        var multititlesize = $("input[name=titlesize]").val();
+        var multiconsize = $("input[name=consize]").val();
+        var multititlelabel = $("input[name=titlelabel]").val();
+        var multiconlabel = $("input[name=conlabel]").val();
+        var multifontsize = $("input[name=fontsize]").val();
+        var multilistpicw = $("input[name=listpicw]").val();
+        var multilistpich = $("input[name=listpich]").val();
+        var multilisturl = $("input[name=url]").val();
+        var multisearchcon = $("#searchcon").val();
+        var multiseardelval = $("#seardelval").val();
+        var multipicfontsize = $("input[name=picfontsize]").val();
+        var multilistheight = $("input[name=listheight]").val();
+
+
+        if (multidatapic == '' && multidatatitle == '' && multidatacontent == '') {
+          alert('没有选择数据字段');
+          return false;
+        }
+        if (datasource == 0) {
+          alert('请选择数据源');
+          return false;
+        }
+        if (multititle == '') {
+          alert('请输入数据源标题');
+          return false;
+        }
+
+        var multinodeid = datasource.split(":")[0];
+        var multisourcename = datasource.split(":")[1];
+
+
+        var oES = $('#' + thisEdimultiSource);
+
+
+        oES.attr('multinodeid', multinodeid);
+        oES.attr('multisourcename', multisourcename);
+
+        oES.html(multititle);
+        oES.attr('multidatapic', multidatapic);
+        oES.attr('multidatatitle', multidatatitle);
+        oES.attr('multidatacontent', multidatacontent);
+        oES.attr('multititlesize', multititlesize);
+        oES.attr('multiconsize', multiconsize);
+        oES.attr('multititlelabel', multititlelabel);
+        oES.attr('multiconlabel', multiconlabel);
+        oES.attr('multifontsize', multifontsize);
+        oES.attr('multilistpicw', multilistpicw);
+        oES.attr('multilistpich', multilistpich);
+        oES.attr('multilisturl', multilisturl);
+        oES.attr('multisearchcon', multisearchcon);
+        oES.attr('multiseardelval', multiseardelval);
+        oES.attr('multipicfontsize', multipicfontsize);
+        oES.attr('multilistheight', multilistheight);
+
+        $('#addMultiSource').show();
+        $('#editMultiSource').hide();
+        $('#delMultiSource').hide();
+
+      })
+
+      $('#delMultiSource').on('click', function() {
+        var oES = $('#' + thisEdimultiSource);
+
+        oES.remove();
+        multiCount = multiCount - 1;
+        $('#addMultiSource').show();
+        $('#editMultiSource').hide();
+        $('#delMultiSource').hide();
+
+
+
+      })
+
+
+
+
+
+      $('body').on('click', '#selectpagingstyleId', function() {
+        var opagingstyleareaid = document.getElementById('pagingstyleareaid');
+        if (this.checked) {
+          opagingstyleareaid.style.display = "";
+        } else {
+          opagingstyleareaid.style.display = "none";
+        }
+
+
+      })
+
+
+
+
+      $('body').on('click', '.tpl-type input', function() {
+        var curtpl = $(this).val();
+        if (curtpl != "type-five") $('#tpl-demo-pic').attr('src', 'self/listone/img/' + curtpl + '.jpg');
+
+
+        //曾智宏
+        var oprefix = document.getElementById("prefixId");
+        var oisheader = document.getElementById("isheaderId");
+        var otplDemoPic = document.getElementById("tpl-demo-pic");
+        var typesevendateandurl = document.getElementById("#typesevendateandurl");
+        if (curtpl == "type-five") {
+          otplDemoPic.style.display = "none";
+          oprefix.style.display = "";
+          oisheader.style.display = "";
+        } else {
+          otplDemoPic.style.display = "";
+          oprefix.style.display = "none";
+          oisheader.style.display = "none";
+        }
+
+
+
+
+
+      })
+
+      //曾智宏
+      $('body').on('click', '.isheader', function() {
+        var isheader = $(this).val();
+        var oheaderSettingArea = document.getElementById("headerSettingArea");
+        if (isheader == "yes") {
+          oheaderSettingArea.style.display = "";
+
+        }
+        if (isheader == "no") {
+          oheaderSettingArea.style.display = "none";
+        }
+
+      })
+      $('body').on('click', '.headstyle', function() {
+        var headstyle = $(this).val();
+        var ouploadHeadImgBtn = document.getElementById("uploadHeadImgBtnId");
+        var osetting = document.getElementById("settingId");
+        if (headstyle == "headImg") {
+          ouploadHeadImgBtn.style.display = "";
+          osetting.style.display = "none";
+        }
+        if (headstyle == "customize") {
+          ouploadHeadImgBtn.style.display = "none";
+          osetting.style.display = "";
+        }
+
+      })
+      $("#prefixId").on("click", function() {
+        var thisPrefix = $("input[name=prefix]:checked").val();
+        var oprefixcolorId = document.getElementById("prefixcolorId");
+        if (thisPrefix == "noneShape") {
+          oprefixcolorId.style.display = "none";
+        } else {
+          oprefixcolorId.style.display = "";
+        }
+      })
+
+      $('body').on('change', '#uploadHeadImgId', function(e) {
+
+        var fileName = $('#uploadHeadImgId')[0].files[0].name;
+
+        //图片后缀判断
+        var suffix = fileName.split(".")[1];
+        // alert(suffix);
+        if (suffix == 'png' || suffix == 'PNG' || suffix == 'jpg' || suffix == 'JPG' || suffix == 'jpeg' ||
+          suffix == 'JPEG' || suffix == 'svg' || suffix == 'SVG') {
+
+          var item = document.getElementById('uploadHeadImgId').files[0],
+            formData = new FormData(),
+            data;
+          formData.append('fileVideo', item);
+          var oDiv;
+          $.ajax({
+            url: prevent_HOST + 'ueditor/uoloadFile',
+            type: 'POST',
+            data: formData,
+            cache: false,
+            processData: false, // 不处理发送的数据，因为data值是FormData对象，不需要对数据做处理
+            contentType: false, // 不设置Content-type请求头
+            beforeSend: function() {
+              oDiv = document.createElement('div');
+              oDiv.innerHTML = "请稍等...";
+              $('#uploadHeadImgId').parent('label').before(oDiv);
+            },
+            success: function(res) {
+              oDiv.remove();
+              data = res.msg;
+
+              var oheadImgSrc = document.getElementById('headImgSrcId');
+              oheadImgSrc.value = data;
+              // alert(oheadImgSrc.value)
+
+              // 						var imageTarget = $('#uploadHeadImgId'),
+              // 							div = document.createElement('div');
+              var oimgArea = document.getElementById("imgAraeId");
+              oimgArea.innerHTML = fileName;
+              // $(imageTarget).parent().parent().find('input').attr('value', data) // 设置input的属性
+              // $(imageTarget).parent('label').before(div);
+            }
+          });
+        } else {
+          alert("图片格式不正确");
+        }
+
+
+
+
+      })
+
+
+
+
+
+      window.onload = function() {
+
+        multiCount = 0;
+
+        layui.use('colorpicker', function() {
+          var $ = layui.$,
+            colorpicker = layui.colorpicker;
+          //表单赋值
+          colorpicker.render({
+            elem: '#headercolor-select',
+            color: '#ffffff',
+            done: function(color) {
+              $('#headercolor').val(color);
+              var color3 = $('#headercolor').val();
+            }
+          });
+
+          colorpicker.render({
+            elem: '#titlecolor-select',
+            color: '#000000',
+            done: function(color) {
+              $('#titlecolor').val(color);
+              var color2 = $('#titlecolor').val();
+            }
+          });
+
+        });
+
+
+
+        $('.multisourcePart').hide();
+
+        $G('orgname').select();
+        //弹出窗口初始化函数
+        if (UE.plugins[thePlugins].editdom) {
+          oNode = UE.plugins[thePlugins].editdom;
+          $G('orgname').value = oNode.getAttribute('title');
+          var datasource = oNode.getAttribute('datasource');
+          var datapic = oNode.getAttribute('datapic');
+          var datatitle = oNode.getAttribute('datatitle');
+          var datacontent = oNode.getAttribute('datacontent');
+          var datacontent2 = oNode.getAttribute('datacontent2');
+          var pagesize = oNode.getAttribute('pagesize');
+          var bottomline = oNode.getAttribute('bottomline');
+          var showpage = oNode.getAttribute('showpage');
+          var orderby = oNode.getAttribute('orderby');
+          var colnumber = oNode.getAttribute('colnumber');
+          var tpl = oNode.getAttribute('tpl');
+          var titlesize = oNode.getAttribute('titlesize');
+          var consize = oNode.getAttribute('consize');
+          var name = oNode.getAttribute('name');
+          var titlelabel = oNode.getAttribute('titlelabel');
+
+          var conlabel = oNode.getAttribute('conlabel');
+          var typesevendate = oNode.getAttribute('typesevendate');
+          var frmedit = oNode.getAttribute('frmedit');
+          var frmdel = oNode.getAttribute('frmdel');
+          var fontsize = oNode.getAttribute('fontsize');
+          var searchcon = oNode.getAttribute('searchcon');
+          var seardelval = oNode.getAttribute('seardelval');
+          var picfontsize = oNode.getAttribute('picfontsize');
+          var listheight = oNode.getAttribute('listheight');
+          var isnotuser = oNode.getAttribute('isnotuser');
+          var multirowsourcecount = oNode.getAttribute('multirowsourcecount');
+
+          var multiSourcePublic = oNode.getAttribute('multisourcepublic');
+
+          //曾智宏
+          var prefix = oNode.getAttribute('prefix');
+          var isheader = oNode.getAttribute('isheader');
+          var headerTitle = oNode.getAttribute('headerTitle');
+          var moreurl = oNode.getAttribute('moreurl');
+          var headercolor = oNode.getAttribute('headercolor');
+          var titlecolor = oNode.getAttribute('titlecolor');
+
+          //曾智宏
+          var iscomment = oNode.getAttribute('iscomment'); //show或hide
+          var isscore = oNode.getAttribute('isscore'); //on或off
+          var iscolor = oNode.getAttribute('iscolor');
+           var typesevenurl = oNode.getAttribute('typesevenurl');
+
+          //曾智宏
+          var outborder = oNode.getAttribute('outborder');
+          var onlyShowOne = oNode.getAttribute('onlyshowone');
+          var prefixcolor = oNode.getAttribute('prefixcolor');
+
+          //曾智宏
+          var headImgSrc = oNode.getAttribute('headImgSrc');
+          var headstyle = oNode.getAttribute('headstyle');
+
+          //曾智宏pagingstyle
+          var pagingstyle = oNode.getAttribute('pagingstyle');
+
+          var multisource = oNode.getAttribute('multisource');
+          var multititles = oNode.getAttribute('multititles');
+          var multisourcenames = oNode.getAttribute('multisourcenames');
+          var multinodeids = oNode.getAttribute('multinodeids');
+
+          var multidatapics = oNode.getAttribute('multidatapics');
+          var multidatatitles = oNode.getAttribute('multidatatitles');
+          var multidatacontents = oNode.getAttribute('multidatacontents');
+          var multititlesizes = oNode.getAttribute('multititlesizes');
+          var multiconsizes = oNode.getAttribute('multiconsizes');
+          var multititlelabels = oNode.getAttribute('multititlelabels');
+          var multiconlabels = oNode.getAttribute('multiconlabels');
+          var multifontsizes = oNode.getAttribute('multifontsizes');
+          var multilistpicws = oNode.getAttribute('multilistpicws');
+          var multilistpichs = oNode.getAttribute('multilistpichs');
+          var multilisturls = oNode.getAttribute('multilisturls');
+          var multisearchcons = oNode.getAttribute('multisearchcons');
+          var multiseardelvals = oNode.getAttribute('multiseardelvals');
+          var multipicfontsizes = oNode.getAttribute('multipicfontsizes');
+          var multilistheights = oNode.getAttribute('multilistheights');
+
+
+
+
+          if (multisource != 'multisource' || multisource == undefined) {
+            $('input[value=nomultisource]').attr("checked", 'true');
+            $('.multisourcePart').hide();
+          } else {
+            $('input[value=multisource]').attr("checked", 'true');
+            $('.multisourcePart').show();
+          }
+
+          if (multititles != undefined && multititles != "") {
+            multititles = multititles.split(',');
+            multisourcenames = multisourcenames.split(',');
+            multinodeids = multinodeids.split(',');
+
+            multidatapics = multidatapics.split(',');
+            multidatatitles = multidatatitles.split(',');
+            multidatacontents = multidatacontents.split(',');
+            multititlesizes = multititlesizes.split(',');
+            multiconsizes = multiconsizes.split(',');
+            multititlelabels = multititlelabels.split(',');
+            multiconlabels = multiconlabels.split(',');
+            multifontsizes = multifontsizes.split(',');
+            multilistpicws = multilistpicws.split(',');
+            multilistpichs = multilistpichs.split(',');
+            multilisturls = multilisturls.split(',');
+            multisearchcons = multisearchcons.split(',');
+            multiseardelvals = multiseardelvals.split(',');
+            multipicfontsizes = multipicfontsizes.split(',');
+            multilistheights = multilistheights.split(',');
+
+
+
+
+
+            if (parseInt(multirowsourcecount)) {
+              $('#multirowsourcecount').attr('value', multirowsourcecount)
+            }
+            if (multiSourcePublic) {
+              $('input[value=multiSourcePublic]').attr("checked", 'true');
+              $('#multititle').hide();
+              $('#addMultiSource').hide();
+              $('#editMultiSource').hide();
+              $('#delMultiSource').hide();
+            }
+
+
+
+
+            multiCount = multititles.length;
+            for (var i = 0; i < multiCount; i++) {
+              if (multititles[i] == "") {
+                multiCount = multiCount - 1;
+                break;
+              }
+              addmult(i + 1, multititles[i], multinodeids[i], multisourcenames[i], multidatapics[i], multidatatitles[
+                  i],
+                multidatacontents[i],
+                multititlesizes[i], multiconsizes[i], multititlelabels[i], multiconlabels[i], multifontsizes[i],
+                multilistpicws[i], multilistpichs[i],
+                multilisturls[i], multisearchcons[i], multiseardelvals[i], multipicfontsizes[i], multilistheights[i]
+              );
+            }
+
+
+
+          }
+
+          /* if (multisourcenames != undefined && multisourcenames != "") {
+
+          }
+          if (multinodeids != undefined && multinodeids != "") {
+
+          } */
+
+
+          control_name = name;
+
+          var listpicw = oNode.getAttribute('listpicw');
+          var listpich = oNode.getAttribute('listpich');
+          var listurl = oNode.getAttribute('url');
+          console.log("onload时的listurl"+listurl)
+          if (frmedit == "1") $("[name='frmedit']").attr("checked", 'true');
+          if (frmdel == "1") $("[name='frmdel']").attr("checked", 'true');
+
+          var datasources = datasource.split(":");
+          $("#datasource").prepend('<option value="' + datasource + '" selected>' + datasources[1] + '</option>');
+          $.ajax({
+            url: prevent_HOST + 'pageDesignQueryFacade/getPageEditorData?id=' + datasources[0],
+            method: "GET",
+            success: function(res) {
+              var pic = '';
+              var title = '';
+              var con = '';
+              var con2 = '';
+              var sear_select = "";
+              $(".datafiled").html('');
+              $.each(res.msg, function(index, value) {
+                if (datapic == value.value) {
+                  pic += '<option value="' + value.value + '" selected>' + value.text + '</option>';
+                } else {
+                  pic += '<option value="' + value.value + '">' + value.text + '</option>';
+                }
+
+                if (datatitle == value.value) {
+                  title += '<option value="' + value.value + '" selected>' + value.text + '</option>';
+                } else {
+                  title += '<option value="' + value.value + '">' + value.text + '</option>';
+                }
+
+                if (datacontent == value.value) {
+                  con += '<option value="' + value.value + '" selected>' + value.text + '</option>';
+                } else {
+                  con += '<option value="' + value.value + '">' + value.text + '</option>';
+                }
+                if (datacontent2 == value.value) {
+                  con2 += '<option value="' + value.value + '" selected>' + value.text + '</option>';
+                } else {
+                  con2 += '<option value="' + value.value + '">' + value.text + '</option>';
+                }
+                sear_select = "";
+                if (searchcon == value.value) sear_select = ' selected';
+                $("#searchcon").append('<option value="' + value.value + '"' + sear_select + '>' + value.text +
+                  '</option>');
+              })
+              $("#datapic").html(pic);
+              $("#datatitle").html(title);
+              $("#datacontent").html(con);
+              $("#datacontent2").html(con2);
+
+            }
+          })
+          if (pagesize != undefined) $("input[name=pagesize]").val(pagesize);
+          if (bottomline != undefined && bottomline == 'on') {
+            $("input[name=bottomline]").attr("checked", "true");
+          }
+          if (isnotuser != undefined && isnotuser == '1') {
+            $("input[name=isnotuser]").attr("checked", "true");
+          }
+          if (showpage != undefined && showpage == 'on') {
+            $("input[name=showpage]").attr("checked", "true");
+            var opagingstyleareaid = document.getElementById('pagingstyleareaid');
+            opagingstyleareaid.style.display = "";
+          }
+          if (pagingstyle != undefined && pagingstyle != '' && pagingstyle != 'null') {
+            $("input[value=" + pagingstyle + "]").attr("checked", "true");
+          }
+
+
+
+          if (orderby != undefined && orderby == 'asc') {
+            $("input[name=orderby]").attr("checked", "true");
+          }
+          //曾智宏
+          if (outborder != undefined && outborder == 'on') {
+            $("input[name=outborder]").attr("checked", "true");
+          }
+          if (onlyShowOne != undefined && onlyShowOne == 'onlyShowOne') {
+            $("input[value=onlyShowOne]").attr("checked", "true");
+          }
+
+
+          if (prefixcolor != undefined && prefixcolor != '' && prefixcolor != 'null') {
+            // alert("#prefixcolorId" + prefixcolor);
+            // $("#prefixcolorId" + prefixcolor).attr("checked", "true");
+            $("input[value='" + prefixcolor + "']").attr("checked", "true");
+          }
+
+          if (colnumber != undefined) {
+            $("input[name=colnumber]").val(colnumber);
+          }
+          if (tpl != undefined) {
+            $('#tpl-demo-pic').attr('src', 'self/listone/img/' + tpl + '.jpg');
+            $("input[value='" + tpl + "']").attr("checked", "true");
+
+
+            //曾智宏
+            var oprefix = document.getElementById("prefixId");
+            var oisheader = document.getElementById("isheaderId");
+            if (tpl == "type-five") {
+              oprefix.style.display = "";
+              oisheader.style.display = "";
+            } else {
+              oprefix.style.display = "none";
+              oisheader.style.display = "none";
+            }
+
+
+
+          }
+          if (titlesize != undefined) {
+            $("input[name='titlesize']").val(titlesize);
+          }
+          if (consize != undefined) {
+            $("input[name='consize']").val(consize);
+          }
+          if (listpicw != undefined && listpicw != '') {
+            $("input[name=listpicw]").val(listpicw);
+          }
+          if (listpich != undefined && listpich != '') {
+            $("input[name=listpich]").val(listpich);
+          }
+         if (listurl != undefined && listurl != '') {
+            $("input[name=url]").val(listurl);
+          }
+          if (fontsize != undefined && listurl != '') {
+            $("input[name=fontsize]").val(fontsize);
+          }
+
+          console.log("onload 加载listurl"+listurl+"title"+titlelabel+"conlabel"+conlabel)
+
+         if (titlelabel != undefined && titlelabel != '' && titlelabel != 'null') {
+            $("input[name=titlelabel]").val(titlelabel);        //这里发生串值  改一下  不知道怎么回事
+          } else {
+            $("input[name=titlelabel]").val("");
+          }
+          if (conlabel != undefined && conlabel != '' && conlabel != 'null') {
+            $("input[name=conlabel]").val(conlabel);
+          } else {
+            $("input[name=conlabel]").val("");
+          }
+
+         /* if (typesevendate != undefined && typesevendate != '' && typesevendate != 'null') {
+            $("input[name=typesevendate]").val(typesevendate);
+          } else {
+            $("input[name=typesevendate]").val("");
+          } */
+
+          if (seardelval != 'null' && seardelval != '') {
+            $("#seardelval").val(seardelval);
+          }
+          $G('pluName').value = name;
+
+          if (picfontsize != undefined && picfontsize != '' && picfontsize != 'null') {
+            $("input[name=picfontsize]").val(picfontsize);
+          }
+          if (listheight != undefined && listheight != '' && listheight != 'null') {
+            $("input[name=listheight]").val(listheight);
+          }
+
+          //曾智宏
+          if (prefix != undefined && prefix != '' && prefix != 'null') {
+            $("input[value='" + prefix + "']").attr("checked", "true");
+            if (prefix != "noneShape") {
+              var oprefixcolorId = document.getElementById("prefixcolorId");
+              oprefixcolorId.style.display = "";
+            }
+
+          }
+          if (isheader != undefined && isheader != '' && isheader != 'null') {
+            $("input[value='" + isheader + "']").attr("checked", "true");
+
+            var oheaderSettingArea = document.getElementById("headerSettingArea");
+            if (isheader == "yes") {
+              oheaderSettingArea.style.display = "";
+            }
+            if (isheader == "no") {
+              oheaderSettingArea.style.display = "none";
+            }
+          }
+          if (headerTitle != undefined && headerTitle != '' && headerTitle != 'null') {
+            $("input[name=headerTitle]").val(headerTitle);
+          }
+          if (moreurl != undefined && moreurl != '' && moreurl != 'null') {
+            $("input[name=moreurl]").val(moreurl);
+          }
+          if (headercolor != undefined && headercolor != '' && headercolor != 'null') {
+            $("input[name=headercolor]").val(headercolor);
+          } else {
+            headercolor = "#ffffff";
+          }
+          if (titlecolor != undefined && titlecolor != '' && titlecolor != 'null') {
+            $("input[name=titlecolor]").val(titlecolor);
+          } else {
+            titlecolor = "#000000";
+          }
+
+
+          //曾智宏
+          if (iscomment != undefined && iscomment != '' && iscomment != 'null') {
+            $("input[value='" + iscomment + "']").attr("checked", "true");
+          }
+          if (isscore != undefined && isscore != '' && isscore != 'null') {
+            $("input[value='" + isscore + "']").attr("checked", "true");
+          }
+          if (iscolor != undefined && iscolor != '' && iscolor != 'null') {
+            switch (iscolor) {
+              case '1':
+                $($("#iscolorId input")[0]).attr("checked", "true");
+                break;
+              case '2':
+                $($("#iscolorId input")[1]).attr("checked", "true");
+                break;
+            }
+
+
+          }
+
+          if (headImgSrc != undefined && headImgSrc != '' && headImgSrc != 'null') {
+            $("input[name=headImgSrc]").val(headImgSrc);
+            var array = headImgSrc.split("/");
+            var index = array.length - 1;
+            var imgName = array[index];
+            // alert(imgName);
+            var oimgArea = document.getElementById("imgAraeId");
+            oimgArea.innerHTML = imgName;
+            // 						alert("当前图片路径="+$("input[name=headImgSrc]").val());
+            // 						alert("当前上传图片名字="+oimgArea.innerHTML)
+          }
+
+          if (headstyle != undefined && headstyle != '' && headstyle != 'null') {
+            $("input[value='" + headstyle + "']").attr("checked", "true");
+            // var headstyle = $(this).val();
+            var ouploadHeadImgBtn = document.getElementById("uploadHeadImgBtnId");
+            var osetting = document.getElementById("settingId");
+            if (headstyle == "headImg") {
+              ouploadHeadImgBtn.style.display = "";
+              osetting.style.display = "none";
+            }
+            if (headstyle == "customize") {
+              ouploadHeadImgBtn.style.display = "none";
+              osetting.style.display = "";
+            }
+          }
+
+
+
+
+          layui.use('colorpicker', function() {
+            var $ = layui.$,
+              colorpicker = layui.colorpicker;
+            //表单赋值
+            colorpicker.render({
+              elem: '#headercolor-select',
+              color: headercolor,
+              done: function(color) {
+                $('#headercolor').val(color);
+                var color3 = $('#headercolor').val();
+              }
+            });
+
+            colorpicker.render({
+              elem: '#titlecolor-select',
+              color: titlecolor,
+              done: function(color) {
+                $('#titlecolor').val(color);
+                var color2 = $('#titlecolor').val();
+              }
+            });
+
+          });
+
+
+
+
+
+
+
+
+
+        }
+
+        /*
+         * 绑定数据源
+         * 链接后台获取 数据链接
+         *
+         */
+        var nodeParentId = $('#nodeParentId', window.parent.document).val();
+        nodeId = $('#node_id', window.parent.document).val();
+        var userinfo = window.localStorage['user'] ? JSON.parse(window.localStorage['user']) : null;
+
+        var datasource = window.localStorage['datasource_' + userinfo.id] ? window.localStorage['datasource_' +
+            userinfo.id] :
+          null;
+        if (datasource == null) {
+          setDataSource(userinfo.id);
+        } else {
+          $("#datasource").append(datasource);
+        }
+
+
+        $(document).on("change", "#datasource", function(e) {
+          var nodeParentId = $(this).val().split(":");
+          $(".datafiled").empty();
+          $("#searchcon").html("<option value=''>选支持搜索字段</option>");
+          $.ajax({
+            url: prevent_HOST + 'pageDesignQueryFacade/getPageEditorData?id=' + nodeParentId[0],
+            method: "GET",
+            success: function(res) {
+              $.each(res.msg, function(index, value) {
+                $(".datafiled").append('<option value="' + value.value + '">' + value.text +
+                  '</option>');
+
+
+                sear_select = "";
+                if (searchcon == value.value) sear_select = ' selected';
+                $("#searchcon").append('<option value="' + value.value + '"' + sear_select + '>' +
+                  value.text +
+                  '</option>');
+
+              })
+            }
+          })
+        });
+      }
+
+      // 取消
+      dialog.oncancel = function() {
+        if (UE.plugins[thePlugins].editdom) {
+          delete UE.plugins[thePlugins].editdom;
+        }
+      };
+
+      dialog.onok = function() {
+        var gName = $G('orgname').value.replace(/\"/g, "&quot;");
+        var datasource = $("#datasource").val();
+        var datapic = $("#datapic").val();
+        var datatitle = $("#datatitle").val();
+        var datacontent = $("#datacontent").val();
+        var datacontent2 = $("#datacontent2").val();
+        var pagesize = $("input[name=pagesize]").val();
+        var colnumber = $("input[name=colnumber]").val();
+        var bottomline = $("input[name=bottomline]:checked").val();
+        var showpage = $("input[name=showpage]:checked").val();
+        var orderby = $("input[name=orderby]:checked").val();
+        //曾智宏
+        var outborder = $("input[name=outborder]:checked").val();
+
+        var tpl = $("input[name=tpl]:checked").val();
+        var titlesize = $("input[name=titlesize]").val();
+        var consize = $("input[name=consize]").val();
+        var titlelabel = $("input[name=titlelabel]").val();
+
+        var conlabel = $("input[name=conlabel]").val();
+        var typesevendate = $("input[name=typesevendate]").val();
+        var fontsize = $("input[name=fontsize]").val();
+        var frmedit = $("input[name=frmedit]").is(':checked') ? 1 : 0;
+        var frmdel = $("input[name=frmdel]").is(':checked') ? 1 : 0;
+        var isnotuser = $("input[name=isnotuser]").is(':checked') ? 1 : 0;
+
+
+        //曾智宏
+        var prefix = $("input[name=prefix]:checked").val(); //circle/square/triangle
+        var prefixcolor = $("input[name=prefixcolor]:checked").val();
+        var isheader = $("input[name=isheader]:checked").val(); //yes/no
+        var headerTitle = $("input[name=headerTitle]").val();
+
+        var moreurl = $("input[name=moreurl]").val();
+        var headercolor = $("input[name=headercolor]").val();
+        var titlecolor = $("input[name=titlecolor]").val();
+        //曾智宏
+        var iscomment = $("input[name=iscomment]:checked").val();
+        var isscore = $("input[name=isscore]:checked").val();
+        var iscolor = $("input[name=iscolor]:checked").val();
+        var typesevenurl = $("input[name=typesevenurl]").val();
+        var headImgSrc = $("#headImgSrcId").val();
+        var headstyle = $("input[name=headstyle]:checked").val();
+        //曾智宏
+        var pagingstyle = $("input[name=pagingstyle]:checked").val();
+
+        var onlyShowOne = $('input[name=onlyShowOne]:checked').val();
+        console.log(onlyShowOne)
+
+        var multisource = $('input[name=multisource]:checked').val();
+        var multiSourcePublic = $('input[name=multiSourcePublic]:checked').val();
+
+        var multititles = [];
+        var multisourcenames = [];
+        var multinodeids = [];
+
+        var multidatapics = [];
+        var multidatatitles = [];
+        var multidatacontents = [];
+        var multititlesizes = [];
+        var multiconsizes = [];
+        var multititlelabels = [];
+        var multiconlabels = [];
+        var multifontsizes = [];
+        var multilistpicws = [];
+        var multilistpichs = [];
+        var multilisturls = [];
+        var multisearchcons = [];
+        var multiseardelvals = [];
+        var multipicfontsizes = [];
+        var multilistheights = [];
+
+
+        var multiRowSourceCount = $('#multirowsourcecount').val();
+        if (multiRowSourceCount) {
+          multiRowSourceCount = parseInt(multiRowSourceCount);
+
+          if (multiRowSourceCount == 0) {
+            multiRowSourceCount = 4;
+          }
+        }
+
+
+
+
+        for (var mc = 1; mc <= multiCount; mc++) {
+          var thismulti = $('#multi' + mc);
+
+          var multinodeid = thismulti.attr('multinodeid');
+          var multisourcename = thismulti.attr('multisourcename');
+          var multititle = thismulti.html();
+
+
+
+          var multidatapic = thismulti.attr('multidatapic');
+          var multidatatitle = thismulti.attr('multidatatitle');
+          var multidatacontent = thismulti.attr('multidatacontent');
+          var multititlesize = thismulti.attr('multititlesize');
+          var multiconsize = thismulti.attr('multiconsize');
+          var multititlelabel = thismulti.attr('multititlelabel');
+          var multiconlabel = thismulti.attr('multiconlabel');
+          var multifontsize = thismulti.attr('multifontsize');
+          var multilistpicw = thismulti.attr('multilistpicw');
+          var multilistpich = thismulti.attr('multilistpich');
+          var multilisturl = thismulti.attr('multilisturl');
+          var multisearchcon = thismulti.attr('multisearchcon');
+          var multiseardelval = thismulti.attr('multiseardelval');
+          var multipicfontsize = thismulti.attr('multipicfontsize');
+          var multilistheight = thismulti.attr('multilistheight');
+
+
+
+
+
+          multititles.push(multititle);
+          multisourcenames.push(multisourcename);
+          multinodeids.push(multinodeid);
+
+
+          multidatapics.push(multidatapic);
+          multidatatitles.push(multidatatitle);
+          multidatacontents.push(multidatacontent);
+          multititlesizes.push(multititlesize);
+          multiconsizes.push(multiconsize);
+          multititlelabels.push(multititlelabel);
+          multiconlabels.push(multiconlabel);
+          multifontsizes.push(multifontsize);
+          multilistpicws.push(multilistpicw);
+          multilistpichs.push(multilistpich);
+          multilisturls.push(multilisturl);
+          multisearchcons.push(multisearchcon);
+          multiseardelvals.push(multiseardelval);
+          multipicfontsizes.push(multipicfontsize);
+          multilistheights.push(multilistheight);
+
+
+
+
+        }
+
+
+
+
+        console.log(prefix);
+        console.log(isheader);
+        console.log(headerTitle);
+        console.log(moreurl);
+        console.log(headercolor);
+        console.log(titlecolor);
+        console.log("iscomment=" + iscomment);
+        console.log("isscore=" + isscore);
+
+        console.log("headstyle=" + headstyle);
+        console.log("headImgSrc=" + headImgSrc);
+        console.log("okpagingstyle=" + pagingstyle);
+
+        if (bottomline == undefined) bottomline = 'off';
+        if (showpage == undefined) showpage = 'off';
+        if (orderby == undefined) orderby = 'desc';
+        //曾智宏
+        if (outborder == undefined) outborder = 'off';
+        if (colnumber == undefined) colnumber = 'off';
+
+        var listpicw = $("input[name=listpicw]").val();
+        var listpich = $("input[name=listpich]").val();
+        var listurl = $("input[name=url]").val();
+        console.log("ok时的listurl"+listurl+"ok时de"+titlelabel+"ok  conlabel"+conlabel);
+        var searchcon = $("#searchcon").val();
+        var seardelval = $("#seardelval").val();
+
+        var picfontsize = $("input[name=picfontsize]").val();
+        var listheight = $("input[name=listheight]").val();
+
+
+        if (gName == '') {
+          alert('控件名称不能为空');
+          $G('orgname').focus();
+          return false;
+        }
+        if (datasource == '0') {
+          alert('没有选择数据源');
+          return false;
+        }
+        if (datapic == '' && datatitle == '' && datacontent == '') {
+          alert('没有选择数据字段');
+          return false;
+        }
+        var PN = $('#pluName');
+        cupy = PN.val();
+        if (cupy == '') {
+          getPY($G('orgname').value);
+        }
+
+        var gTitle = '';
+        if (!oNode) {
+          try {
+            oNode = createElement('input', cupy);
+            oNode.setAttribute('leipiPlugins', thePlugins);
+            oNode.setAttribute('type', 'text');
+            oNode.setAttribute('value', gName);
+            oNode.setAttribute('title', gName);
+            oNode.setAttribute('datasource', datasource);
+            oNode.setAttribute('datapic', datapic);
+            oNode.setAttribute('datatitle', datatitle);
+            oNode.setAttribute('datacontent', datacontent);
+            oNode.setAttribute('datacontent2', datacontent2);
+            oNode.setAttribute('pagesize', pagesize);
+            oNode.setAttribute('bottomline', bottomline);
+            oNode.setAttribute('showpage', showpage);
+            oNode.setAttribute('orderby', orderby);
+            //曾智宏
+            oNode.setAttribute('onlyshowone', onlyShowOne);
+
+            oNode.setAttribute('outborder', outborder);
+            oNode.setAttribute('prefixcolor', prefixcolor);
+
+            oNode.setAttribute('colnumber', colnumber);
+            oNode.setAttribute('tpl', tpl);
+            oNode.setAttribute('titlesize', titlesize);
+            oNode.setAttribute('consize', consize);
+            oNode.setAttribute('style', 'height: 20px;line-height: 20px;');
+            oNode.setAttribute('listpicw', listpicw);
+            oNode.setAttribute('listpich', listpich);
+            oNode.setAttribute('url', listurl);
+            oNode.setAttribute('titlelabel', titlelabel);
+            oNode.setAttribute('conlabel', conlabel);
+             oNode.setAttribute('typesevendate', typesevendate);
+            oNode.setAttribute('frmedit', frmedit);
+            oNode.setAttribute('frmdel', frmdel);
+            oNode.setAttribute('fontsize', fontsize);
+            oNode.setAttribute('searchcon', searchcon);
+            oNode.setAttribute('seardelval', seardelval);
+            oNode.setAttribute('picfontsize', picfontsize);
+            oNode.setAttribute('listheight', listheight);
+            oNode.setAttribute('isnotuser', isnotuser);
+            oNode.setAttribute('multiRowSourceCount', multiRowSourceCount);
+            oNode.setAttribute('multisourcepublic', multiSourcePublic);
+            //曾智宏pagingstyle
+
+            if (prefix != undefined && prefix != '' && prefix != 'null') {
+              oNode.setAttribute('prefix', prefix);
+            }
+            oNode.setAttribute('isheader', isheader);
+            oNode.setAttribute('headerTitle', headerTitle);
+            oNode.setAttribute('moreurl', moreurl);
+            if (headercolor != undefined && headercolor != '' && headercolor != 'null') {
+              oNode.setAttribute('headercolor', headercolor);
+            }
+            if (titlecolor != undefined && titlecolor != '' && titlecolor != 'null') {
+              oNode.setAttribute('titlecolor', titlecolor);
+            }
+
+
+            oNode.setAttribute('iscomment', iscomment);
+            oNode.setAttribute('isscore', isscore);
+            oNode.setAttribute('headstyle', headstyle);
+            oNode.setAttribute('headImgSrc', headImgSrc);
+            oNode.setAttribute('iscolor', iscolor);
+            oNode.setAttribute('typesevenurl', typesevenurl);
+            oNode.setAttribute('pagingstyle', pagingstyle);
+
+            oNode.setAttribute('multisource', multisource);
+            oNode.setAttribute('multititles', multititles);
+            oNode.setAttribute('multisourcenames', multisourcenames);
+            oNode.setAttribute('multinodeids', multinodeids);
+
+
+            oNode.setAttribute('multidatapics', multidatapics);
+            oNode.setAttribute('multidatatitles', multidatatitles);
+            oNode.setAttribute('multidatacontents', multidatacontents);
+            oNode.setAttribute('multititlesizes', multititlesizes);
+            oNode.setAttribute('multiconsizes', multiconsizes);
+            oNode.setAttribute('multititlelabels', multititlelabels);
+            oNode.setAttribute('multiconlabels', multiconlabels);
+            oNode.setAttribute('multifontsizes', multifontsizes);
+            oNode.setAttribute('multilistpicws', multilistpicws);
+            oNode.setAttribute('multilistpichs', multilistpichs);
+            oNode.setAttribute('multilisturls', multilisturls);
+            oNode.setAttribute('multisearchcons', multisearchcons);
+            oNode.setAttribute('multiseardelvals', multiseardelvals);
+            oNode.setAttribute('multipicfontsizes', multipicfontsizes);
+            oNode.setAttribute('multilistheights', multilistheights);
+
+
+
+
+            //oNode.style.width="60px";
+            editor.execCommand('insertHtml', oNode.outerHTML);
+            var editNewData = {
+              "node_id": nodeId,
+              "title": gName,
+              "control_name": cupy
+            }
+            $.ajax({
+              url: prevent_HOST + `pageDesignOperatorFacade/insertControl`,
+              type: 'POST',
+              dataType: 'json',
+              contentType: 'application/json; charset=UTF-8',
+              data: JSON.stringify(editNewData),
+              async: false,
+              success: function(res) {}
+            })
+            return true;
+          } catch (e) {
+            try {
+              editor.execCommand('error');
+            } catch (e) {
+              alert('控件异常，请反馈或寻求帮助！');
+            }
+            return false;
+          }
+        } else {
+          //修改
+          oNode.setAttribute('leipiPlugins', thePlugins);
+          oNode.setAttribute('name', cupy);
+          oNode.setAttribute('value', gName);
+          oNode.setAttribute('title', gName);
+          oNode.setAttribute('datasource', datasource);
+          oNode.setAttribute('datapic', datapic);
+          oNode.setAttribute('datatitle', datatitle);
+          oNode.setAttribute('datacontent', datacontent);
+          oNode.setAttribute('datacontent2', datacontent2);
+          oNode.setAttribute('pagesize', pagesize);
+          oNode.setAttribute('bottomline', bottomline);
+          oNode.setAttribute('showpage', showpage);
+          oNode.setAttribute('orderby', orderby);
+          //曾智宏
+          oNode.setAttribute('onlyshowone', onlyShowOne);
+          oNode.setAttribute('outborder', outborder);
+          oNode.setAttribute('prefixcolor', prefixcolor);
+
+          oNode.setAttribute('colnumber', colnumber);
+          oNode.setAttribute('tpl', tpl);
+          oNode.setAttribute('titlesize', titlesize);
+          oNode.setAttribute('consize', consize);
+          oNode.setAttribute('listpicw', listpicw);
+          oNode.setAttribute('listpich', listpich);
+          oNode.setAttribute('url', listurl);
+          oNode.setAttribute('titlelabel', titlelabel);
+          oNode.setAttribute('typesevendate', typesevendate)
+          oNode.setAttribute('conlabel', conlabel);
+          oNode.setAttribute('frmedit', frmedit);
+          oNode.setAttribute('frmdel', frmdel);
+          oNode.setAttribute('fontsize', fontsize);
+          oNode.setAttribute('iscolor', iscolor);
+          oNode.setAttribute('typesevenurl', typesevenurl);
+          oNode.setAttribute('searchcon', searchcon);
+          oNode.setAttribute('seardelval', seardelval);
+          oNode.setAttribute('picfontsize', picfontsize);
+          oNode.setAttribute('listheight', listheight);
+          oNode.setAttribute('isnotuser', isnotuser);
+          oNode.setAttribute('multiRowSourceCount', multiRowSourceCount);
+          oNode.setAttribute('multisourcepublic', multiSourcePublic);
+
+          //曾智宏
+
+          if (prefix != undefined && prefix != '' && prefix != 'null') {
+            oNode.setAttribute('prefix', prefix);
+          }
+          oNode.setAttribute('isheader', isheader);
+          oNode.setAttribute('headerTitle', headerTitle);
+          oNode.setAttribute('moreurl', moreurl);
+          if (headercolor != undefined && headercolor != '' && headercolor != 'null') {
+            oNode.setAttribute('headercolor', headercolor);
+          }
+          if (titlecolor != undefined && titlecolor != '' && titlecolor != 'null') {
+            oNode.setAttribute('titlecolor', titlecolor);
+          }
+
+          oNode.setAttribute('iscomment', iscomment);
+          oNode.setAttribute('isscore', isscore);
+          oNode.setAttribute('headstyle', headstyle);
+          oNode.setAttribute('headImgSrc', headImgSrc);
+
+          oNode.setAttribute('pagingstyle', pagingstyle);
+
+          oNode.setAttribute('pagingstyle', pagingstyle);
+
+          oNode.setAttribute('multisource', multisource);
+          oNode.setAttribute('multititles', multititles);
+          oNode.setAttribute('multisourcenames', multisourcenames);
+          oNode.setAttribute('multinodeids', multinodeids);
+
+          oNode.setAttribute('multidatapics', multidatapics);
+          oNode.setAttribute('multidatatitles', multidatatitles);
+          oNode.setAttribute('multidatacontents', multidatacontents);
+          oNode.setAttribute('multititlesizes', multititlesizes);
+          oNode.setAttribute('multiconsizes', multiconsizes);
+          oNode.setAttribute('multititlelabels', multititlelabels);
+          oNode.setAttribute('multiconlabels', multiconlabels);
+          oNode.setAttribute('multifontsizes', multifontsizes);
+          oNode.setAttribute('multilistpicws', multilistpicws);
+          oNode.setAttribute('multilistpichs', multilistpichs);
+          oNode.setAttribute('multilisturls', multilisturls);
+          oNode.setAttribute('multisearchcons', multisearchcons);
+          oNode.setAttribute('multiseardelvals', multiseardelvals);
+          oNode.setAttribute('multipicfontsizes', multipicfontsizes);
+          oNode.setAttribute('multilistheights', multilistheights);
+
+
+
+          delete UE.plugins[thePlugins].editdom; //使用后清空这个对象，变回新增模式
+
+          var editNewData = {
+            "node_id": nodeId,
+            "title": gName,
+            "control_name": control_name,
+            "new_control_name": cupy
+          }
+          $.ajax({
+            url: prevent_HOST + `pageDesignOperatorFacade/updateControl`,
+            type: 'POST',
+            dataType: 'json',
+            contentType: 'application/json; charset=UTF-8',
+            data: JSON.stringify(editNewData),
+            async: false,
+            success: function(res) {}
+          })
+        }
+      };
+
+      function searchDatasource() {
+        var searchStr = $.trim($('#searchDatasource').val());
+        if (searchStr == '') {
+          // alert('请输入查找字符')
+        }
+        $('.tempDatasource').remove();
+        $('#tempBr2Id').remove();
+
+        var tHtml = '';
+        $('#datasource option').each(function(i, n) {
+          var datasourceName = $(n).html();
+          var datasourceValue = $(n).attr('value');
+          if (datasourceName.indexOf(searchStr) != -1) {
+            tHtml += '<a href="#" class="tempDatasource" thisvalue="' + datasourceValue +
+              '" onclick="confirmDatasource(this)">' + datasourceName + '</a>'
+          }
+        })
+        tHtml += '<br id="tempBr2Id">';
+        $('#tempBrId').after(tHtml);
+      }
+
+      function confirmDatasource(e) {
+        var thisValue = $(e).attr('thisvalue');
+        $('#datasource option').each(function(i, n) {
+          var datasourceValue = $(n).attr('value');
+          if (thisValue == datasourceValue) {
+            $(n).attr('selected', 'selected');
+          }
+        })
+
+      }
+    </script>
+  </body>
+
+</html>

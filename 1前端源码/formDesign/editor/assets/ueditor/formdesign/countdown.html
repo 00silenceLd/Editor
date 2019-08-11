@@ -1,0 +1,202 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+
+<head>
+    <title>倒计时</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <link rel="stylesheet" href="bootstrap-3/css/bootstrap.min.css">
+    <!--[if lte IE 6]>
+  <link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap-ie6.css">
+  <![endif]-->
+    <!--[if lte IE 7]>
+  <link rel="stylesheet" type="text/css" href="bootstrap/css/ie.css">
+  <![endif]-->
+    <script src="jquery-3.2.1.min.js"></script>
+    <script src="self/js/py.js"></script>
+    <link rel="stylesheet" href="leipi.style.css">
+    <script type="text/javascript" src="../dialogs/internal.js"></script>
+    <link rel="stylesheet" href="./cropper/cropper.css">
+    <link rel="stylesheet" href="self/btnSelect/btnSelect.css">
+    <script type="text/javascript" src="./cropper/cropper.js"></script>
+    <script type="text/javascript" src="bootstrap/js/bootstrap.js"></script>
+    <script type="text/javascript" src="self/btnSelect/btnSelect.js"></script>
+
+    <script src="../httpData.config.js"></script>
+    <link rel="stylesheet" href="self/tpl/tpl.css">
+</head>
+
+<body>
+    <table class="table-c table table-bordered table-striped table-hover">
+        <tr>
+            <th>
+                <span>控件名称</span>
+                <span class="label label-important">*</span>
+                <span>字段名称</span>
+            </th>
+            <th>
+                <span>字体大小</span>
+            </th>
+        </tr>
+        <tr>
+            <td>
+                <input id="orgname"  type="text" onclick="javascript:this.select()" placeholder="倒计时控件" value="倒计时控件" onblur="getPY(this.value)">
+                <input type="text" class="span2" id="pluName" placeholder="只允许拼音、不允许有相同名" value="" >
+            </td>
+            <td>
+                <input style="padding:0" id="orgfontsize" class="form-control" type="text" class="input-small span1" value="16">
+            </td>
+        </tr>
+        <tr>
+            <th>
+                <span>宽度</span>
+            </th>
+            <th>
+                <span>高度</span>
+            </th>
+        </tr>
+        <tr>
+            <td>
+                <input style="padding:0" class="form-control" type="text" id="orgwidth" value="">
+            </td>
+            <td>
+                <input style="padding:0" class="form-control" type="text" id="orgheight" value="">
+            </td>
+        </tr>
+        <tr>
+            <th>
+                <span>输入倒计时时间</span>
+            </th>
+            <th>
+            <span>选择字体颜色</span>
+            </th>
+        </tr>
+        <tr>
+            <td>
+                <input style="padding:0" class="form-control" type="text" id="orgTime" value="10">
+            </td>
+            <td>
+             <input style="padding: 6px 12px;" class="form-control" type="color" id="fontColor">
+            </td>
+        </tr>
+
+    </table>
+</body>
+<script type="text/javascript">
+     
+    function createElement( type, name ) {
+        var element = null;
+        try {
+            element = document.createElement( '<' + type + ' name="' + name + '">' );
+        } catch ( e ) {}
+        if ( element == null ) {
+            element = document.createElement( type );
+            element.name = name;
+        }
+        return element;
+    }
+    $( document ).on( "click", ".myupfilehome", function () {
+        curpicbtn = 'myupfilehome';
+
+    } );
+    var oNode = null,
+        control_name=null,
+        nodeId=null,
+        thePlugins = 'settimeout';
+    window.onload = function () {
+        $G( 'orgname' ).select();
+        if ( UE.plugins[ thePlugins ].editdom ) {
+            oNode = UE.plugins[ thePlugins ].editdom;
+            var gName = oNode.getAttribute( 'title' ),
+                gfontsize = oNode.getAttribute( 'orgfontsize' ),
+                gWidth = oNode.getAttribute( 'orgwidth' ),
+                gHeight = oNode.getAttribute( 'orgheight' ),
+                gTime = oNode.getAttribute( 'orgTime' ),
+                name = oNode.getAttribute( 'name' ),
+                fontColor = oNode.getAttribute( 'fontColor' ); 
+                backColor = oNode.getAttribute( 'backColor' );
+            $G( 'orgname' ).value = gName;
+            $G( 'orgwidth' ).value = gWidth;
+            $G( 'orgheight' ).value = gHeight;
+            $G( 'orgfontsize' ).value = gfontsize;
+            $G( 'orgTime' ).value = gTime;
+            $G( 'fontColor' ).value = fontColor;
+            control_name=name;
+            $G( 'pluName' ).value = name;
+
+
+        }
+
+        nodeId = $('#node_id',window.parent.document).val();
+
+    }
+
+    dialog.oncancel = function () {
+        if ( UE.plugins[ thePlugins ].editdom ) {
+            delete UE.plugins[ thePlugins ].editdom;
+        }
+    };
+
+    dialog.onok = function () {
+        if ( $G( 'orgname' ).value == '' ) {
+            alert( '请输入控件名称' );
+            return false;
+        }
+
+        var PN=$('#pluName');
+            cupy=PN.val();
+            if(cupy==''){
+                getPY($G( 'orgname' ).value);
+            }
+        var gTitle = $G( 'orgname' ).value.replace( /\"/g, "&quot;" ),
+            orgfontsize = $G( 'orgfontsize' ).value,
+            orgwidth = $G( 'orgwidth' ).value,
+            orgheight = $G( 'orgheight' ).value,
+            orgTime = $G( 'orgTime' ).value;
+            fontColor = $G( 'fontColor' ).value;
+        if ( !oNode ) {
+            try {
+        var leipiplugins = `<input orgtime="${orgTime}" orgwidth="${orgwidth}" orgheight="${orgheight}" name="${cupy}" type="text" color="${fontColor}" title="${gTitle}" value="倒计时控件" orgfontsize="${orgfontsize}" leipiplugins="settimeout" style="height: 20px;width: 75px;border-radius: 8px;">`;
+        var bhtml = `<script type="text/javascript" src="self/js/timeout.js"><\/script>` +
+            `${leipiplugins}
+            <div style="display:inline-block"><span id="startTimer">开始</span><div id="timer" data-id=${orgTime} style="display:inline-block;margin-left:20px;color:${fontColor};width:${orgwidth};height:${orgheight};font-size:${orgfontsize}px"> </div></div>
+             <div id="warring" style="color:red"></div>`
+        editor.setContent( '' );
+        editor.execCommand( 'insertHtml', bhtml );
+            var editNewData={"node_id": nodeId,"title":$G( 'orgname' ).value,"control_name": cupy}
+                $.ajax({
+                    url: prevent_HOST + `pageDesignOperatorFacade/insertControl`,
+                    type: 'POST',
+                    dataType: 'json',
+                    contentType: 'application/json; charset=UTF-8',
+                    data: JSON.stringify(editNewData),
+                    async: false,
+                    success: function ( res ) {
+                    }
+                })
+            } catch ( e ) {
+                    try {
+                        editor.execCommand( 'error' );
+                    } catch ( e ) {
+                        alert( '控件异常，请到 与我们反馈或寻求帮助！' );
+                    }
+                    return false;
+                }
+            } else {
+                oNode.setAttribute( 'title', $G( 'orgname' ).value );
+                oNode.setAttribute( 'name', cupy );
+
+                var editNewData={"node_id": nodeId,"title":$G( 'orgname' ).value,"control_name": control_name,"new_control_name": cupy}
+                    $.ajax({
+                        url: prevent_HOST + `pageDesignOperatorFacade/updateControl`,
+                        type: 'POST',
+                        dataType: 'json',
+                        contentType: 'application/json; charset=UTF-8',
+                        data: JSON.stringify(editNewData),
+                        async: false,
+                        success: function ( res ) {
+                        }
+                    })
+                }
+    }
+</script>

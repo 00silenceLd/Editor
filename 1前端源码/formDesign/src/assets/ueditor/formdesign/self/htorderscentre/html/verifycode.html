@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<!-- <meta name="keywords" content=""/>
+		<meta name="description" content=""/> -->
+		<!-- <link rel="stylesheet" type="text/css" href="./self/commentControl/css/bootstrap.min.css"> -->
+		<link rel="stylesheet" type="text/css" href="../../commentControl/css/commentController.css">
+		<!-- Bootstrap 图标-->
+		<link rel="stylesheet" href="../../../bootstrap/css/bootstrap.same.css">
+
+		<title>处理中...</title>
+		<!-- jQuery -->
+		<script src="../../js/jquery-3.2.1.min.js"></script>
+		
+		<!-- 请求 前缀 配置文件 -->
+        <script src="../../../../httpData.config.js"></script>
+        
+        <!-- 本页面的样式 -->
+		<link rel="stylesheet" href="../../../self/css/style.css"> 
+		 <link rel="stylesheet" href="../../../self/swiper/swiper-4.2.2.min.css">
+		
+		<!-- Bootstrap -->
+		<!-- <link rel="stylesheet" href="../../../bootstrap/css/bootstrap.css">
+		<script src="../../../bootstrap/js/bootstrap.js"></script> -->
+		<script src="../../js/fun.js"></script>
+		<link rel="stylesheet" type="text/css" href="../../../layui/css/layui.css" />
+		<script src="../../../layui/layui.js" type="text/javascript" charset="utf-8"></script>
+		<style type="text/css">
+			/*登陆框*/
+			#loginbox {
+				display: none;
+				width: 360px;
+				height: 405px;
+				background: #fff;
+				position: absolute;
+				left: 50%;
+				top: 50%;
+				margin-left: -175px;
+				margin-top: -150px;
+				/*text-align: center;*/
+			}
+
+			#loginbox label {
+				display: block;
+				font-size: 16px;
+				margin-bottom: 20px;
+			}
+
+			#loginbox label input {
+				width: 300px;
+				height: 40px;
+				color: #cccccc;
+			}
+
+			#loginbox #btn {
+				width: 278px;
+				height: 30px;
+			}
+
+			#loginbox #btn button {
+				width: 120px;
+				height: 30px;
+				background: #0B5AA6;
+				border-radius: 3px;
+				border: none;
+				margin-top: 30px;
+				color: #fff;
+			}
+
+			#close {
+				font-size: 18px;
+				position: absolute;
+				top: 0;
+				right: 5px;
+				cursor: pointer;
+			}
+
+			/*登陆框结束*/
+			#tip {
+				margin: 40px 0 40px 0;
+			}
+
+			#over {
+				position: absolute;
+				left: 0;
+				top: 0;
+				width: 100%;
+				height: 100%;
+				background: #000;
+				opacity: 0.7;
+				display: none;
+				z-index: 6;
+			}
+
+			#next {
+				display: inline-block;
+				width: 300px;
+				height: 20px;
+				margin-left: 30px;
+			}
+
+			#zhuce {
+				width: 360px;
+				height: 60px;
+				background: #f0f6ff;
+				margin-top: 22px;
+			}
+
+			a:hover {
+				opacity: 0.7;
+			}
+		</style>
+
+	</head>
+	<body class="mnPhone">
+
+		<div id="lian" style="width: 110px;height: 110px;position: fixed;right: 10px;bottom: 200px;display: none;">
+			<p id="close1" style="position: absolute;right: 1px;top: -16px;color: black;font-size: 12px;width: 25px;height: 20px;z-index: 1;cursor: pointer;">关闭</p>
+			<img src="../image/liannanzugong.jpg" alt="" style="width: 110px;height: 110px;">
+		</div>
+
+		<section class="container">
+			<form id="insertForm" onkeydown="if(event.keyCode==13)return false;">
+				<div class="bodyContent">
+                    <table width="357" class="gogogo">
+						<tbody>
+							<tr class="firstRow">
+								<td style="border-color: rgb(48, 45, 62); background-color: rgb(48, 45, 62); word-break: break-all; height:44px"
+								 width="30%" valign="middle" align="left"><a href="javascript:history.go(-1)"
+									 target="_self"><img src="../../htreservation/image/15514287821041543307245145返回.png" title="15514287821041543307245145.png"
+										 alt="15514287821041543307245145.png" width="32" height="32"></a><br></td>
+								<td style="border-color:  #302d3e; word-break: break-all; background-color:  #302d3e;" width="72" valign="middle"
+								 align="center"><span style="text-align: -webkit-right; background-color: rgb(48, 45, 62); color: rgb(255, 255, 255); font-size: 18px;">验证使用码</span><br></td>
+								<td style="border-color: rgb(48, 45, 62); background-color: rgb(48, 45, 62); word-break: break-all;" width="72"
+								 valign="middle" align="right"></td>
+							</tr>
+						</tbody>
+					</table>
+					<p><br></p>
+					<p><br></p>
+					<table width="357" class="gogogo" >
+						<tbody>
+							<tr class="firstRow" id="gain">
+								<td valign="middle" style="word-break: break-all; border-color: rgb(255, 255, 255);" align="center" width="38%" id="right"><span
+									 style="font-size: 15px;" id="usetext">&nbsp; &nbsp; 输入使用码：</span></td>
+                                <td valign="top" style="border-color: rgb(255, 255, 255);" width="235" id="cencer">
+                                    <input class="searchData" leipiplugins="text"
+									 onclick="clearInputValue(event)" orgtype="text" type="text" max="undefined" maxlength="null" title="使用码" id="shiyongma"
+									 name="shiyongma" orgheight="null" orgwidth="null" style="line-clamp:undefined;line-clamp=&#39;undefined&#39; text-align:left; height:null;width:null; font-size:16px;border:;background:;line-clamp=&#39;undefined&#39; text-align:left; height:null;width:null; font-size:16px;border:;background:;line-clamp=&#39;undefined&#39; text-align:left; height:null;width:null; font-size:16px;border:;background:;line-clamp=&#39;undefined&#39; text-align:left; height:null;width:null; font-size:16px;border:;background:;line-clamp=&#39;undefined&#39; text-align:left; height:null;width:null; font-size:16px;border:;background:;font-size: 16px; text-align: left; overflow: hidden; text-overflow: ellipsis;"
+									 placeholder="" orgthide="0" orgbghide="0" datasource="{&quot;data&quot;:&quot;&quot;,&quot;field&quot;:&quot;&quot;}"></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+	
+
+			</form>
+
+	</body>
+<script>
+	$(function(){
+	    var usecodestatus=window.location.search.split("=")[1];
+
+		if(usecodestatus==undefined){
+			$("#gain").append('<td valign="middle" style="word-break: break-all; border-color: rgb(255, 255, 255);" align="center" width="20%" onclick="huoqu()" id="left"><button'+
+									 ' type="button" style="width:80%;height:25px;border-radius:10px;border:1px solid #FFC000;background-color:#FFC000;color:#fff">获取</button></td>');
+
+		}else if(usecodestatus==1){
+			$("#gain").append('<td valign="middle" style="word-break: break-all; border-color: rgb(255, 255, 255);" align="center" width="20%" onclick="info()" id="left"><button'+
+									 ' type="button" style="width:80%;height:25px;border-radius:10px;border:1px solid #FFC000;background-color:#FFC000;color:#fff">获取</button></td>');
+			  /**
+               * 监听视窗宽高
+               */
+
+			   $(window).resize(function () { //当浏览器大小变化时
+                    console.log($(window).width());
+                    if ($(window).width() > 500) {
+                        $(".mnPhone").css("width", window.innerWidth + "px");
+                        $("#insertForm").css("width", window.innerWidth + "px");
+						$(".container").css("width",window.innerWidth+"px");
+						$(".gogogo").css("width",window.innerWidth+"px");
+						$("#right").css("width","17%");
+						$("#cencer").css("width","7%");
+						$("#left").css("width","20%");
+						$("#left").css("text-align","left");
+						$("#usetext").css("font-size","37px");
+                    }
+                })
+                window.addEventListener('load', function () {
+                    console.log(window.innerWidth);
+                    if (window.innerWidth > 500) {
+                        $(".mnPhone").css("width", window.innerWidth + "px");
+                        $("#insertForm").css("width", window.innerWidth + "px");
+						$(".container").css("width",window.innerWidth+"px");
+						$(".gogogo").css("width",window.innerWidth+"px");
+						$("#right").css("width","17%");
+						$("#cencer").css("width","7%");
+						$("#left").css("width","20%");
+						$("#left").css("text-align","left");
+						$("#usetext").css("font-size","37px");
+                    }
+				})
+		}
+	});
+	function info(){
+		var shiyongma=$("#shiyongma").val();
+		if(shiyongma!=""&&shiyongma!=null){
+			window.location.href="../../htevmorderfood/html/verifycodeinfopage.html?reBeiId="+shiyongma;
+		}else{
+			alert("使用码获取不到,请输入");
+		}
+	};
+	function huoqu(){
+		var shiyongma=$("#shiyongma").val();
+		if(shiyongma!=""&&shiyongma!=null){
+			window.location.href="orderdetails.html?reBeiId="+shiyongma;
+		}else{
+			alert("使用码获取不到,请输入");
+		}
+		
+	};
+	
+</script>
+</html>
