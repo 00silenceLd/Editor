@@ -44,8 +44,10 @@
 
 
     <!-- ---------------------------------------第三方 Begin------------------------------- -->
-    <!-- jQuery -->
+    <!-- jQuery -->                             <!-- 懒加载 -->
     <script src="./self/js/jquery-3.2.1.min.js"></script>
+    <!--    图片懒加载 -->
+     <script src="./self/js/jquery.lazyload.js"></script>
     <script src="./self/ligerlib/jquery.cookie.js"></script>
     <!-- <script src="./self/zTree/jquery.ztree.all.min.js"></script> -->
     <!-- 权限相关 -->
@@ -320,8 +322,84 @@
 
 
 
+		<script>
+			/* $(function() {
+					 window.onload();
+
+					 $("img").lazyload({
+					 	effect: "fadeIn",
+					 	threshold: 0
+					 });
+
+              //判断图片是否出现在可视区域内
+              function isInSight(el) {
+                  const bound = el.getBoundingClientRect();
+                  const clientHeight = $(document.body).height();
+                  return bound.top <= clientHeight + 1000;
+              }
+              //加载图片
+              let index = 0;
+              function checkImgs() {
+                  const imgs = document.querySelectorAll('img');
+                  for( let i = index; i < imgs.length; i++){
+                    if(isInSight(imgs[i])){
+                      loadImg(imgs[i]);
+                      index = i;
+                    }
+                  }
+              }
+              function loadImg(el) {
+                  if(!el.src){
+                    const source = el.data-original;
+                    el.src = source;
+                  }
+              }
+              //函数节流
+              //函数节流是很重要的思想，可以防止过于频繁的操作dom
+              function throttle(fn,mustRun = 500) {
+                  const timer = null;
+                  let previous = null;
+                  return function () {
+                    const now = new Date();
+                    const context = this;
+                    const args = arguments;
+                    if(!previous){
+                      previous = now;
+                    }
+                    const remaining = now -previous;
+                    if(mustRun && remaining >= mustRun){
+                      fn.apply(context,args);
+                      previous = now;
+                    }
+                  }
+                }
+              //调用函数
+              window.onload=checkImgs;
+              window.onscroll = throttle(checkImgs);
 
 
+
+						})
+ */
+
+			/* function loadImg() {
+					var img = this.$refs.lazy.getElementsByClassName("lazy");
+					// 已滚动高度+可视区高度
+					var top = this.$refs.lazy.scrollTop + this.$refs.lazy.clientHeight;
+
+					for(var i = 0; i < img.length; i++) {
+						if(img[i].offsetTop <= top) {  // 在可视区内则显示图片
+							img[i].src = img[i].getAttribute("datasrc");
+						}
+					}
+				}
+			 function	lazyLoad() {
+					this.loadImg();
+				} */
+		</script>
 
   </body>
+
+
+
 </html>
